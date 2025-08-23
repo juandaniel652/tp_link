@@ -1,0 +1,21 @@
+.btn-guardar {
+  background: var(--color-secundario);
+  border: none;
+  padding: 10px 15px;
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .2s;
+}
+
+.btn-guardar:hover {
+  background: #2980b9;
+}
+
+input, select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin: 5px 0;
+  width: 100%;
+}

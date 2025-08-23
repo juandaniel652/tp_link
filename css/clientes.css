@@ -1,0 +1,104 @@
+/* === FORMULARIO CLIENTE === */
+#cliente {
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  border-radius: 15px;
+  padding: 25px 20px;
+  max-width: 500px;
+  margin: 20px auto;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  animation: fadeIn 0.6s ease-in-out;
+}
+#cliente h2 {
+  text-align: center;
+  font-size: 22px;
+  margin-bottom: 20px;
+  color: #1E3C72;
+  font-weight: bold;
+  border-bottom: 2px solid #2A5298;
+  padding-bottom: 8px;
+}
+#cliente form input {
+  width: 90%;
+  padding: 12px 14px;
+  margin: 10px 0;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+#cliente form input:focus {
+  border-color: #2A5298;
+  box-shadow: 0 0 8px rgba(42,82,152,0.4);
+}
+#cliente .btn-guardar {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #1E3C72, #2A5298);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+#cliente .btn-guardar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+#listaClientes {
+  margin-top: 20px;
+  list-style: none;
+  padding: 0;
+}
+#listaClientes li {
+  background: #f4f4f4;
+  margin: 5px 0;
+  padding: 10px;
+  border-radius: 8px;
+  border-left: 4px solid #2A5298;
+  font-size: 14px;
+}
+
+#listaClientes li:hover {
+  background: #e0eaff;
+  transform: translateX(5px);
+  transition: all 0.2s ease;
+}
+
+
+#clientesContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.cliente-card {
+  background: linear-gradient(135deg, #1E3C72, #2A5298);
+  color: #fff;
+  padding: 15px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  width: 200px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.cliente-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+.cliente-card h3 {
+  margin: 0 0 5px 0;
+  font-size: 18px;
+}
+
+.cliente-card p {
+  margin: 2px 0;
+  font-size: 14px;
+}

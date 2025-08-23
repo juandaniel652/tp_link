@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Técnicos</title>
+  <link rel="stylesheet" href="../css/general.css">
+  <link rel="stylesheet" href="../css/menu.css">
+  <link rel="stylesheet" href="../css/tecnicos.css">
+</head>
+<body>
+
+<header class="titulo">
+  <img src="../img/logo_s_link.png" alt="Logo" class="logo">
+  <h1>Técnicos</h1>
+</header>
+
+<div id="tecnico" class="tab-content">
+  <h2>Formulario Técnico</h2>
+  <form id="formTecnico">
+    <input type="text" id="tecnicoNombre" placeholder="Nombre" required>
+    <input type="text" id="tecnicoApellido" placeholder="Apellido" required>
+    <input type="text" id="tecnicoTelefono" placeholder="Teléfono" required>
+    <button type="submit" class="btn-guardar-tecnico">Guardar Técnico</button>
+  </form>
+
+  <h2>Lista de Técnicos</h2>
+  <div id="tecnicosContainer"></div>
+</div>
+
+<script src="../js/tecnicosModule.js"></script>
+</body>
+</html>

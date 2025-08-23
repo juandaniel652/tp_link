@@ -1,0 +1,200 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1b1b1b;
+    color: #fff;
+    margin: 0;
+    padding: 20px;
+  }
+  h1 {
+    color: white;
+    text-align: center;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  th, td {
+    border: 1px solid #444;
+    padding: 8px;
+    text-align: center;
+  }
+  th {
+    background-color: #0b3d91;
+    color: #fff;
+  }
+  td {
+    background-color: #224d22;
+  }
+  td button {
+    background-color: #4caf50;
+    border: none;
+    color: white;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+  td button:hover {
+    background-color: #45a049;
+  }
+  .hora {
+    background-color: #333;
+  }
+  /* Botones navegación */
+  div button {
+    padding: 8px 12px;
+    margin: 5px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  div button:hover {
+    background-color: #0b3d91;
+    color: #fff;
+  }
+
+
+  /* Botones de navegación modernos */
+#agendaContainer > div {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+
+#selectSemana, #selectTecnico {
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: none;
+  font-weight: bold;
+  font-size: 14px;
+  color: #fff;
+  background: linear-gradient(135deg, #1E3C72, #2A5298);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#selectSemana:hover, #selectTecnico:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  background: linear-gradient(135deg, #2A5298, #1E3C72);
+}
+
+#agendaContainer > div button {
+  padding: 10px 20px;
+  margin: 0 4px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 15px;
+  color: #fff;
+  background: linear-gradient(135deg, #1E3C72, #2A5298);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+}
+
+#agendaContainer > div button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+  background: linear-gradient(135deg, #2A5298, #1E3C72);
+}
+
+
+/* Tooltip moderno para turnos */
+td button {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+td button:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #1E3C72, #2A5298);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 10;
+  opacity: 1;
+  pointer-events: none;
+}
+
+/* Fade-in tooltip */
+td button::after {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: max-content;
+  background-color: #333;
+  color: #fff;
+  text-align: left;
+  padding: 5px 8px;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 10;
+  top: -5px;
+  left: 105%;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 12px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+
+
+button.btn-ocupado {
+  background-color: #1E90FF;  /* azul */
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  width: 100%;
+  height: 100%;
+  cursor: not-allowed;
+}
+
+
+td button {
+  background-color: #4caf50;
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+td button:hover {
+  background-color: #45a049;
+}
+
+
+button.btn-libre {
+  background-color: transparent;
+  color: #bbb;
+  border: 1px dashed #444;
+  border-radius: 5px;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
