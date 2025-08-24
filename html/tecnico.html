@@ -17,11 +17,22 @@
 <div id="tecnico" class="tab-content">
   <h2>Formulario Técnico</h2>
   <form id="formTecnico">
-    <input type="text" id="tecnicoNombre" placeholder="Nombre" required>
-    <input type="text" id="tecnicoApellido" placeholder="Apellido" required>
-    <input type="text" id="tecnicoTelefono" placeholder="Teléfono" required>
-    <input type="text" id="duracionTurnoMinutos" placeholder="En minutos" required>
-    <input type="text" id="puntoAcceso" placeholder="Nap" required>
+    
+    <label for="tecnicoNombre" class="label">Nombre</label>
+    <input type="text" id="tecnicoNombre" placeholder="Ingrese nombre" required>
+
+    <label for="tecnicoApellido" class="label">Apellido</label>
+    <input type="text" id="tecnicoApellido" placeholder="Ingrese apellido" required>
+
+    <label for="tecnicoTelefono" class="label">Teléfono</label>
+    <input type="text" id="tecnicoTelefono" placeholder="Ingrese teléfono" required>
+
+    <label for="duracionTurnoMinutos" class="label">Duración del turno (minutos)</label>
+    <input type="text" id="duracionTurnoMinutos" placeholder="Ej: 30" required>
+
+    <label for="puntoAcceso" class="label">NAP</label>
+    <input type="text" id="puntoAcceso" placeholder="Ingrese NAP" required>
+
     <button type="submit" class="btn-guardar-tecnico">Guardar Técnico</button>
   </form>
 

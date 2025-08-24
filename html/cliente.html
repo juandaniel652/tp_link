@@ -17,12 +17,25 @@
 <div id="cliente" class="tab-content">
   <h2>Formulario Cliente</h2>
   <form id="formCliente">
-    <input type="text" id="NumeroCliente" placeholder="Número Cliente" required>
-    <input type="text" id="clienteNombre" placeholder="Nombre" required>
-    <input type="text" id="clienteApellido" placeholder="Apellido" required>
-    <input type="text" id="clienteDomicilio" placeholder="Domicilio (calle)" required>
-    <input type="text" id="clienteNumeroDomicilio" placeholder="Número Domicilio" required>
-    <input type="text" id="clienteTelefono" placeholder="Teléfono" required>
+
+    <label for="NumeroCliente" class="label">Número Cliente</label>
+    <input type="text" id="NumeroCliente" placeholder="Ingrese número de cliente" required>
+
+    <label for="clienteNombre" class="label">Nombre</label>
+    <input type="text" id="clienteNombre" placeholder="Ingrese nombre" required>
+
+    <label for="clienteApellido" class="label">Apellido</label>
+    <input type="text" id="clienteApellido" placeholder="Ingrese apellido" required>
+
+    <label for="clienteDomicilio" class="label">Domicilio (calle)</label>
+    <input type="text" id="clienteDomicilio" placeholder="Ingrese domicilio" required>
+
+    <label for="clienteNumeroDomicilio" class="label">Número Domicilio</label>
+    <input type="text" id="clienteNumeroDomicilio" placeholder="Ingrese número del domicilio" required>
+
+    <label for="clienteTelefono" class="label">Teléfono</label>
+    <input type="text" id="clienteTelefono" placeholder="Ingrese teléfono" required>
+
     <button type="submit" class="btn-guardar">Guardar Cliente</button>
   </form>
 
