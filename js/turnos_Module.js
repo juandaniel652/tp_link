@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('formTurno');
+  const formulario_turno = document.getElementById('formTurno');
   const clientesSelect = document.getElementById('selectCliente');
   const tecnicosSelect = document.getElementById('selectTecnico');
   const container = document.getElementById('turnosContainer');
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Guardar turno
-  form.addEventListener('submit', (e) => {
+  formulario_turno.addEventListener('submit', (e) => {
     e.preventDefault();
     const turno = {
       cliente: clientesSelect.value, // ya no se agrega "Cliente "
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     turnos.push(turno);
     localStorage.setItem('turnos', JSON.stringify(turnos));
-    form.reset();
+    formulario_turno.reset();
     render();
     filtrarClientes(); // actualizar clientes después de guardar
   });
