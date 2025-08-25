@@ -6,137 +6,252 @@ document.addEventListener("DOMContentLoaded", () => {
   const selectTecnico = document.getElementById("selectTecnico");
   const turnosContainer = document.getElementById("turnosContainer");
 
-  // =========================
-  // Cargar clientes desde localStorage
-  // =========================
-  const clientes = JSON.parse(localStorage.getItem("clientes")) || [];
-  clientes.forEach(c => {
-    const option = document.createElement("option");
-    option.value = `${c.numeroCliente} - ${c.nombre} ${c.apellido}`;
-    option.textContent = `${c.numeroCliente} - ${c.nombre} ${c.apellido}`;
-    selectCliente.appendChild(option);
-  });
+  let turnos = JSON.parse(localStorage.getItem("turnos")) || [];
+  let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
+  let tecnicos = JSON.parse(localStorage.getItem("tecnicos")) || [];
 
-  // =========================
-  // Cargar técnicos desde localStorage
-  // =========================
-  const tecnicos = JSON.parse(localStorage.getItem("tecnicos")) || [];
-  tecnicos.forEach(t => {
-    const option = document.createElement("option");
-    option.value = t.nombre;
-    option.textContent = `${t.nombre}${t.especialidad ? " (" + t.especialidad + ")" : ""}`;
-    selectTecnico.appendChild(option);
-  });
-
-  // =========================
-  // Configuración Fecha
-  // =========================
-  const today = new Date();
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, "0");
-  const dd = String(today.getDate()).padStart(2, "0");
-  fechaInput.min = `${yyyy}-${mm}-${dd}`;
-
-  // =========================
-  // Deshabilitar domingos en el calendario
-  // =========================
-  fechaInput.addEventListener("input", function () {
-    if (!this.value) return;
-
-    const [year, month, day] = this.value.split("-").map(Number);
-    const selected = new Date(year, month - 1, day);
-
-    if (selected.getDay() === 0) { // domingo
-      alert("No se pueden sacar turnos los domingos.");
-      this.value = "";
-    }
-  });
-
-  // =========================
-  // Generar Horarios (08:00 a 17:00 cada 15 min)
-  // =========================
-  function generarHoras() {
-    selectHora.innerHTML = ""; // limpiar antes
-    for (let h = 8; h <= 17; h++) {
-      for (let m = 0; m < 60; m += 15) {
-        if (h === 17 && m > 0) break;
-        const hora = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-        const option = document.createElement("option");
-        option.value = hora;
-        option.textContent = hora;
-        selectHora.appendChild(option);
-      }
-    }
-    selectHora.value = "08:00"; // valor por defecto
-  }
-  generarHoras();
-
-  // =========================
-  // Guardar Turno
-  // =========================
-  formTurno.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    const cliente = selectCliente.value;
-    const tecnico = selectTecnico.value;
-    const fecha = fechaInput.value;
-    const hora = selectHora.value;
-
-    if (!cliente || !tecnico || !fecha || !hora) {
-      alert("Todos los campos son obligatorios.");
-      return;
-    }
-
-    // Validar domingo
-    const [year, month, day] = fecha.split("-").map(Number);
-    const fechaSeleccionada = new Date(year, month - 1, day);
-    if (fechaSeleccionada.getDay() === 0) {
-      alert("No se permiten turnos en domingo.");
-      return;
-    }
-
-    // Guardar turno
-    const turnos = JSON.parse(localStorage.getItem("turnos")) || [];
-    const nuevoTurno = { cliente, tecnico, fecha, hora };
-    turnos.push(nuevoTurno);
+  /** =====================
+   * Helpers
+   * ===================== */
+  function guardarTurnos() {
     localStorage.setItem("turnos", JSON.stringify(turnos));
+  }
 
-    mostrarTurnos(turnos);
-    formTurno.reset();
-    selectHora.value = "08:00";
-  });
+  function mostrarAlerta(mensaje, tipo = "info") {
+    // elimino mensajes previos
+    const alertaPrevia = document.querySelector(".mensaje");
+    if (alertaPrevia) alertaPrevia.remove();
 
-  // =========================
-  // Mostrar Turnos
-  // =========================
-  function mostrarTurnos(turnos) {
+    const alerta = document.createElement("div");
+    alerta.className = `mensaje ${tipo}`;
+    alerta.textContent = mensaje;
+    formTurno.prepend(alerta);
+
+    setTimeout(() => alerta.remove(), 3500);
+  }
+
+  function renderTurnos() {
     turnosContainer.innerHTML = "";
+
+    if (turnos.length === 0) {
+      turnosContainer.innerHTML = `<p>No hay turnos registrados</p>`;
+      return;
+    }
+
     turnos.forEach((t, index) => {
-      const div = document.createElement("div");
-      div.classList.add("tarjeta-turno");
-      div.innerHTML = `
+      const card = document.createElement("div");
+      card.classList.add("tarjeta-turno");
+
+      card.innerHTML = `
+        <h3>📅 ${t.fecha} - ⏰ ${t.hora}</h3>
         <p><strong>Cliente:</strong> ${t.cliente}</p>
         <p><strong>Técnico:</strong> ${t.tecnico}</p>
-        <p><strong>Fecha:</strong> ${t.fecha}</p>
-        <p><strong>Hora:</strong> ${t.hora}</p>
+        <span class="turno-estado confirmado">Confirmado</span>
+        <br><br>
         <button data-index="${index}" class="btn-eliminar">Eliminar</button>
       `;
-      turnosContainer.appendChild(div);
+
+      turnosContainer.appendChild(card);
     });
 
-    // Eliminar turno
     document.querySelectorAll(".btn-eliminar").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         const idx = e.target.dataset.index;
         turnos.splice(idx, 1);
-        localStorage.setItem("turnos", JSON.stringify(turnos));
-        mostrarTurnos(turnos);
+        guardarTurnos();
+        renderTurnos();
+        generarHorasDisponibles();
+        actualizarClientesDisponibles();
+        mostrarAlerta("✅ Turno eliminado.", "success");
       });
     });
   }
 
-  // =========================
-  // Inicializar lista de turnos
-  // =========================
-  mostrarTurnos(JSON.parse(localStorage.getItem("turnos")) || []);
+  function renderTecnicos() {
+    selectTecnico.innerHTML = "<option value=''>Seleccione técnico</option>";
+    tecnicos.forEach((t) => {
+      const option = document.createElement("option");
+      option.value = t.nombre;
+      option.textContent = `${t.nombre}${t.especialidad ? " (" + t.especialidad + ")" : ""}`;
+      selectTecnico.appendChild(option);
+    });
+  }
+
+  function renderClientes() {
+    selectCliente.innerHTML = "<option value=''>Seleccione cliente</option>";
+    clientes.forEach((c) => {
+      const option = document.createElement("option");
+      option.value = `${c.numeroCliente} - ${c.nombre} ${c.apellido}`;
+      option.textContent = option.value;
+      selectCliente.appendChild(option);
+    });
+  }
+
+  function generarHorasDisponibles() {
+    selectHora.innerHTML = "<option value=''>Seleccione hora</option>";
+    const fecha = fechaInput.value;
+    const tecnico = selectTecnico.value;
+
+    if (!fecha || !tecnico) return;
+
+    for (let h = 8; h <= 17; h++) {
+      for (let m = 0; m < 60; m += 15) {
+        if (h === 17 && m > 0) break;
+        const hora = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+        const ocupado = turnos.some(
+          (t) => t.fecha === fecha && t.hora === hora && t.tecnico === tecnico
+        );
+        if (!ocupado) {
+          const option = document.createElement("option");
+          option.value = hora;
+          option.textContent = hora;
+          selectHora.appendChild(option);
+        }
+      }
+    }
+  }
+
+  function actualizarClientesDisponibles() {
+    if (!selectTecnico.value || !fechaInput.value) return; 
+    selectCliente.innerHTML = "<option value=''>Seleccione cliente</option>";
+    const tecnico = selectTecnico.value;
+
+    const clientesDisponibles = clientes.filter((c) => {
+      const clienteId = `${c.numeroCliente} - ${c.nombre} ${c.apellido}`;
+
+      // cliente ya tiene turno con otro técnico → no disponible
+      const tieneOtroTecnico = turnos.some(
+        (t) => t.cliente === clienteId && t.tecnico !== tecnico
+      );
+
+      // cliente ya tiene turno con este técnico → no disponible
+      const yaConEsteTecnico = turnos.some(
+        (t) => t.cliente === clienteId && t.tecnico === tecnico
+      );
+
+      return !tieneOtroTecnico && !yaConEsteTecnico;
+    });
+
+    if (clientesDisponibles.length === 0) {
+      const option = document.createElement("option");
+      option.value = "";
+      option.textContent = "No hay clientes disponibles";
+      selectCliente.appendChild(option);
+    } else {
+      clientesDisponibles.forEach((c) => {
+        const option = document.createElement("option");
+        option.value = `${c.numeroCliente} - ${c.nombre} ${c.apellido}`;
+        option.textContent = option.value;
+        selectCliente.appendChild(option);
+      });
+    }
+  }
+
+  /** =====================
+   * Validaciones
+   * ===================== */
+  function esTurnoDuplicado(nuevo) {
+    return turnos.some(
+      (t) => t.fecha === nuevo.fecha && t.hora === nuevo.hora && t.tecnico === nuevo.tecnico
+    );
+  }
+
+  function clienteYaTieneTecnico(nuevo) {
+    return turnos.some(
+      (t) => t.cliente === nuevo.cliente && t.tecnico !== nuevo.tecnico
+    );
+  }
+
+  function clienteYaTieneTurnoConTecnico(nuevo) {
+    return turnos.some(
+      (t) => t.cliente === nuevo.cliente && t.tecnico === nuevo.tecnico
+    );
+  }
+
+  /** =====================
+   * Eventos
+   * ===================== */
+  selectTecnico.addEventListener("change", () => {
+    generarHorasDisponibles();
+    actualizarClientesDisponibles();
+  });
+
+  fechaInput.addEventListener("change", () => {
+    if (!fechaInput.value) return;
+    const [year, month, day] = fechaInput.value.split("-").map(Number);
+    const fechaSel = new Date(year, month - 1, day);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (fechaSel < today) {
+      mostrarAlerta("⚠️ No puedes elegir un día anterior a hoy.", "error");
+      fechaInput.value = "";
+      return;
+    }
+
+    if (fechaSel.getDay() === 0) {
+      mostrarAlerta("⚠️ No se pueden sacar turnos los domingos.", "error");
+      fechaInput.value = "";
+      return;
+    }
+
+    generarHorasDisponibles();
+    actualizarClientesDisponibles();
+  });
+
+  formTurno.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const nuevoTurno = {
+      fecha: fechaInput.value,
+      hora: selectHora.value,
+      cliente: selectCliente.value,
+      tecnico: selectTecnico.value,
+    };
+
+    if (!nuevoTurno.fecha || !nuevoTurno.hora || !nuevoTurno.cliente || !nuevoTurno.tecnico) {
+      mostrarAlerta("⚠️ Por favor, complete todos los campos.", "error");
+      return;
+    }
+
+    if (esTurnoDuplicado(nuevoTurno)) {
+      mostrarAlerta("❌ Ese turno ya está ocupado con este técnico.", "error");
+      return;
+    }
+
+    if (clienteYaTieneTecnico(nuevoTurno)) {
+      mostrarAlerta("❌ Un cliente solo puede tener un técnico asignado.", "error");
+      return;
+    }
+
+    if (clienteYaTieneTurnoConTecnico(nuevoTurno)) {
+      mostrarAlerta("⚠️ El cliente ya tiene turno con este técnico.", "error");
+      return;
+    }
+
+    turnos.push(nuevoTurno);
+    guardarTurnos();
+    renderTurnos();
+
+    formTurno.reset();
+    mostrarAlerta("✅ Turno registrado con éxito.", "success");
+  });
+
+  /** =====================
+   * Inicialización
+   * ===================== */
+  function inicializar() {
+    renderTurnos();
+    renderClientes();
+    renderTecnicos();
+
+    const today = new Date();
+    const minDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(today.getDate()).padStart(2, "0")}`;
+    fechaInput.min = minDate;
+  }
+
+  inicializar();
 });

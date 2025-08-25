@@ -127,3 +127,42 @@
 
 .turno-estado.confirmado { background-color: #4caf50; }
 .turno-estado.pendiente { background-color: #f39c12; }
+
+/* === MENSAJES MODERNOS === */
+.mensaje {
+  position: relative;
+  width: 95%;
+  margin: 10px auto;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: slideDown 0.4s forwards;
+  z-index: 100;
+}
+
+.mensaje.success {
+  background: linear-gradient(135deg, #4CAF50, #66BB6A);
+}
+
+.mensaje.error {
+  background: linear-gradient(135deg, #E74C3C, #FF6F61);
+}
+
+.mensaje.info {
+  background: linear-gradient(135deg, #3498DB, #5DADE2);
+}
+
+/* Animación de entrada */
+@keyframes slideDown {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
