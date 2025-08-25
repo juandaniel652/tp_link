@@ -50,28 +50,41 @@ export class AgendaUI {
           const fStr = fechaDia.toISOString().split('T')[0];
           const hStr = this.agenda.pad(h) + ':' + this.agenda.pad(m);
 
-          // --- filtrado de turnos según técnico seleccionado ---
-          const filtroTec = this.agenda.tecnicoFiltro || ''; // '' significa todos
-          const turnoExistente = this.agenda.turnos.find(t =>
-            t.fecha.replace(/\//g, '-') === fStr &&
-            t.hora.padStart(5, '0') === hStr &&
-            (!filtroTec || t.tecnico === filtroTec)
-          );
+          const filtroTec = this.agenda.tecnicoFiltro || '';
+
+          // --- Verificamos si este bloque está ocupado por algún turno considerando T ---
+          let bloqueOcupado = false;
+          let clienteAsignado = '';
+          let tecnicoAsignado = '';
+
+          this.agenda.turnos.forEach(turno => {
+            if ((!filtroTec || turno.tecnico === filtroTec) && turno.fecha.replace(/\//g,'-') === fStr) {
+              const bloquesTurno = parseInt(turno.t?.replace('T','')) || 1;
+              const [horaTurno, minTurno] = turno.hora.split(':').map(Number);
+              for (let b = 0; b < bloquesTurno; b++) {
+                const totalMin = horaTurno*60 + minTurno + b*15;
+                const hh = Math.floor(totalMin/60);
+                const mm = totalMin%60;
+                const bloqueHora = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+                if (bloqueHora === hStr) {
+                  bloqueOcupado = true;
+                  clienteAsignado = turno.cliente;
+                  tecnicoAsignado = turno.tecnico;
+                }
+              }
+            }
+          });
 
           const btn = document.createElement('button');
           btn.dataset.hora = hStr;
           btn.dataset.fecha = fStr;
           btn.dataset.tecnico = filtroTec || 'Todos';
 
-          if (turnoExistente) {
-            btn.textContent = turnoExistente.cliente;
+          if (bloqueOcupado) {
+            btn.textContent = clienteAsignado;
             btn.disabled = true;
             btn.classList.add('btn-ocupado');
-            btn.dataset.tooltip = `
-                Cliente: ${turnoExistente.cliente} ||
-                Técnico: ${turnoExistente.tecnico}
-              `;
-
+            btn.dataset.tooltip = `Cliente: ${clienteAsignado} || Técnico: ${tecnicoAsignado}`;
           } else {
             btn.textContent = '+';
             btn.dataset.tooltip = 'Bloque libre';

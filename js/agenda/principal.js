@@ -65,13 +65,11 @@ export class Agenda {
     this.cargarClientesPorTecnico(this.tecnicoFiltro);
   }
 
-  // --- Muestra todos los clientes siempre, y resalta los del técnico seleccionado ---
   cargarClientesPorTecnico(tecnico) {
     const clientesSelect = document.getElementById('selectCliente');
     if (!clientesSelect) return;
 
     const clientes = this.clienteService.getAll();
-
     clientesSelect.innerHTML = '<option value="">Seleccionar Cliente</option>';
 
     clientes.forEach(c => {
@@ -85,10 +83,10 @@ export class Agenda {
           t => t.cliente === nombreCompleto && t.tecnico === tecnico
         );
         if (tieneTurno) {
-          option.style.color = '#1E90FF'; // azul
+          option.style.color = '#1E90FF';
           option.style.fontWeight = 'bold';
         } else {
-          option.style.color = '#bbb'; // tenue
+          option.style.color = '#bbb';
           option.style.fontWeight = 'normal';
         }
       } else {
@@ -105,11 +103,14 @@ export class Agenda {
       alert('Debe seleccionar un técnico');
       return;
     }
+
+    // Guardamos temporalmente la fecha y hora para la pantalla de creación de turno
     localStorage.setItem('nuevoTurno', JSON.stringify({
       fecha: fStr,
       hora: hStr,
       tecnico: this.tecnicoFiltro
     }));
+
     window.location.href = '../html/turno.html';
   }
 
@@ -119,9 +120,8 @@ export class Agenda {
     const selectTecnico = document.createElement('select');
     selectTecnico.id = 'selectTecnico';
 
-    // Opción "Todos" siempre visible
     const opcionTodos = document.createElement('option');
-    opcionTodos.value = ''; // valor vacío = todos
+    opcionTodos.value = '';
     opcionTodos.textContent = 'Seleccionar Técnico';
     selectTecnico.appendChild(opcionTodos);
 
@@ -134,7 +134,7 @@ export class Agenda {
 
     selectTecnico.value = this.tecnicoFiltro || '';
     selectTecnico.addEventListener('change', e => {
-      this.tecnicoFiltro = e.target.value; // '' = todos
+      this.tecnicoFiltro = e.target.value;
       this.cargarClientesPorTecnico(this.tecnicoFiltro);
       this.generarTabla();
     });
