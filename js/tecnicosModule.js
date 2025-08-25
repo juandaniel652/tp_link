@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const num = Number(valor);
     return num > 0 && num % 5 === 0;
   };
-  const validarPunto = valor => /^\d{2}$/.test(valor.trim());
+  const validarPunto = valor => /^\d{1,2}$/.test(valor.trim());
 
   /** =====================
    *  Manejo de Inputs para evitar errores
@@ -69,6 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   inputs.punto.addEventListener('input', () => {
+    // Solo números, máximo 2 dígitos, pero permite 1 o 2
     inputs.punto.value = inputs.punto.value.replace(/[^0-9]/g, '').slice(0, 2);
     validarCampo(inputs.punto);
   });
@@ -99,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         break;
       case 'punto':
         valido = validarPunto(valor);
-        mensaje = valido ? '' : '2 dígitos';
+        mensaje = valido ? '' : 'Entre 1 y 2 dígitos';
         break;
       case 'telefono':
         const raw = valor.replace(/\D/g, '');
