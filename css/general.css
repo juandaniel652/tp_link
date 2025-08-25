@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'RobotoMonoBold'; /* Un nombre que tú elijas para la fuente */
+  src: url('../fuentes/RobotoMono/RobotoMono-Bold.ttf') format('truetype'); /* Ruta al archivo de tu fuente */
+  font-weight: normal; /* El peso de la fuente, si aplica */
+  font-style: normal;  /* El estilo de la fuente, si aplica */
+}
+
+
 /* === GENERAL === */
 body {
   font-family: Arial, sans-serif;
@@ -6,9 +14,23 @@ body {
   min-height: 100vh;
   background: linear-gradient(135deg, #1E3C72, #2A5298);
   color: #fff;
+  line-height: 1.6;
+  overflow-x: hidden; /* evita scroll horizontal en móviles */
 }
 
-/* Encabezado con logo y título */
+/* Animación de entrada */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Aplico la animación a la caja del título */
 .titulo {
   display: flex;
   align-items: center;
@@ -22,22 +44,31 @@ body {
   background-color: rgba(255, 255, 255, 0.15);
   box-shadow: 0 6px 15px rgba(0,0,0,0.4);
   transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  font-family: "RobotoMonoBold";
+  text-align: center;
+
+  /* 🎬 animación al cargar */
+  animation: fadeInUp 1s ease-out forwards;
 }
+
+
 .titulo:hover {
   transform: translateY(-5px) scale(1.02);
   box-shadow: 0 10px 25px rgba(0,0,0,0.5);
   background-color: rgba(255, 255, 255, 0.25);
 }
+
 .titulo .logo {
   width: 175px;
-  height: 175px;
+  height: auto;
+  max-width: 100%;
   object-fit: contain;
   transition: transform 0.3s ease;
 }
 .titulo:hover .logo {
   transform: scale(1.1) rotate(-5deg);
 }
+
 .titulo h1 {
   color: #ffffff;
   font-size: 40px;
@@ -51,32 +82,57 @@ body {
   color: #ffeb3b;
 }
 
-/* Responsive encabezado */
-@media (max-width: 600px) {
-  .titulo {
-    flex-direction: column;
-    gap: 15px;
-    padding: 12px 20px;
-  }
-  .titulo .logo {
-    width: 70px;
-    height: 70px;
-  }
-  .titulo h1 {
-    font-size: 28px;
-  }
-}
-
 /* Botón volver */
 .volver {
   background: #1E3C72;
   color: white;
   border: none;
-  padding: 5px 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
+  padding: 8px 16px;
+  margin: 10px;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease;
 }
 .volver:hover {
   background: #2A5298;
+}
+
+/* ============================= */
+/* ===  📱 Responsive rules  === */
+/* ============================= */
+
+/* Tablets medianas */
+@media (max-width: 900px) {
+  .titulo {
+    max-width: 95%;
+    padding: 12px 18px;
+    gap: 15px;
+  }
+  .titulo .logo {
+    width: 120px;
+  }
+  .titulo h1 {
+    font-size: 32px;
+  }
+}
+
+/* Smartphones */
+@media (max-width: 600px) {
+  .titulo {
+    flex-direction: column;
+    gap: 12px;
+    padding: 10px 15px;
+  }
+  .titulo .logo {
+    width: 80px;
+  }
+  .titulo h1 {
+    font-size: 24px;
+  }
+  .volver {
+    width: 100%;
+    font-size: 16px;
+    padding: 10px;
+  }
 }
