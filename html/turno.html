@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Turnos</title>
-<link rel="stylesheet" href="../css/general.css">
-<link rel="stylesheet" href="../css/menu.css">
-<link rel="stylesheet" href="../css/turnos.css">
-<link rel="stylesheet" href="../css/clientes.css"> <!-- Reutilizamos estilos de tarjetas -->
+  <meta charset="UTF-8">
+  <title>Turnos</title>
+  <link rel="stylesheet" href="../css/general.css">
+  <link rel="stylesheet" href="../css/menu.css">
+  <link rel="stylesheet" href="../css/turnos.css">
+  <link rel="stylesheet" href="../css/clientes.css"> <!-- Reutilizamos estilos de tarjetas -->
 </head>
 <body>
 
@@ -18,51 +18,24 @@
 <div id="turno" class="tab-content">
   <h2>Crear Turno</h2>
   <form id="formTurno">
+
+    <label for="selectCliente">Cliente</label>
     <select id="selectCliente" required>
       <option value="">Seleccionar Cliente</option>
     </select>
+
+    <label for="selectTecnico">Técnico</label>
     <select id="selectTecnico" required>
       <option value="">Seleccionar Técnico</option>
     </select>
-    <input type="date" id="turnoFecha" required min="">
-    <script>
-      // Set min date to today and disable Sundays
-      const fechaInput = document.getElementById('turnoFecha');
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, '0');
-      const dd = String(today.getDate()).padStart(2, '0');
-      fechaInput.min = `${yyyy}-${mm}-${dd}`;
 
-      fechaInput.addEventListener('input', function() {
-      const selected = new Date(this.value);
-      // 0 = Sunday
-      if (selected.getDay() === 0) {
-        alert('No se pueden sacar turnos los domingos.');
-        this.value = '';
-      }
-      });
-    </script>
+    <label for="turnoFecha">Fecha</label>
+    <input type="date" id="turnoFecha" required>
 
+    <label for="turnoHora">Hora</label>
     <select id="turnoHora" required class="hora-select">
       <option value="">Seleccionar Hora</option>
     </select>
-    <script>
-      // Generar opciones de 08:00 a 17:00 cada 15 minutos
-      const selectHora = document.getElementById('turnoHora');
-      for (let h = 8; h <= 17; h++) {
-      for (let m = 0; m < 60; m += 15) {
-        if (h === 17 && m > 0) break;
-        const hora = String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
-        const option = document.createElement('option');
-        option.value = hora;
-        option.textContent = hora;
-        selectHora.appendChild(option);
-      }
-      }
-      // Selecciona por defecto las 08:00
-      selectHora.value = "08:00";
-    </script>
 
     <button type="submit" class="btn-guardar-turno">Guardar Turno</button>
   </form>
@@ -71,6 +44,6 @@
   <div id="turnosContainer"></div>
 </div>
 
-<script src="../js/turnos_Module.js"></script>
+<script src="../js/turnosModule.js"></script>
 </body>
 </html>
