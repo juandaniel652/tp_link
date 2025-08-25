@@ -12,8 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const clientes = JSON.parse(localStorage.getItem("clientes")) || [];
   clientes.forEach(c => {
     const option = document.createElement("option");
-    option.value = `${c.numero} - ${c.nombre} ${c.apellido}`;
-    option.textContent = `${c.numero} - ${c.nombre} ${c.apellido}`;
+    option.value = `${c.numeroCliente} - ${c.nombre} ${c.apellido}`;
+    option.textContent = `${c.numeroCliente} - ${c.nombre} ${c.apellido}`;
     selectCliente.appendChild(option);
   });
 

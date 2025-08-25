@@ -67,7 +67,11 @@ export class AgendaUI {
             btn.textContent = turnoExistente.cliente;
             btn.disabled = true;
             btn.classList.add('btn-ocupado');
-            btn.dataset.tooltip = `Cliente: ${turnoExistente.cliente}`;
+            btn.dataset.tooltip = `
+                Cliente: ${turnoExistente.cliente} ||
+                Técnico: ${turnoExistente.tecnico}
+              `;
+
           } else {
             btn.textContent = '+';
             btn.dataset.tooltip = 'Bloque libre';
