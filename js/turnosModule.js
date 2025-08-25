@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const selectHora = document.getElementById("turnoHora");
   const selectCliente = document.getElementById("selectCliente");
   const selectTecnico = document.getElementById("selectTecnico");
+  const selectT = document.getElementById("selectT");
+  const selectRango = document.getElementById("selectRango");
   const turnosContainer = document.getElementById("turnosContainer");
 
   let turnos = JSON.parse(localStorage.getItem("turnos")) || [];
@@ -18,7 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function mostrarAlerta(mensaje, tipo = "info") {
-    // elimino mensajes previos
     const alertaPrevia = document.querySelector(".mensaje");
     if (alertaPrevia) alertaPrevia.remove();
 
@@ -46,6 +47,8 @@ document.addEventListener("DOMContentLoaded", () => {
         <h3>📅 ${t.fecha} - ⏰ ${t.hora}</h3>
         <p><strong>Cliente:</strong> ${t.cliente}</p>
         <p><strong>Técnico:</strong> ${t.tecnico}</p>
+        <p><strong>T:</strong> ${t.t}</p>
+        <p><strong>Rango:</strong> ${t.rango}</p>
         <span class="turno-estado confirmado">Confirmado</span>
         <br><br>
         <button data-index="${index}" class="btn-eliminar">Eliminar</button>
@@ -87,6 +90,27 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // === NUEVO: llenar selectT y selectRango ===
+  function renderT() {
+    selectT.innerHTML = "<option value=''>Seleccionar T</option>";
+    for (let i = 1; i <= 16; i++) {
+      const option = document.createElement("option");
+      option.value = `T${i}`;
+      option.textContent = `T${i} (${i * 15} min)`;
+      selectT.appendChild(option);
+    }
+  }
+
+  function renderRango() {
+    selectRango.innerHTML = "<option value=''>Seleccionar Rango</option>";
+    ["AM", "PM"].forEach((rango) => {
+      const option = document.createElement("option");
+      option.value = rango;
+      option.textContent = rango;
+      selectRango.appendChild(option);
+    });
+  }
+
   function generarHorasDisponibles() {
     selectHora.innerHTML = "<option value=''>Seleccione hora</option>";
     const fecha = fechaInput.value;
@@ -119,12 +143,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const clientesDisponibles = clientes.filter((c) => {
       const clienteId = `${c.numeroCliente} - ${c.nombre} ${c.apellido}`;
 
-      // cliente ya tiene turno con otro técnico → no disponible
       const tieneOtroTecnico = turnos.some(
         (t) => t.cliente === clienteId && t.tecnico !== tecnico
       );
 
-      // cliente ya tiene turno con este técnico → no disponible
       const yaConEsteTecnico = turnos.some(
         (t) => t.cliente === clienteId && t.tecnico === tecnico
       );
@@ -207,9 +229,11 @@ document.addEventListener("DOMContentLoaded", () => {
       hora: selectHora.value,
       cliente: selectCliente.value,
       tecnico: selectTecnico.value,
+      t: selectT.value,
+      rango: selectRango.value
     };
 
-    if (!nuevoTurno.fecha || !nuevoTurno.hora || !nuevoTurno.cliente || !nuevoTurno.tecnico) {
+    if (!nuevoTurno.fecha || !nuevoTurno.hora || !nuevoTurno.cliente || !nuevoTurno.tecnico || !nuevoTurno.t || !nuevoTurno.rango) {
       mostrarAlerta("⚠️ Por favor, complete todos los campos.", "error");
       return;
     }
@@ -244,6 +268,8 @@ document.addEventListener("DOMContentLoaded", () => {
     renderTurnos();
     renderClientes();
     renderTecnicos();
+    renderT();
+    renderRango();
 
     const today = new Date();
     const minDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(
