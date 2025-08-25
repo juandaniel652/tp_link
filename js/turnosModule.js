@@ -90,12 +90,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // === NUEVO: llenar selectT y selectRango ===
   function renderT() {
     selectT.innerHTML = "<option value=''>Seleccionar T</option>";
     for (let i = 1; i <= 16; i++) {
       const option = document.createElement("option");
-      option.value = `T${i}`;
+      option.value = i;
       option.textContent = `T${i} (${i * 15} min)`;
       selectT.appendChild(option);
     }
@@ -111,21 +110,42 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // === Generar horas disponibles considerando T y Rango ===
   function generarHorasDisponibles() {
     selectHora.innerHTML = "<option value=''>Seleccione hora</option>";
     const fecha = fechaInput.value;
     const tecnico = selectTecnico.value;
+    const bloquesT = parseInt(selectT.value) || 1;
+    const rango = selectRango.value;
 
-    if (!fecha || !tecnico) return;
+    if (!fecha || !tecnico || !rango) return;
 
-    for (let h = 8; h <= 17; h++) {
+    // definir límites por rango
+    let horaInicio = rango === "AM" ? 8 : 12;
+    let horaFin = rango === "AM" ? 11 : 17;
+
+    for (let h = horaInicio; h <= horaFin; h++) {
       for (let m = 0; m < 60; m += 15) {
-        if (h === 17 && m > 0) break;
-        const hora = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-        const ocupado = turnos.some(
-          (t) => t.fecha === fecha && t.hora === hora && t.tecnico === tecnico
-        );
-        if (!ocupado) {
+        if (h === horaFin && m > 0) break;
+
+        let puedeAsignar = true;
+        for (let b = 0; b < bloquesT; b++) {
+          let totalMinutos = h * 60 + m + b * 15;
+          let hh = Math.floor(totalMinutos / 60);
+          let mm = totalMinutos % 60;
+          if (hh > 17) {
+            puedeAsignar = false;
+            break;
+          }
+          const horaCheck = `${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}`;
+          if (turnos.some((t) => t.fecha === fecha && t.hora === horaCheck && t.tecnico === tecnico)) {
+            puedeAsignar = false;
+            break;
+          }
+        }
+
+        if (puedeAsignar) {
+          const hora = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
           const option = document.createElement("option");
           option.value = hora;
           option.textContent = hora;
@@ -198,6 +218,14 @@ document.addEventListener("DOMContentLoaded", () => {
     actualizarClientesDisponibles();
   });
 
+  selectT.addEventListener("change", () => {
+    generarHorasDisponibles();
+  });
+
+  selectRango.addEventListener("change", () => {
+    generarHorasDisponibles();
+  });
+
   fechaInput.addEventListener("change", () => {
     if (!fechaInput.value) return;
     const [year, month, day] = fechaInput.value.split("-").map(Number);
@@ -229,7 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
       hora: selectHora.value,
       cliente: selectCliente.value,
       tecnico: selectTecnico.value,
-      t: selectT.value,
+      t: `T${selectT.value}`,
       rango: selectRango.value
     };
 
@@ -258,6 +286,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderTurnos();
 
     formTurno.reset();
+    generarHorasDisponibles();
     mostrarAlerta("✅ Turno registrado con éxito.", "success");
   });
 

@@ -1,0 +1,4 @@
+Agenda:
+
+1 - Hacer funcionar T, lo cual significa que se ocupen los bloques según su número asignado y se marquen azul
+2 - Que se divida en AM y PM, pero funcione igual (AM hay que preguntar hasta que hora dura)
