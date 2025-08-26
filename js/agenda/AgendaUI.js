@@ -35,10 +35,10 @@ export class AgendaUI {
     let horaInicio = this.agenda.horaInicio;
     let horaFin = this.agenda.horaFin;
 
-    if (this.agenda.rangoSeleccionado === "AM") {
+    if (this.agenda.rango === "AM") {
       horaInicio = 9;
       horaFin = 13;
-    } else if (this.agenda.rangoSeleccionado === "PM") {
+    } else if (this.agenda.rango === "PM") {
       horaInicio = 14;
       horaFin = 18;
     }
