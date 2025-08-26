@@ -31,17 +31,8 @@ export class AgendaUI {
   crearCuerpo() {
     const tbody = document.createElement('tbody');
 
-    // --- Determinamos rango horario AM/PM ---
     let horaInicio = this.agenda.horaInicio;
     let horaFin = this.agenda.horaFin;
-
-    if (this.agenda.rango === "AM") {
-      horaInicio = 9;
-      horaFin = 13;
-    } else if (this.agenda.rango === "PM") {
-      horaInicio = 14;
-      horaFin = 18;
-    }
 
     for (let h = horaInicio; h < horaFin; h++) {
       for (let m = 0; m < 60; m += this.agenda.minutosBloque) {
@@ -61,51 +52,46 @@ export class AgendaUI {
 
           const fStr = fechaDia.toISOString().split('T')[0];
           const hStr = this.agenda.pad(h) + ':' + this.agenda.pad(m);
-
           const filtroTec = this.agenda.tecnicoFiltro || '';
 
-          // --- Verificamos si este bloque está ocupado por algún turno considerando T ---
-          let bloqueOcupado = false;
-          let clienteAsignado = '';
-          let tecnicoAsignado = '';
+          const divBloques = document.createElement('div');
+          divBloques.classList.add('bloques-container');
+          td.appendChild(divBloques);
 
           this.agenda.turnos.forEach(turno => {
-            if ((!filtroTec || turno.tecnico === filtroTec) && turno.fecha.replace(/\//g,'-') === fStr) {
-              const bloquesTurno = parseInt(turno.t?.replace('T','')) || 1;
-              const [horaTurno, minTurno] = turno.hora.split(':').map(Number);
-              for (let b = 0; b < bloquesTurno; b++) {
-                const totalMin = horaTurno*60 + minTurno + b*15;
-                const hh = Math.floor(totalMin/60);
-                const mm = totalMin%60;
-                const bloqueHora = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
-                if (bloqueHora === hStr) {
-                  bloqueOcupado = true;
-                  clienteAsignado = turno.cliente;
-                  tecnicoAsignado = turno.tecnico;
+            if (turno.fecha.replace(/\//g,'-') === fStr) {
+              if (!filtroTec || turno.tecnico === filtroTec) {
+                const bloquesTurno = parseInt(turno.t?.replace('T','')) || 1;
+                const [horaTurno, minTurno] = turno.hora.split(':').map(Number);
+
+                for (let b = 0; b < bloquesTurno; b++) {
+                  const totalMin = horaTurno*60 + minTurno + b*15;
+                  const hh = Math.floor(totalMin/60);
+                  const mm = totalMin % 60;
+                  const bloqueHora = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+
+                  if (bloqueHora === hStr) {
+                    const btn = document.createElement('button');
+                    btn.textContent = turno.cliente;
+                    btn.disabled = true;
+                    btn.classList.add('btn-ocupado');
+                    btn.style.backgroundColor = turno.color || '#1E90FF'; // color por técnico opcional
+                    btn.dataset.tooltip = `Cliente: ${turno.cliente} || Técnico: ${turno.tecnico}`;
+                    divBloques.appendChild(btn);
+                  }
                 }
               }
             }
           });
 
-          const btn = document.createElement('button');
-          btn.dataset.hora = hStr;
-          btn.dataset.fecha = fStr;
-          btn.dataset.tecnico = filtroTec || 'Todos';
-
-          if (bloqueOcupado) {
-            btn.textContent = clienteAsignado;
-            btn.disabled = true;
-            btn.classList.add('btn-ocupado');
-            btn.dataset.tooltip = `Cliente: ${clienteAsignado} || Técnico: ${tecnicoAsignado}`;
-          } else {
-            btn.textContent = '+';
-            btn.dataset.tooltip = 'Bloque libre';
-            btn.disabled = false;
-            btn.classList.add('btn-libre');
-            btn.onclick = () => this.agenda.asignarTurno(fStr, hStr);
+          if (divBloques.childElementCount === 0) {
+            const btnLibre = document.createElement('button');
+            btnLibre.textContent = '+';
+            btnLibre.classList.add('btn-libre');
+            btnLibre.onclick = () => this.agenda.asignarTurno(fStr, hStr);
+            divBloques.appendChild(btnLibre);
           }
 
-          td.appendChild(btn);
           tr.appendChild(td);
         }
 

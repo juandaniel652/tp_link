@@ -11,9 +11,10 @@ export class Agenda {
     this.clienteService = new ClienteService();
     this.tecnicoService = new TecnicoService();
 
-    // Valores iniciales
-    this.horaInicio = 8;
-    this.horaFin = 17;
+    // Valores iniciales según rango AM
+    this.rangoSeleccionado = "AM";  // rango por defecto
+    this.horaInicio = 9;            // inicio AM
+    this.horaFin = 13;              // fin AM
     this.minutosBloque = 15;
     this.numDias = 6;
 
@@ -21,9 +22,6 @@ export class Agenda {
     this.turnos = this.turnoService.getAll();
     this.tecnicoFiltro = ''; 
     this.semanaSeleccionada = 0;
-
-    // NUEVO: rango seleccionado (por defecto "AM")
-    this.rangoSeleccionado = "AM";
 
     this.ui = new AgendaUI(this);
 
@@ -178,7 +176,7 @@ export class Agenda {
       this.generarTabla();
     });
 
-    // --- NUEVO: Select de rango AM/PM ---
+    // --- Select de rango AM/PM ---
     const selectRango = document.createElement('select');
     selectRango.id = 'selectRango';
 
@@ -196,7 +194,6 @@ export class Agenda {
     selectRango.addEventListener('change', e => {
       this.rangoSeleccionado = e.target.value;
 
-      // Cambiamos horaInicio y horaFin según rango
       if (this.rangoSeleccionado === "AM") {
         this.horaInicio = 9;
         this.horaFin = 13;
@@ -227,7 +224,7 @@ export class Agenda {
 
     nav.appendChild(selectTecnico);
     nav.appendChild(selectSemana);
-    nav.appendChild(selectRango); // 👈 nuevo en la navegación
+    nav.appendChild(selectRango);
     nav.appendChild(btnPrev);
     nav.appendChild(btnNext);
 
