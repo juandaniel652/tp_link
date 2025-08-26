@@ -11,6 +11,7 @@ export class Agenda {
     this.clienteService = new ClienteService();
     this.tecnicoService = new TecnicoService();
 
+    // Valores iniciales
     this.horaInicio = 8;
     this.horaFin = 17;
     this.minutosBloque = 15;
@@ -18,8 +19,11 @@ export class Agenda {
 
     this.fechaInicioSemana = this.getFechaLunes(new Date());
     this.turnos = this.turnoService.getAll();
-    this.tecnicoFiltro = ''; // '' = todos los técnicos
+    this.tecnicoFiltro = ''; 
     this.semanaSeleccionada = 0;
+
+    // NUEVO: rango seleccionado (por defecto "AM")
+    this.rangoSeleccionado = "AM";
 
     this.ui = new AgendaUI(this);
 
@@ -49,7 +53,7 @@ export class Agenda {
   }
 
   generarTabla() {
-    this.turnos = this.turnoService.getAll(); // recarga turnos
+    this.turnos = this.turnoService.getAll(); 
     console.log('--- Generando tabla ---');
     console.log('Turnos actuales:', this.turnos);
 
@@ -104,7 +108,6 @@ export class Agenda {
       return;
     }
 
-    // Guardamos temporalmente la fecha y hora para la pantalla de creación de turno
     localStorage.setItem('nuevoTurno', JSON.stringify({
       fecha: fStr,
       hora: hStr,
@@ -117,6 +120,7 @@ export class Agenda {
   crearNavegacion() {
     const nav = document.createElement('div');
 
+    // --- Select de técnicos ---
     const selectTecnico = document.createElement('select');
     selectTecnico.id = 'selectTecnico';
 
@@ -139,6 +143,7 @@ export class Agenda {
       this.generarTabla();
     });
 
+    // --- Select de semanas ---
     const selectSemana = document.createElement('select');
     selectSemana.id = 'selectSemana';
     const lunesActual = this.getFechaLunes(new Date());
@@ -173,6 +178,37 @@ export class Agenda {
       this.generarTabla();
     });
 
+    // --- NUEVO: Select de rango AM/PM ---
+    const selectRango = document.createElement('select');
+    selectRango.id = 'selectRango';
+
+    const optAM = document.createElement('option');
+    optAM.value = 'AM';
+    optAM.textContent = 'Mañana (09:00 - 13:00)';
+    selectRango.appendChild(optAM);
+
+    const optPM = document.createElement('option');
+    optPM.value = 'PM';
+    optPM.textContent = 'Tarde (14:00 - 18:00)';
+    selectRango.appendChild(optPM);
+
+    selectRango.value = this.rangoSeleccionado;
+    selectRango.addEventListener('change', e => {
+      this.rangoSeleccionado = e.target.value;
+
+      // Cambiamos horaInicio y horaFin según rango
+      if (this.rangoSeleccionado === "AM") {
+        this.horaInicio = 9;
+        this.horaFin = 13;
+      } else {
+        this.horaInicio = 14;
+        this.horaFin = 18;
+      }
+
+      this.generarTabla();
+    });
+
+    // --- Botones de navegación ---
     const btnPrev = document.createElement('button');
     btnPrev.textContent = '← Semana Anterior';
     btnPrev.onclick = () => {
@@ -191,6 +227,7 @@ export class Agenda {
 
     nav.appendChild(selectTecnico);
     nav.appendChild(selectSemana);
+    nav.appendChild(selectRango); // 👈 nuevo en la navegación
     nav.appendChild(btnPrev);
     nav.appendChild(btnNext);
 

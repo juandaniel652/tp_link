@@ -31,7 +31,19 @@ export class AgendaUI {
   crearCuerpo() {
     const tbody = document.createElement('tbody');
 
-    for (let h = this.agenda.horaInicio; h < this.agenda.horaFin; h++) {
+    // --- Determinamos rango horario AM/PM ---
+    let horaInicio = this.agenda.horaInicio;
+    let horaFin = this.agenda.horaFin;
+
+    if (this.agenda.rangoSeleccionado === "AM") {
+      horaInicio = 9;
+      horaFin = 13;
+    } else if (this.agenda.rangoSeleccionado === "PM") {
+      horaInicio = 14;
+      horaFin = 18;
+    }
+
+    for (let h = horaInicio; h < horaFin; h++) {
       for (let m = 0; m < 60; m += this.agenda.minutosBloque) {
         const tr = document.createElement('tr');
         const tdHora = document.createElement('td');

@@ -33,7 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderTurnos() {
     turnosContainer.innerHTML = "";
-
     if (turnos.length === 0) {
       turnosContainer.innerHTML = `<p>No hay turnos registrados</p>`;
       return;
@@ -42,7 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
     turnos.forEach((t, index) => {
       const card = document.createElement("div");
       card.classList.add("tarjeta-turno");
-
       card.innerHTML = `
         <h3>📅 ${t.fecha} - ⏰ ${t.hora}</h3>
         <p><strong>Cliente:</strong> ${t.cliente}</p>
@@ -53,7 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
         <br><br>
         <button data-index="${index}" class="btn-eliminar">Eliminar</button>
       `;
-
       turnosContainer.appendChild(card);
     });
 
@@ -117,34 +114,28 @@ document.addEventListener("DOMContentLoaded", () => {
     const tecnico = selectTecnico.value;
     const bloquesT = parseInt(selectT.value) || 1;
     const rango = selectRango.value;
-
     if (!fecha || !tecnico || !rango) return;
 
-    // definir límites por rango
-    let horaInicio = rango === "AM" ? 8 : 12;
-    let horaFin = rango === "AM" ? 11 : 17;
+    let horaInicio = rango === "AM" ? 9 : 14;
+    let horaFin = rango === "AM" ? 13 : 18;
 
-    for (let h = horaInicio; h <= horaFin; h++) {
+    for (let h = horaInicio; h < horaFin; h++) {
       for (let m = 0; m < 60; m += 15) {
-        if (h === horaFin && m > 0) break;
+        const inicioNuevo = h * 60 + m;
+        const finNuevo = inicioNuevo + bloquesT * 15;
+        if (finNuevo > horaFin * 60) continue;
 
-        let puedeAsignar = true;
-        for (let b = 0; b < bloquesT; b++) {
-          let totalMinutos = h * 60 + m + b * 15;
-          let hh = Math.floor(totalMinutos / 60);
-          let mm = totalMinutos % 60;
-          if (hh > 17) {
-            puedeAsignar = false;
-            break;
-          }
-          const horaCheck = `${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}`;
-          if (turnos.some((t) => t.fecha === fecha && t.hora === horaCheck && t.tecnico === tecnico)) {
-            puedeAsignar = false;
-            break;
-          }
-        }
+        // Verificar solapamiento con otros turnos del mismo técnico
+        const seSolapa = turnos.some((t) => {
+          if (t.fecha !== fecha || t.tecnico !== tecnico) return false;
+          const durT = parseInt(t.t.replace("T", "")) * 15;
+          const [hT, mT] = t.hora.split(":").map(Number);
+          const inicioT = hT * 60 + mT;
+          const finT = inicioT + durT;
+          return inicioNuevo < finT && inicioT < finNuevo;
+        });
 
-        if (puedeAsignar) {
+        if (!seSolapa) {
           const hora = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
           const option = document.createElement("option");
           option.value = hora;
@@ -156,21 +147,14 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function actualizarClientesDisponibles() {
-    if (!selectTecnico.value || !fechaInput.value) return; 
+    if (!selectTecnico.value || !fechaInput.value) return;
     selectCliente.innerHTML = "<option value=''>Seleccione cliente</option>";
     const tecnico = selectTecnico.value;
 
     const clientesDisponibles = clientes.filter((c) => {
       const clienteId = `${c.numeroCliente} - ${c.nombre} ${c.apellido}`;
-
-      const tieneOtroTecnico = turnos.some(
-        (t) => t.cliente === clienteId && t.tecnico !== tecnico
-      );
-
-      const yaConEsteTecnico = turnos.some(
-        (t) => t.cliente === clienteId && t.tecnico === tecnico
-      );
-
+      const tieneOtroTecnico = turnos.some((t) => t.cliente === clienteId && t.tecnico !== tecnico);
+      const yaConEsteTecnico = turnos.some((t) => t.cliente === clienteId && t.tecnico === tecnico);
       return !tieneOtroTecnico && !yaConEsteTecnico;
     });
 
@@ -193,21 +177,28 @@ document.addEventListener("DOMContentLoaded", () => {
    * Validaciones
    * ===================== */
   function esTurnoDuplicado(nuevo) {
-    return turnos.some(
-      (t) => t.fecha === nuevo.fecha && t.hora === nuevo.hora && t.tecnico === nuevo.tecnico
-    );
+    return turnos.some((t) => t.fecha === nuevo.fecha && t.hora === nuevo.hora && t.tecnico === nuevo.tecnico);
   }
 
   function clienteYaTieneTecnico(nuevo) {
-    return turnos.some(
-      (t) => t.cliente === nuevo.cliente && t.tecnico !== nuevo.tecnico
-    );
+    return turnos.some((t) => t.cliente === nuevo.cliente && t.tecnico !== nuevo.tecnico);
   }
 
   function clienteYaTieneTurnoConTecnico(nuevo) {
-    return turnos.some(
-      (t) => t.cliente === nuevo.cliente && t.tecnico === nuevo.tecnico
-    );
+    return turnos.some((t) => t.cliente === nuevo.cliente && t.tecnico === nuevo.tecnico);
+  }
+
+  function seSolapanTurnos(turnoA, turnoB) {
+    if (turnoA.fecha !== turnoB.fecha || turnoA.tecnico !== turnoB.tecnico) return false;
+    const durA = parseInt(turnoA.t.replace("T","")) * 15;
+    const durB = parseInt(turnoB.t.replace("T","")) * 15;
+    const [hA,mA] = turnoA.hora.split(":").map(Number);
+    const [hB,mB] = turnoB.hora.split(":").map(Number);
+    const inicioA = hA*60+mA;
+    const finA = inicioA+durA;
+    const inicioB = hB*60+mB;
+    const finB = inicioB+durB;
+    return inicioA < finB && inicioB < finA;
   }
 
   /** =====================
@@ -217,28 +208,21 @@ document.addEventListener("DOMContentLoaded", () => {
     generarHorasDisponibles();
     actualizarClientesDisponibles();
   });
-
-  selectT.addEventListener("change", () => {
-    generarHorasDisponibles();
-  });
-
-  selectRango.addEventListener("change", () => {
-    generarHorasDisponibles();
-  });
+  selectT.addEventListener("change", generarHorasDisponibles);
+  selectRango.addEventListener("change", generarHorasDisponibles);
 
   fechaInput.addEventListener("change", () => {
     if (!fechaInput.value) return;
     const [year, month, day] = fechaInput.value.split("-").map(Number);
     const fechaSel = new Date(year, month - 1, day);
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setHours(0,0,0,0);
 
     if (fechaSel < today) {
       mostrarAlerta("⚠️ No puedes elegir un día anterior a hoy.", "error");
       fechaInput.value = "";
       return;
     }
-
     if (fechaSel.getDay() === 0) {
       mostrarAlerta("⚠️ No se pueden sacar turnos los domingos.", "error");
       fechaInput.value = "";
@@ -281,10 +265,14 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    if (turnos.some((t) => seSolapanTurnos(t, nuevoTurno))) {
+      mostrarAlerta("❌ Ese turno se solapa con otro del mismo técnico.", "error");
+      return;
+    }
+
     turnos.push(nuevoTurno);
     guardarTurnos();
     renderTurnos();
-
     formTurno.reset();
     generarHorasDisponibles();
     mostrarAlerta("✅ Turno registrado con éxito.", "success");
@@ -301,10 +289,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderRango();
 
     const today = new Date();
-    const minDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}-${String(today.getDate()).padStart(2, "0")}`;
+    const minDate = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
     fechaInput.min = minDate;
   }
 

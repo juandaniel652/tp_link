@@ -63,7 +63,7 @@ body {
 }
 
 
-#selectSemana, #selectTecnico {
+#selectSemana, #selectTecnico, #selectRango {
   padding: 8px 14px;
   border-radius: 12px;
   border: none;
@@ -198,3 +198,5 @@ button.btn-libre {
   height: 100%;
   cursor: pointer;
 }
+
+
