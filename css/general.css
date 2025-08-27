@@ -1,10 +1,9 @@
 @font-face {
-  font-family: 'RobotoMonoBold'; /* Un nombre que tú elijas para la fuente */
-  src: url('../fuentes/RobotoMono/RobotoMono-Bold.ttf') format('truetype'); /* Ruta al archivo de tu fuente */
-  font-weight: normal; /* El peso de la fuente, si aplica */
-  font-style: normal;  /* El estilo de la fuente, si aplica */
+  font-family: 'RobotoMonoBold';
+  src: url('../fuentes/RobotoMono/RobotoMono-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
-
 
 /* === GENERAL === */
 body {
@@ -15,10 +14,10 @@ body {
   background: linear-gradient(135deg, #1E3C72, #2A5298);
   color: #fff;
   line-height: 1.6;
-  overflow-x: hidden; /* evita scroll horizontal en móviles */
+  overflow-x: hidden;
 }
 
-/* Animación de entrada */
+/* === Animaciones === */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -30,7 +29,7 @@ body {
   }
 }
 
-/* Aplico la animación a la caja del título */
+/* === Título principal === */
 .titulo {
   display: flex;
   align-items: center;
@@ -46,15 +45,12 @@ body {
   transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
   font-family: "RobotoMonoBold";
   text-align: center;
-
-  /* 🎬 animación al cargar */
   animation: fadeInUp 1s ease-out forwards;
 }
 
-.fuente-botones{
+.fuente-botones {
   font-family: "RobotoMonoBold";
 }
-
 
 .titulo:hover {
   transform: translateY(-5px) scale(1.02);
@@ -62,17 +58,18 @@ body {
   background-color: rgba(255, 255, 255, 0.25);
 }
 
+/* === Logos dentro del título === */
 .titulo .logo {
-  width: 175px;
-  height: auto;
-  max-width: 100%;
-  object-fit: contain;
+  max-height: 90px;      /* 📌 altura controlada */
+  width: auto;           /* mantiene proporción */
+  object-fit: contain;   /* evita deformaciones */
   transition: transform 0.3s ease;
 }
 .titulo:hover .logo {
   transform: scale(1.1) rotate(-5deg);
 }
 
+/* === Texto del título === */
 .titulo h1 {
   color: #ffffff;
   font-size: 40px;
@@ -86,7 +83,7 @@ body {
   color: #ffeb3b;
 }
 
-/* Botón volver */
+/* === Botón volver === */
 .volver {
   background: #1E3C72;
   color: white;
@@ -114,7 +111,7 @@ body {
     gap: 15px;
   }
   .titulo .logo {
-    width: 120px;
+    max-height: 70px; /* 📌 ajusta altura en tablets */
   }
   .titulo h1 {
     font-size: 32px;
@@ -129,7 +126,7 @@ body {
     padding: 10px 15px;
   }
   .titulo .logo {
-    width: 80px;
+    max-height: 55px; /* 📌 logos más chicos en móvil */
   }
   .titulo h1 {
     font-size: 24px;

@@ -47,13 +47,14 @@ body {
   background-color: rgba(255, 255, 255, 0.25);
 }
 .titulo .logo {
-  width: 175px;
-  height: auto;
-  max-width: 100%;
+  max-height: 90px;   /* 📌 altura controlada */
+  width: auto;        /* mantiene proporción */
   object-fit: contain;
   transition: transform 0.3s ease;
 }
-.titulo:hover .logo { transform: scale(1.1) rotate(-5deg); }
+.titulo:hover .logo {
+  transform: scale(1.1) rotate(-5deg);
+}
 .titulo h1 {
   color: #ffffff;
   font-size: 40px;
@@ -77,9 +78,6 @@ body {
   gap: 25px;
   justify-content: center;
   align-items: center;
-
-  /* animación de entrada */
-  /* la animación individual la aplicamos a cada botón */
 }
 
 /* ===================== */
@@ -110,7 +108,7 @@ body {
   animation: fadeInUp 0.6s forwards;
 }
 
-/* Efecto de brillo al pasar el mouse */
+/* Efecto de brillo */
 .menu-button::after {
   content: "";
   position: absolute;
@@ -126,8 +124,8 @@ body {
 
 /* Contenido de botones */
 .menu-button img {
-  width: 60px;
-  height: 60px;
+  max-height: 60px;  /* 📌 control por altura */
+  width: auto;       /* mantiene proporción */
   margin-bottom: 8px;
   transition: transform 0.3s ease;
 }
@@ -159,8 +157,6 @@ body {
     transform: translateY(0);
   }
 }
-
-/* Staggered animation para cada botón */
 .menu-button:nth-child(1) { animation-delay: 0.1s; }
 .menu-button:nth-child(2) { animation-delay: 0.3s; }
 .menu-button:nth-child(3) { animation-delay: 0.5s; }
@@ -179,8 +175,10 @@ body {
     width: 120px;
     height: 120px;
   }
-  .menu-button img { width: 50px; height: 50px; }
+  .menu-button img { max-height: 50px; }
   .menu-button span { font-size: 13px; }
+  .titulo .logo { max-height: 70px; }
+  .titulo h1 { font-size: 32px; }
 }
 
 @media (max-width: 480px) {
@@ -193,6 +191,8 @@ body {
     width: 100px;
     height: 100px;
   }
-  .menu-button img { width: 40px; height: 40px; }
+  .menu-button img { max-height: 40px; }
   .menu-button span { font-size: 12px; }
+  .titulo .logo { max-height: 55px; }
+  .titulo h1 { font-size: 24px; }
 }
