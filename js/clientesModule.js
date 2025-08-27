@@ -27,6 +27,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const limpiarLetras = (valor) => valor.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
   const limpiarNumeros = (valor) => valor.replace(/\D/g, '');
 
+  function limpiarCamposFormulario() {
+    // 🔥 Limpia solo inputs de texto obligatorios
+    inputNumeroCliente.value = "";
+    inputNombre.value = "";
+    inputApellido.value = "";
+    inputDomicilio.value = "";
+    inputNumeroDomicilio.value = "";
+
+    // Teléfono siempre reinicia en "11"
+    inputTelefono.value = "11";
+    contadorTelefono.textContent = "0/8 dígitos";
+    contadorTelefono.style.color = "orange";
+  }
+
   /** =====================
    *  Contadores y mensajes visuales
    *  ===================== */
@@ -168,11 +182,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     clientes.push(cliente);
     localStorage.setItem('clientes', JSON.stringify(clientes));
-    form.reset();
 
-    inputTelefono.value = "11";
-    contadorTelefono.textContent = "0/8 dígitos";
-    contadorTelefono.style.color = "orange";
+    // 🔥 limpieza controlada (no se pierde info útil)
+    limpiarCamposFormulario();
 
     renderizarClientes();
   });

@@ -21,11 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const mensajes = {};
   Object.keys(inputs).forEach(key => {
     const span = document.createElement('span');
-    span.style.display = 'block'; // importante: bloque para que aparezca abajo
+    span.style.display = 'block';
     span.style.marginTop = '4px';
     span.style.fontSize = '0.9em';
     span.style.color = 'red';
-    inputs[key].parentNode.insertBefore(span, inputs[key].nextSibling); // justo debajo del input
+    inputs[key].parentNode.insertBefore(span, inputs[key].nextSibling);
     mensajes[key] = span;
   });
 
@@ -51,7 +51,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const validarPunto = valor => /^\d{1,2}$/.test(valor.trim());
 
   /** =====================
-   *  Manejo de Inputs para evitar errores
+   *  Limpieza controlada del formulario
+   *  ===================== */
+  function limpiarCamposFormulario() {
+    inputs.nombre.value = "";
+    inputs.apellido.value = "";
+    inputs.duracion.value = "";
+    inputs.punto.value = "";
+
+    // Teléfono siempre se reinicia en "11"
+    inputs.telefono.value = "11";
+    validarCampo(inputs.telefono);
+  }
+
+  /** =====================
+   *  Manejo de Inputs
    *  ===================== */
   inputs.nombre.addEventListener('input', () => {
     inputs.nombre.value = inputs.nombre.value.replace(/[^a-zA-Z]/g, '');
@@ -69,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   inputs.punto.addEventListener('input', () => {
-    // Solo números, máximo 2 dígitos, pero permite 1 o 2
     inputs.punto.value = inputs.punto.value.replace(/[^0-9]/g, '').slice(0, 2);
     validarCampo(inputs.punto);
   });
@@ -82,6 +95,9 @@ document.addEventListener('DOMContentLoaded', () => {
     validarCampo(inputs.telefono);
   });
 
+  /** =====================
+   *  Validación individual de campos
+   *  ===================== */
   const validarCampo = (input) => {
     const key = Object.keys(inputs).find(k => inputs[k] === input);
     const valor = input.value.trim();
@@ -104,8 +120,8 @@ document.addEventListener('DOMContentLoaded', () => {
         break;
       case 'telefono':
         const raw = valor.replace(/\D/g, '');
-        valido = raw.length === 10;
-        mensaje = `Faltan ${10 - raw.length} dígitos`;
+        valido = validarTelefono(valor);
+        mensaje = valido ? '' : `Faltan ${Math.max(0, 10 - raw.length)} dígitos`;
         break;
     }
 
@@ -122,6 +138,11 @@ document.addEventListener('DOMContentLoaded', () => {
     tecnicos.forEach(t => {
       const card = document.createElement('div');
       card.classList.add('tecnico-card');
+      card.style.border = "1px solid #ccc";
+      card.style.padding = "10px";
+      card.style.marginBottom = "8px";
+      card.style.borderRadius = "5px";
+      card.style.backgroundColor = "#f9f9f9";
       card.innerHTML = `
         <h3>Nombre: ${t.nombre}</h3>
         <h3>Apellido: ${t.apellido}</h3>
@@ -160,10 +181,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     tecnicos.push(tecnico);
     localStorage.setItem('tecnicos', JSON.stringify(tecnicos));
-    formulario.reset();
-    Object.values(inputs).forEach(input => validarCampo(input));
+
+    // 🔥 limpieza controlada
+    limpiarCamposFormulario();
+
     render();
   });
 
+  /** =====================
+   *  Render inicial
+   *  ===================== */
+  limpiarCamposFormulario();
   render();
 });
