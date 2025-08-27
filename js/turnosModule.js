@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderT() {
     selectT.innerHTML = "<option value=''>Seleccionar T</option>";
-    for (let i = 1; i <= 16; i++) {
+    for (let i = 1; i <= 6; i++) {
       const option = document.createElement("option");
       option.value = i;
       option.textContent = `T${i} (${i * 15} min)`;
