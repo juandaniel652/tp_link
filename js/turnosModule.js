@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const selectTecnico = document.getElementById("selectTecnico");
   const selectT = document.getElementById("selectT");
   const selectRango = document.getElementById("selectRango");
+  const selectEstadoTicket = document.getElementById("selectEstadoTicket");
   const turnosContainer = document.getElementById("turnosContainer");
 
   let turnos = JSON.parse(localStorage.getItem("turnos")) || [];
@@ -106,6 +107,18 @@ document.addEventListener("DOMContentLoaded", () => {
       selectRango.appendChild(option);
     });
   }
+
+
+  function renderEstadoTicket(){
+    selectEstadoTicket.innerHTML = "<option value=''>Seleccionar Estado del Ticket</option>";
+    ["Abierto", "En Progreso", "Cerrado"].forEach((estado) => {
+      const option = document.createElement("option");
+      option.value = estado;
+      option.textContent = estado;
+      selectEstadoTicket.appendChild(option);
+    });
+  }
+
 
   // === Generar horas disponibles considerando T y Rango ===
   function generarHorasDisponibles() {
@@ -242,10 +255,11 @@ document.addEventListener("DOMContentLoaded", () => {
       cliente: selectCliente.value,
       tecnico: selectTecnico.value,
       t: `T${selectT.value}`,
-      rango: selectRango.value
+      rango: selectRango.value,
+      estado: selectEstadoTicket.value
     };
 
-    if (!nuevoTurno.fecha || !nuevoTurno.hora || !nuevoTurno.cliente || !nuevoTurno.tecnico || !nuevoTurno.t || !nuevoTurno.rango) {
+    if (!nuevoTurno.fecha || !nuevoTurno.hora || !nuevoTurno.cliente || !nuevoTurno.tecnico || !nuevoTurno.t || !nuevoTurno.rango || !nuevoTurno.estado) {
       mostrarAlerta("⚠️ Por favor, complete todos los campos.", "error");
       return;
     }
@@ -287,6 +301,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderTecnicos();
     renderT();
     renderRango();
+    renderEstadoTicket();
 
     const today = new Date();
     const minDate = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
