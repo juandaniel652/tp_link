@@ -1,13 +1,13 @@
 // =============================
-//  punto_acceso.js
+//  punto_acceso.js con localStorage
 // =============================
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("formTecnico");
   const numeroNapInput = document.getElementById("numeroNap");
   const puntoContainer = document.getElementById("puntoContainer");
 
-  // Lista de puntos guardados (puede venir de localStorage si querés persistencia)
-  let puntos = [];
+  // Cargar puntos guardados desde localStorage (si existen)
+  let puntos = JSON.parse(localStorage.getItem("puntosAcceso")) || [];
 
   // Validar número de NAP
   const validarNumeroNap = (valor) => {
@@ -26,6 +26,11 @@ document.addEventListener("DOMContentLoaded", () => {
       return false;
     }
     return true;
+  };
+
+  // Guardar en localStorage
+  const guardarEnLocalStorage = () => {
+    localStorage.setItem("puntosAcceso", JSON.stringify(puntos));
   };
 
   // Renderizar tarjetas
@@ -54,10 +59,16 @@ document.addEventListener("DOMContentLoaded", () => {
     // Guardar en la lista
     puntos.push(valor);
 
+    // Persistir
+    guardarEnLocalStorage();
+
     // Renderizar
     renderPuntos();
 
     // Limpiar input
     numeroNapInput.value = "";
   });
+
+  // Al cargar la página, mostrar lo guardado
+  renderPuntos();
 });
