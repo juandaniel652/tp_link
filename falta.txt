@@ -1,0 +1,4 @@
+1. Apartado Naps (número, lugar o zona)
+2. En el forumlario técnico en su sección nap, puede seleccionar múltiples Naps, así armar su relación
+3. Agregar ese filtro a la agenda
+Por último. Agregar especialidad a técnico (Luego de terminar esto para tener sencillez)

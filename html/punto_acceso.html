@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Punto de Acceso</title>
+    <link rel="stylesheet" href="../css/general.css">
+    <link rel="stylesheet" href="../css/menu.css">
+    <link rel="stylesheet" href="../css/punto_acceso.css">
+    <link rel="icon" type="image/png" href="../img/icono_logo.ico">
+</head>
+<body>
+
+<header class="titulo">
+    <img src="../img/logo_s_link.png" alt="Logo" class="logo">
+    <h1>Punto de Acceso</h1>
+</header>
+    
+    <div id="punto-acceso" class="tab-content">
+        <h2>Formulario Técnico</h2>
+        <form id="formTecnico">
+
+            <label for="numeroNap" class="label">Número de punto de acceso</label>
+            <input type="number" id="numeroNap" placeholder="Ingrese número" required>
+
+            <button type="submit" class="btn-guardar-punto-acceso">Guardar Punto acceso</button>
+
+    </form>
+        <h2>Lista de Naps</h2>
+        <div id="puntoContainer"></div>
+    </div>
+
+<script src="../js/punto_acceso.js"></script>
+
+
+</body>
+</html>

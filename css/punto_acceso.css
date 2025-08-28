@@ -1,0 +1,135 @@
+/* FUENTES */
+
+@font-face {
+  font-family: 'RobotoMonoBold'; /* Un nombre que tú elijas para la fuente */
+  src: url('../fuentes/RobotoMono/RobotoMono-Bold.ttf') format('truetype'); /* Ruta al archivo de tu fuente */
+  font-weight: normal; /* El peso de la fuente, si aplica */
+  font-style: normal;  /* El estilo de la fuente, si aplica */
+}
+
+@font-face{
+  font-family: 'AncizarSanzBold'; /* Un nombre que tú elijas para la fuente */
+  src: url('../fuentes/AncizarSans/AncizarSans-Bold.ttf') format('truetype'); /* Ruta al archivo de tu fuente */
+  font-weight: normal; /* El peso de la fuente, si aplica */
+  font-style: normal;  /* El estilo de la fuente, si aplica */
+}
+
+
+/* === FORMULARIO PUNTO DE ACCESO === */
+#punto-acceso {
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  border-radius: 15px;
+  padding: 25px 20px;
+  max-width: 500px;
+  margin: 30px auto;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+#punto-acceso h2 {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #2A5298;
+  font-weight: bold;
+  border-bottom: 2px solid #1E3C72;
+  padding-bottom: 8px;
+  font-family: 'AncizarSanzBold', sans-serif;
+}
+
+#formTecnico input {
+  width: 90%;
+  padding: 12px 14px;
+  margin: 10px 0;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  font-size: 18px;
+  outline: none;
+  transition: all 0.3s ease;
+  font-family: 'AncizarSanzBold', sans-serif;
+}
+
+#formTecnico input:focus {
+  border-color: #1E3C72;
+  box-shadow: 0 0 8px rgba(30,60,114,0.4);
+}
+
+/* Botón guardar */
+.btn-guardar-punto-acceso {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #1E3C72, #2A5298);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  font-family: 'AncizarSanzBold', sans-serif;
+}
+
+.btn-guardar-punto-acceso:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+/* Etiquetas */
+.label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #333;
+  font-family: 'RobotoMonoBold', monospace;
+}
+
+/* Tarjetas de Técnicos (mismo estilo que clientes) */
+#puntoContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+
+/* Tarjetas de Puntos de Acceso (mismo estilo que técnicos) */
+.punto-card {
+  background: linear-gradient(135deg, #2A5298, #1E3C72);
+  color: #fff;
+  padding: 15px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  width: 200px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  font-family: 'AncizarSanzBold', sans-serif;
+  text-align: center;
+}
+
+.punto-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+.punto-card h3 {
+  margin: 0 0 5px 0;
+  font-size: 18px;
+}
+
+.punto-card p {
+  margin: 2px 0;
+  font-size: 14px;
+  font-family: 'RobotoMonoBold', monospace;
+}
+
+
+
+/* Animación */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
