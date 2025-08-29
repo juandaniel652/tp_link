@@ -44,7 +44,14 @@ export class AgendaNav {
 
     const renderSemanas = () => {
       select.innerHTML = '';
+      // Opción para volver rápido a la semana actual
+      const optActual = new Option('⏪ Semana Actual', 0);
+      if (this.agenda.semanaSeleccionada === 0) optActual.selected = true;
+      select.appendChild(optActual);
+
       for (let i = this.agenda.semanaSeleccionada - 4; i <= this.agenda.semanaSeleccionada + 4; i++) {
+        // Evitar duplicar la opción de semana actual
+        if (i === 0) continue;
         const fecha = new Date(lunesActual);
         fecha.setDate(fecha.getDate() + i*7);
         const fechaFin = new Date(fecha);
