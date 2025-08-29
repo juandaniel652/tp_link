@@ -1,20 +1,17 @@
-/* FUENTES */
+/* === FUENTES === */
+@font-face {
+  font-family: 'RobotoMonoBold';
+  src: url('../fuentes/RobotoMono/RobotoMono-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
 
 @font-face {
-  font-family: 'RobotoMonoBold'; /* Un nombre que tú elijas para la fuente */
-  src: url('../fuentes/RobotoMono/RobotoMono-Bold.ttf') format('truetype'); /* Ruta al archivo de tu fuente */
-  font-weight: normal; /* El peso de la fuente, si aplica */
-  font-style: normal;  /* El estilo de la fuente, si aplica */
+  font-family: 'AncizarSanzBold';
+  src: url('../fuentes/AncizarSans/AncizarSans-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
-
-@font-face{
-  font-family: 'AncizarSanzBold'; /* Un nombre que tú elijas para la fuente */
-  src: url('../fuentes/AncizarSans/AncizarSans-Bold.ttf') format('truetype'); /* Ruta al archivo de tu fuente */
-  font-weight: normal; /* El peso de la fuente, si aplica */
-  font-style: normal;  /* El estilo de la fuente, si aplica */
-}
-
-
 
 /* === FORMULARIO TÉCNICO === */
 #tecnico {
@@ -52,6 +49,7 @@
   border-color: #1E3C72;
   box-shadow: 0 0 8px rgba(30,60,114,0.4);
 }
+
 #tecnico .btn-guardar-tecnico {
   width: 100%;
   padding: 12px;
@@ -70,22 +68,8 @@
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0,0,0,0.3);
 }
-#listaTecnicos {
-  margin-top: 20px;
-  list-style: none;
-  padding: 0;
-}
-#listaTecnicos li {
-  background: #f4f4f4;
-  margin: 5px 0;
-  padding: 10px;
-  border-radius: 8px;
-  border-left: 4px solid #1E3C72;
-  font-size: 14px;
-}
 
-
-/* Tarjetas de Técnicos (mismo estilo que clientes) */
+/* === LISTA DE TÉCNICOS === */
 #tecnicosContainer {
   display: flex;
   flex-wrap: wrap;
@@ -93,7 +77,6 @@
   margin-top: 20px;
   justify-content: center;
 }
-
 .tecnico-card {
   background: linear-gradient(135deg, #2A5298, #1E3C72);
   color: #fff;
@@ -103,27 +86,69 @@
   width: 200px;
   transition: transform 0.2s, box-shadow 0.2s;
 }
-
 .tecnico-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 16px rgba(0,0,0,0.3);
 }
-
 .tecnico-card h3 {
   margin: 0 0 5px 0;
   font-size: 18px;
 }
-
 .tecnico-card p {
   margin: 2px 0;
   font-size: 14px;
 }
 
-
-.label{
+/* === LABELS === */
+.label {
   display: block;
   margin-bottom: 8px;
   font-weight: bold;
   color: #333;
   font-family: 'RobotoMonoBold', monospace;
+}
+.select {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: bold;
+  color: #333;
+  font-family: 'RobotoMonoBold', monospace;
+}
+
+/* === CHIPS / TAGS === */
+.chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 12px;
+  background: #fff;
+  font-family: 'AncizarSanzBold', sans-serif;
+}
+.chip {
+  background: #f4f4f4;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+.chip input[type="checkbox"] {
+  display: none;
+}
+.chip:hover {
+  background: rgba(42,82,152,0.1);
+  color: #1E3C72;
+}
+.chip input[type="checkbox"]:checked + span {
+  background: linear-gradient(135deg, #1E3C72, #2A5298);
+  color: #fff;
+  font-weight: bold;
+  padding: 6px 12px;
+  border-radius: 20px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
 }

@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
    *  ===================== */
   const formulario = document.getElementById('formTecnico');
   const contenedor = document.getElementById('tecnicosContainer');
+  const chipsContainer = document.getElementById('puntoAcceso'); // contenedor de chips
 
   let tecnicos = JSON.parse(localStorage.getItem('tecnicos')) || [];
 
@@ -12,8 +13,32 @@ document.addEventListener('DOMContentLoaded', () => {
     apellido: document.getElementById('tecnicoApellido'),
     telefono: document.getElementById('tecnicoTelefono'),
     duracion: document.getElementById('duracionTurnoMinutos'),
-    punto: document.getElementById('puntoAcceso')
+    punto: chipsContainer
   };
+
+  /** =====================
+   *  Cargar puntos de acceso (NAPs) como chips
+   *  ===================== */
+  function cargarPuntosAcceso() {
+    const puntos = JSON.parse(localStorage.getItem("puntosAcceso")) || [];
+    chipsContainer.innerHTML = ``;
+
+    puntos.forEach(puntoObj => {
+      const label = document.createElement("label");
+      label.classList.add("chip");
+
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.value = puntoObj.numero;
+
+      const span = document.createElement("span");
+      span.textContent = `NAP ${puntoObj.numero}`;
+
+      label.appendChild(input);
+      label.appendChild(span);
+      chipsContainer.appendChild(label);
+    });
+  }
 
   /** =====================
    *  Mensajes y estilos
@@ -34,21 +59,29 @@ document.addEventListener('DOMContentLoaded', () => {
    *  ===================== */
   const formatearTelefono = valor => {
     let numeros = valor.replace(/\D/g, '');
-    if (!numeros.startsWith('11')) numeros = '11';
-    numeros = numeros.slice(0, 10);
+    if (numeros.length <= 2) return numeros;
     const p1 = numeros.slice(0, 2);
     const p2 = numeros.slice(2, 6);
     const p3 = numeros.slice(6, 10);
-    return p3 ? `${p1}-${p2}-${p3}` : p2 ? `${p1}-${p2}` : p1;
+    const p4 = numeros.slice(10);
+    let resultado = `${p1}-${p2}-${p3}`;
+    if (p4) resultado += `-${p4}`;
+    return resultado;
   };
 
   const validarTexto = valor => /^[a-zA-Z]+$/.test(valor.trim());
-  const validarTelefono = valor => /^11\d{8}$/.test(valor.replace(/\D/g, ''));
+  const validarTelefono = valor => {
+    const raw = valor.replace(/\D/g, '');
+    return raw.length >= 10; // al menos 10 dígitos
+  };
   const validarDuracion = valor => {
     const num = Number(valor);
     return num > 0 && num % 5 === 0;
   };
-  const validarPunto = valor => /^\d{1,2}$/.test(valor.trim());
+  const validarPunto = () => {
+    const seleccionados = [...chipsContainer.querySelectorAll("input[type='checkbox']:checked")];
+    return seleccionados.length > 0;
+  };
 
   /** =====================
    *  Limpieza controlada del formulario
@@ -57,11 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
     inputs.nombre.value = "";
     inputs.apellido.value = "";
     inputs.duracion.value = "";
-    inputs.punto.value = "";
-
-    // Teléfono siempre se reinicia en "11"
-    inputs.telefono.value = "11";
-    validarCampo(inputs.telefono);
+    inputs.telefono.value = "";
+    [...chipsContainer.querySelectorAll("input[type='checkbox']")].forEach(chk => chk.checked = false);
   }
 
   /** =====================
@@ -82,25 +112,23 @@ document.addEventListener('DOMContentLoaded', () => {
     validarCampo(inputs.duracion);
   });
 
-  inputs.punto.addEventListener('input', () => {
-    inputs.punto.value = inputs.punto.value.replace(/[^0-9]/g, '').slice(0, 2);
+  chipsContainer.addEventListener('change', () => {
     validarCampo(inputs.punto);
   });
 
   inputs.telefono.addEventListener('input', () => {
     let raw = inputs.telefono.value.replace(/\D/g, '');
-    if (!raw.startsWith('11')) raw = '11';
-    raw = raw.slice(0, 10);
+    if (raw.length > 12) raw = raw.slice(0, 12); // máximo 12 dígitos
     inputs.telefono.value = formatearTelefono(raw);
     validarCampo(inputs.telefono);
   });
 
   /** =====================
-   *  Validación individual de campos
+   *  Validación individual
    *  ===================== */
   const validarCampo = (input) => {
     const key = Object.keys(inputs).find(k => inputs[k] === input);
-    const valor = input.value.trim();
+    const valor = input.value ? input.value.trim() : "";
     let valido = true;
     let mensaje = '';
 
@@ -115,13 +143,12 @@ document.addEventListener('DOMContentLoaded', () => {
         mensaje = valido ? '' : 'Múltiplo de 5';
         break;
       case 'punto':
-        valido = validarPunto(valor);
-        mensaje = valido ? '' : 'Entre 1 y 2 dígitos';
+        valido = validarPunto();
+        mensaje = valido ? '' : 'Seleccione al menos un NAP';
         break;
       case 'telefono':
-        const raw = valor.replace(/\D/g, '');
         valido = validarTelefono(valor);
-        mensaje = valido ? '' : `Faltan ${Math.max(0, 10 - raw.length)} dígitos`;
+        mensaje = valido ? '' : 'Número incompleto';
         break;
     }
 
@@ -138,17 +165,15 @@ document.addEventListener('DOMContentLoaded', () => {
     tecnicos.forEach(t => {
       const card = document.createElement('div');
       card.classList.add('tecnico-card');
-      card.style.border = "1px solid #ccc";
-      card.style.padding = "10px";
-      card.style.marginBottom = "8px";
-      card.style.borderRadius = "5px";
-      card.style.backgroundColor = "#f9f9f9";
+
+      const naps = Array.isArray(t.puntosAcceso) ? t.puntosAcceso.join(', ') : '';
+
       card.innerHTML = `
         <h3>Nombre: ${t.nombre}</h3>
         <h3>Apellido: ${t.apellido}</h3>
         <h3>Teléfono: ${t.telefono}</h3>
         <h3>Duración Turno: ${t.duracionTurnoMinutos} minutos</h3>
-        <h3>Punto de Acceso: ${t.puntoAcceso}</h3>
+        <h3>Puntos de Acceso: NAP ${naps}</h3>
       `;
       contenedor.appendChild(card);
     });
@@ -165,10 +190,9 @@ document.addEventListener('DOMContentLoaded', () => {
       apellido: inputs.apellido.value.trim(),
       telefono: inputs.telefono.value,
       duracionTurnoMinutos: inputs.duracion.value.trim(),
-      puntoAcceso: inputs.punto.value.trim()
+      puntosAcceso: [...chipsContainer.querySelectorAll("input[type='checkbox']:checked")].map(chk => parseInt(chk.value))
     };
 
-    // Validar todos los campos antes de enviar
     let formularioValido = true;
     Object.values(inputs).forEach(input => {
       if(!validarCampo(input)) formularioValido = false;
@@ -182,15 +206,14 @@ document.addEventListener('DOMContentLoaded', () => {
     tecnicos.push(tecnico);
     localStorage.setItem('tecnicos', JSON.stringify(tecnicos));
 
-    // 🔥 limpieza controlada
     limpiarCamposFormulario();
-
     render();
   });
 
   /** =====================
    *  Render inicial
    *  ===================== */
+  cargarPuntosAcceso();  
   limpiarCamposFormulario();
   render();
 });

@@ -1,74 +1,82 @@
-// =============================
-//  punto_acceso.js con localStorage
-// =============================
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("formTecnico");
-  const numeroNapInput = document.getElementById("numeroNap");
-  const puntoContainer = document.getElementById("puntoContainer");
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('formPuntoAcceso');
+  const numeroInput = document.getElementById('numero');
+  const puntosContainer = document.getElementById('puntosContainer');
+  const btnGuardar = document.getElementById('btnGuardar');
+  const btnCancelar = document.getElementById('btnCancelar');
 
-  // Cargar puntos guardados desde localStorage (si existen)
-  let puntos = JSON.parse(localStorage.getItem("puntosAcceso")) || [];
+  let puntos = JSON.parse(localStorage.getItem('puntosAcceso')) || [];
+  let editIndex = null;
 
-  // Validar número de NAP
-  const validarNumeroNap = (valor) => {
-    const numero = parseInt(valor, 10);
+  renderPuntos();
 
-    if (isNaN(numero)) {
-      alert("Por favor ingrese un número válido.");
-      return false;
-    }
-    if (numero <= 0) {
-      alert("El número de punto de acceso debe ser mayor a 0.");
-      return false;
-    }
-    if (numero > 999) {
-      alert("El número de punto de acceso no puede tener más de 3 dígitos (máximo 999).");
-      return false;
-    }
-    return true;
-  };
-
-  // Guardar en localStorage
-  const guardarEnLocalStorage = () => {
-    localStorage.setItem("puntosAcceso", JSON.stringify(puntos));
-  };
-
-  // Renderizar tarjetas
-  const renderPuntos = () => {
-    puntoContainer.innerHTML = ""; // Limpia antes de volver a mostrar
-    puntos.forEach((punto, index) => {
-      const card = document.createElement("div");
-      card.classList.add("punto-card");
-
-      card.innerHTML = `
-        <h3>NAP ${index + 1}</h3>
-        <p>Número de punto de acceso: <strong>${punto}</strong></p>
-      `;
-
-      puntoContainer.appendChild(card);
-    });
-  };
-
-  // Manejo de envío del formulario
-  form.addEventListener("submit", (e) => {
+  form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const valor = numeroNapInput.value.trim();
+    const numero = parseInt(numeroInput.value);
 
-    if (!validarNumeroNap(valor)) return;
+    if (isNaN(numero) || numero <= 0 || numero > 999) {
+      alert("Ingrese un número válido (1-999).");
+      return;
+    }
 
-    // Guardar en la lista
-    puntos.push(valor);
+    const duplicado = puntos.some((p, i) => p.numero === numero && i !== editIndex);
+    if (duplicado) {
+      alert("Ese número ya existe.");
+      return;
+    }
 
-    // Persistir
-    guardarEnLocalStorage();
+    if (editIndex !== null) {
+      puntos[editIndex].numero = numero;
+      editIndex = null;
+      btnGuardar.textContent = "Guardar";
+      btnCancelar.classList.add("hidden");
+    } else {
+      puntos.push({ numero });
+    }
 
-    // Renderizar
+    localStorage.setItem('puntosAcceso', JSON.stringify(puntos));
+    numeroInput.value = '';
     renderPuntos();
-
-    // Limpiar input
-    numeroNapInput.value = "";
   });
 
-  // Al cargar la página, mostrar lo guardado
-  renderPuntos();
+  btnCancelar.addEventListener('click', () => {
+    editIndex = null;
+    numeroInput.value = '';
+    btnGuardar.textContent = "Guardar";
+    btnCancelar.classList.add("hidden");
+  });
+
+  function renderPuntos() {
+    puntosContainer.innerHTML = '';
+    puntos.sort((a,b) => a.numero - b.numero);
+
+    puntos.forEach((p, index) => {
+      const card = document.createElement('div');
+      card.className = 'punto-card';
+      card.innerHTML = `
+        <h3>NAP ${p.numero}</h3>
+        <div class="actions">
+          <button class="edit">Editar</button>
+          <button class="delete">Eliminar</button>
+        </div>
+      `;
+
+      card.querySelector('.edit').addEventListener('click', () => {
+        numeroInput.value = p.numero;
+        editIndex = index;
+        btnGuardar.textContent = "Actualizar";
+        btnCancelar.classList.remove("hidden");
+      });
+
+      card.querySelector('.delete').addEventListener('click', () => {
+        if (confirm(`¿Eliminar NAP ${p.numero}?`)) {
+          puntos.splice(index, 1);
+          localStorage.setItem('puntosAcceso', JSON.stringify(puntos));
+          renderPuntos();
+        }
+      });
+
+      puntosContainer.appendChild(card);
+    });
+  }
 });

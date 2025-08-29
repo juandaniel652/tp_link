@@ -26,13 +26,16 @@
     <input type="text" id="tecnicoApellido" placeholder="Ingrese apellido" required>
 
     <label for="tecnicoTelefono" class="label">Teléfono</label>
-    <input type="tel" id="tecnicoTelefono" maxlength= "10" placeholder="Ingrese teléfono" required>
+    <input type="text" id="tecnicoTelefono" maxlength="12" placeholder="Ingrese teléfono" required>
 
     <label for="duracionTurnoMinutos" class="label">Duración del turno (minutos)</label>
     <input type="text" id="duracionTurnoMinutos" placeholder="Ej: 15" required>
 
-    <label for="puntoAcceso" class="label">NAP</label>
-    <input type="text" id="puntoAcceso" placeholder="Ingrese NAP" required>
+    <!-- Reemplazo del select multiple -->
+    <label class="select">Punto de acceso</label>
+    <div id="puntoAcceso" class="chips-container">
+      
+    </div>
 
     <button type="submit" class="btn-guardar-tecnico">Guardar Técnico</button>
   </form>
