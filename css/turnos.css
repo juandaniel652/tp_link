@@ -1,3 +1,21 @@
+/* FUENTES */
+
+@font-face {
+  font-family: 'RobotoMonoBold'; /* Un nombre que tú elijas para la fuente */
+  src: url('../fuentes/RobotoMono/RobotoMono-Bold.ttf') format('truetype'); /* Ruta al archivo de tu fuente */
+  font-weight: normal; /* El peso de la fuente, si aplica */
+  font-style: normal;  /* El estilo de la fuente, si aplica */
+}
+
+@font-face{
+  font-family: 'AncizarSanzBold'; /* Un nombre que tú elijas para la fuente */
+  src: url('../fuentes/AncizarSans/AncizarSans-Bold.ttf') format('truetype'); /* Ruta al archivo de tu fuente */
+  font-weight: normal; /* El peso de la fuente, si aplica */
+  font-style: normal;  /* El estilo de la fuente, si aplica */
+}
+
+
+
 /* === FORMULARIO TURNOS === */
 #turno {
   background: rgba(255, 255, 255, 0.9);
@@ -12,12 +30,13 @@
 
 #turno h2 {
   text-align: center;
-  font-size: 24px;
+  font-size: 32px;
   margin-bottom: 20px;
   color: #1E3C72;
   font-weight: bold;
   border-bottom: 3px solid #1E3C72;
   padding-bottom: 8px;
+  font-family: 'AncizarSanzBold', sans-serif;
 }
 
 #turno form select,

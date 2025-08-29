@@ -60,19 +60,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const formatearTelefono = valor => {
     let numeros = valor.replace(/\D/g, '');
     if (numeros.length <= 2) return numeros;
-    const p1 = numeros.slice(0, 2);
-    const p2 = numeros.slice(2, 6);
-    const p3 = numeros.slice(6, 10);
-    const p4 = numeros.slice(10);
-    let resultado = `${p1}-${p2}-${p3}`;
-    if (p4) resultado += `-${p4}`;
+    const p1 = numeros.slice(0, 2);       // siempre 11
+    const p2 = numeros.slice(2, 6);       // siguientes 4 dígitos
+    const p3 = numeros.slice(6, 10);      // últimos 4 dígitos
+    let resultado = `${p1}`;
+    if(p2) resultado += `-${p2}`;
+    if(p3) resultado += `-${p3}`;
     return resultado;
   };
 
   const validarTexto = valor => /^[a-zA-Z]+$/.test(valor.trim());
   const validarTelefono = valor => {
     const raw = valor.replace(/\D/g, '');
-    return raw.length >= 10; // al menos 10 dígitos
+    if (!raw.startsWith('11')) return false;   // debe comenzar con 11
+    return raw.length === 10;                   // 2 + 8 dígitos
   };
   const validarDuracion = valor => {
     const num = Number(valor);
@@ -118,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   inputs.telefono.addEventListener('input', () => {
     let raw = inputs.telefono.value.replace(/\D/g, '');
-    if (raw.length > 12) raw = raw.slice(0, 12); // máximo 12 dígitos
+    if (raw.length > 10) raw = raw.slice(0, 10); // máximo 10 dígitos
     inputs.telefono.value = formatearTelefono(raw);
     validarCampo(inputs.telefono);
   });
@@ -148,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
         break;
       case 'telefono':
         valido = validarTelefono(valor);
-        mensaje = valido ? '' : 'Número incompleto';
+        mensaje = valido ? '' : 'Debe empezar con 11 y tener 10 dígitos';
         break;
     }
 

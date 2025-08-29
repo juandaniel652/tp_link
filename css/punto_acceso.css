@@ -1,3 +1,20 @@
+/* FUENTES */
+
+@font-face {
+  font-family: 'RobotoMonoBold'; /* Un nombre que tú elijas para la fuente */
+  src: url('../fuentes/RobotoMono/RobotoMono-Bold.ttf') format('truetype'); /* Ruta al archivo de tu fuente */
+  font-weight: normal; /* El peso de la fuente, si aplica */
+  font-style: normal;  /* El estilo de la fuente, si aplica */
+}
+
+@font-face{
+  font-family: 'AncizarSanzBold'; /* Un nombre que tú elijas para la fuente */
+  src: url('../fuentes/AncizarSans/AncizarSans-Bold.ttf') format('truetype'); /* Ruta al archivo de tu fuente */
+  font-weight: normal; /* El peso de la fuente, si aplica */
+  font-style: normal;  /* El estilo de la fuente, si aplica */
+}
+
+
 /* === FORMULARIO PUNTO DE ACCESO === */
 #punto-acceso {
   background: rgba(240, 245, 255, 0.95); /* tono más suave y azulado */
@@ -19,6 +36,7 @@
   font-weight: bold;
   border-bottom: 2px solid #2A5298;
   padding-bottom: 10px;
+  font-family: 'AncizarSanzBold', sans-serif;
 }
 
 /* Inputs */
