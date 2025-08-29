@@ -1,6 +1,3 @@
-1. Apartado Naps (número, lugar o zona) HECHO
-2. En el formulario técnico en su sección nap, puede seleccionar múltiples Naps, así armar su relación (Hecho)
-3. En el apartado de punto de acceso, que haya un botón exta que diga "Mostrar técnicos" y al mostrar, se muestre en una
-especie de ventana emergente un listado de los técnicos (Hecho)
-4. Agregar ese filtro a la agenda
+1. Dar funcionalidad en tema en tipo de ticket de agenda
+2. Agregar ese filtro a la agenda (Preguntar)
 Por último. Agregar especialidad a técnico (Luego de terminar esto para tener sencillez)

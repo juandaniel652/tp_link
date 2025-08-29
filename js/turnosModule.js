@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <p><strong>Técnico:</strong> ${t.tecnico}</p>
         <p><strong>T:</strong> ${t.t}</p>
         <p><strong>Rango:</strong> ${t.rango}</p>
-        <span class="turno-estado confirmado">Confirmado</span>
+        <span class="turno-estado confirmado">${t.estado}</span>
         <br><br>
         <button data-index="${index}" class="btn-eliminar">Eliminar</button>
       `;
