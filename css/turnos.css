@@ -1,22 +1,23 @@
-/* FUENTES */
+/* ===================== */
+/* ===  FUENTES  === */
+/* ===================== */
+@font-face {
+  font-family: 'RobotoMonoBold';
+  src: url('../fuentes/RobotoMono/RobotoMono-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
 
 @font-face {
-  font-family: 'RobotoMonoBold'; /* Un nombre que tú elijas para la fuente */
-  src: url('../fuentes/RobotoMono/RobotoMono-Bold.ttf') format('truetype'); /* Ruta al archivo de tu fuente */
-  font-weight: normal; /* El peso de la fuente, si aplica */
-  font-style: normal;  /* El estilo de la fuente, si aplica */
+  font-family: 'AncizarSanzBold';
+  src: url('../fuentes/AncizarSans/AncizarSans-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
 
-@font-face{
-  font-family: 'AncizarSanzBold'; /* Un nombre que tú elijas para la fuente */
-  src: url('../fuentes/AncizarSans/AncizarSans-Bold.ttf') format('truetype'); /* Ruta al archivo de tu fuente */
-  font-weight: normal; /* El peso de la fuente, si aplica */
-  font-style: normal;  /* El estilo de la fuente, si aplica */
-}
-
-
-
-/* === FORMULARIO TURNOS === */
+/* ===================== */
+/* ===  FORMULARIO TURNOS  === */
+/* ===================== */
 #turno {
   background: rgba(255, 255, 255, 0.9);
   color: #333;
@@ -77,7 +78,9 @@
   box-shadow: 0 6px 15px rgba(0,0,0,0.35);
 }
 
-/* === LISTA DE TURNOS (TARJETAS) === */
+/* ===================== */
+/* ===  LISTA DE TURNOS (TARJETAS)  === */
+/* ===================== */
 #turnosContainer {
   display: flex;
   flex-wrap: wrap;
@@ -86,68 +89,156 @@
   justify-content: center;
 }
 
-.turno-card {
+/* ===================== */
+/* === TARJETAS COMPACTAS === */
+/* ===================== */
+.tarjeta-turno {
   background: linear-gradient(135deg, #2A3C72, #1E5298);
   color: #fff;
-  padding: 15px 20px;
+  padding: 12px 15px;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
   width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   transition: transform 0.2s, box-shadow 0.2s;
+  font-size: 14px;
 }
 
-.turno-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+.tarjeta-turno h3 {
+  margin: 0 0 3px 0;
+  font-size: 15px;
+  line-height: 1.2;
 }
 
-.turno-card h3 {
+.tarjeta-turno p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.tarjeta-turno .acciones {
+  display: flex;
+  gap: 8px;
+  margin-top: 5px;
+}
+
+.tarjeta-turno .btn-estado,
+.tarjeta-turno .btn-eliminar {
+  width: calc(50% - 4px);
+  padding: 7px 10px;
+  font-size: 12px;
+}
+
+.tarjeta-turno:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+}
+
+/* Mobile: botones apilados */
+@media (max-width: 420px) {
+  .tarjeta-turno .btn-estado,
+  .tarjeta-turno .btn-eliminar {
+    width: 100%;
+  }
+}
+
+.tarjeta-turno h3 {
   margin: 0 0 5px 0;
   font-size: 16px;
 }
 
-.turno-card p {
+.tarjeta-turno p {
   margin: 2px 0;
   font-size: 14px;
 }
 
-.turno-estado {
-  display: inline-block;
-  margin-top: 5px;
-  padding: 3px 8px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: bold;
-}
-
-.tarjeta-turno{
-  background: linear-gradient(135deg, #2A3C72, #1E5298);
-  color: #fff;
-  padding: 15px 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-  width: 220px;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.btn-eliminar{
-  background: #5b3ce7;
-  color: #fff;
-  padding: 10px 15px;
+/* ===================== */
+/* ===  BOTONES  === */
+/* ===================== */
+.btn-estado,
+.btn-eliminar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 12px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
+  font-family: 'AncizarSanzBold', 'RobotoMonoBold', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.14);
+  text-decoration: none;
+  color: #fff;
+  -webkit-tap-highlight-color: transparent;
+  width: calc(50% - 6px);
+  box-sizing: border-box;
 }
 
+.btn-estado {
+  background: linear-gradient(135deg, #1E3C72 0%, #4CAF50 100%);
+}
+
+.btn-eliminar {
+  background: linear-gradient(135deg, #E53935 0%, #B71C1C 100%);
+}
+
+.btn-estado:hover,
 .btn-eliminar:hover {
-  background: #2b46c0;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.2);
+  opacity: 0.98;
 }
 
-.turno-estado.confirmado { background-color: #4caf50; }
-.turno-estado.pendiente { background-color: #f39c12; }
+.btn-estado:focus,
+.btn-eliminar:focus {
+  outline: 3px solid rgba(30,60,114,0.12);
+  outline-offset: 2px;
+}
 
-/* === MENSAJES MODERNOS === */
+/* Contenedor interno de acciones */
+.tarjeta-turno .acciones {
+  display: flex;
+  gap: 12px;
+}
+
+/* Mobile: botones apilados a pantalla pequeña */
+@media (max-width: 420px) {
+  .tarjeta-turno .btn-estado,
+  .tarjeta-turno .btn-eliminar {
+    width: 100%;
+  }
+}
+
+/* =========================== */
+/* ===  ETIQUETAS / ESTADO  === */
+/* =========================== */
+.turno-estado {
+  color: #fff;
+  font-family: 'AncizarSanzBold', sans-serif;
+  padding: 6px 10px;
+  border-radius: 999px;
+  display: inline-block;
+  min-width: 56px;
+  text-align: center;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.14);
+  font-size: 12px;
+}
+
+.turno-estado.confirmado    { background: linear-gradient(135deg,#43A047 0%, #66BB6A 100%); }
+.turno-estado.rechazado     { background: linear-gradient(135deg,#E53935 0%, #FF6F61 100%); }
+.turno-estado.reprogramado  { background: linear-gradient(135deg,#FB8C00 0%, #FFA726 100%); }
+.turno-estado.abierto       { background: linear-gradient(135deg,#29B6F6 0%, #0288D1 100%); }
+.turno-estado.en-progreso   { background: linear-gradient(135deg,#8E24AA 0%, #5b3ce7 100%); }
+.turno-estado.cerrado       { background: linear-gradient(135deg,#6B7280 0%, #374151 100%); }
+
+/* =========================== */
+/* ===  MENSAJES MODERNOS  === */
+/* =========================== */
 .mensaje {
   position: relative;
   width: 95%;
@@ -177,7 +268,6 @@
   background: linear-gradient(135deg, #3498DB, #5DADE2);
 }
 
-/* Animación de entrada */
 @keyframes slideDown {
   to {
     opacity: 1;
@@ -185,3 +275,91 @@
   }
 }
 
+/* =========================== */
+/* ===  MODAL DE ESTADO  === */
+/* =========================== */
+#modalEstado {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+#modalEstado.show {
+  display: flex;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#modalEstado > div {
+  background: #fff;
+  padding: 25px 20px;
+  border-radius: 12px;
+  min-width: 300px;
+  max-width: 90%;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  transform: translateY(-20px);
+  transition: transform 0.3s ease;
+}
+
+#modalEstado.show > div {
+  transform: translateY(0);
+}
+
+#modalEstado h3 {
+  margin: 0 0 15px 0;
+  font-size: 20px;
+  font-family: 'AncizarSanzBold', sans-serif;
+  color: #1E3C72;
+}
+
+#modalSelectEstado {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  background: #fdfdfd;
+  transition: all 0.3s ease;
+}
+
+#modalSelectEstado:focus {
+  border-color: #1E3C72;
+  box-shadow: 0 0 8px rgba(30,60,114,0.4);
+}
+
+#modalEstado button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+  font-family: 'AncizarSanzBold', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#modalCancelar {
+  background: linear-gradient(135deg, #E53935, #B71C1C);
+  color: #fff;
+  margin-right: 10px;
+}
+
+#modalGuardar {
+  background: linear-gradient(135deg, #1E3C72, #4CAF50);
+  color: #fff;
+}
+
+#modalCancelar:hover,
+#modalGuardar:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.35);
+}
