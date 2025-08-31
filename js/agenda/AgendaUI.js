@@ -59,24 +59,50 @@ export class AgendaUI {
           td.appendChild(divBloques);
 
           this.agenda.turnos.forEach(turno => {
-            if (turno.fecha.replace(/\//g,'-') === fStr) {
+            if (turno.fecha.replace(/\//g, '-') === fStr) {
               if (!filtroTec || turno.tecnico === filtroTec) {
-                const bloquesTurno = parseInt(turno.t?.replace('T','')) || 1;
+                const bloquesTurno = parseInt(turno.t?.replace('T', '')) || 1;
                 const [horaTurno, minTurno] = turno.hora.split(':').map(Number);
 
                 for (let b = 0; b < bloquesTurno; b++) {
-                  const totalMin = horaTurno*60 + minTurno + b*15;
-                  const hh = Math.floor(totalMin/60);
+                  const totalMin = horaTurno * 60 + minTurno + b * 15;
+                  const hh = Math.floor(totalMin / 60);
                   const mm = totalMin % 60;
-                  const bloqueHora = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+                  const bloqueHora = `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
 
                   if (bloqueHora === hStr) {
                     const btn = document.createElement('button');
                     btn.textContent = turno.cliente;
                     btn.disabled = true;
                     btn.classList.add('btn-ocupado');
-                    btn.style.backgroundColor = turno.color || '#1E90FF'; // color por técnico opcional
-                    btn.dataset.tooltip = `Cliente: ${turno.cliente} || Técnico: ${turno.tecnico}`;
+                    btn.style.backgroundColor = turno.color || '#1E90FF';
+
+                    // Tooltip dinámico con HTML
+                    btn.addEventListener("mouseenter", () => {
+                      let tooltip = document.createElement("div");
+                      tooltip.classList.add("tooltip");
+                      tooltip.innerHTML = `
+                        <strong>Cliente:</strong> ${turno.cliente}<br>
+                        <strong>Técnico:</strong> ${turno.tecnico}<br>
+                        <strong>T:</strong> ${turno.t}<br>
+                        <strong>Rango:</strong> ${turno.rango}<br>
+                        <strong>Estado:</strong> ${turno.estado}
+                      `;
+                      document.body.appendChild(tooltip);
+
+                      const moveHandler = (e) => {
+                        tooltip.style.top = e.pageY + 15 + "px";
+                        tooltip.style.left = e.pageX + 15 + "px";
+                      };
+
+                      btn.addEventListener("mousemove", moveHandler);
+
+                      btn.addEventListener("mouseleave", () => {
+                        tooltip.remove();
+                        btn.removeEventListener("mousemove", moveHandler);
+                      });
+                    });
+
                     divBloques.appendChild(btn);
                   }
                 }

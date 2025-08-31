@@ -1,3 +1,7 @@
-1. Dar funcionalidad en tema en tipo de ticket de agenda
-2. Agregar ese filtro a la agenda (Preguntar)
+1. Dar funcionalidad en tema en tipo de ticket de agenda (Hecho, perfeccionarlo de igual manera)
+2. Mostrar en agedna el estado del ticekt (como en clansis OK, OKI, etc)
 Por último. Agregar especialidad a técnico (Luego de terminar esto para tener sencillez)
+
+-- Según el tipo de estado (Abierto por ejemplo) que se elije al crear el turno aparecen las opciones
+al editar el tipo de letra, (siguiendo con el tema del abierto, serían solo las opciones OK, OKI, etc).
+SI es Rechazado marca directamente NOK y así tienen esa relación. luego llevar a la agenda
