@@ -16,6 +16,7 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
+  table-layout: fixed; /* columnas iguales */
 }
 
 th, td {
@@ -84,7 +85,9 @@ td button {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  align-items: center; /* centra todos los bloques en la celda */
 }
+
 
 /* ======== TOOLTIP MODERNO ======== */
 td button:hover::after {
@@ -169,3 +172,38 @@ td button::after {
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
 
+.bloque-turno {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* centra botón y sub-etiqueta */
+  gap: 2px; /* espacio entre botón y sub-etiqueta */
+}
+
+.sub-etiqueta {
+  margin-top: 4px;
+  width: 36px;           /* más ancho para el texto */
+  height: 18px;          /* altura suficiente para centrar texto */
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.7rem;
+  font-weight: bold;
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.sub-etiqueta.ok {
+  background-color: #4CAF50; /* Verde */
+  border: 1px solid #2e7d32;
+}
+
+.sub-etiqueta.nok {
+  background-color: #F44336; /* Rojo */
+  border: 1px solid #b71c1c;
+}
+
+.sub-etiqueta.repro {
+  background-color: #FF9800; /* Naranja */
+  border: 1px solid #ef6c00;
+}

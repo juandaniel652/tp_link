@@ -70,41 +70,61 @@ export class AgendaUI {
                   const mm = totalMin % 60;
                   const bloqueHora = `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
 
-                  if (bloqueHora === hStr) {
+                    if (bloqueHora === hStr) {
+                    const wrapper = document.createElement('div');
+                    wrapper.classList.add('bloque-turno');
+
+                    // Botón principal
                     const btn = document.createElement('button');
                     btn.textContent = turno.cliente;
                     btn.disabled = true;
                     btn.classList.add('btn-ocupado');
                     btn.style.backgroundColor = turno.color || '#1E90FF';
 
-                    // Tooltip dinámico con HTML
+                    // Sub-etiqueta como cuadradito debajo del botón
+                    const sub = document.createElement("div");
+                    sub.classList.add("sub-etiqueta");
+                    if (turno.estado === "Confirmado") {
+                      sub.textContent = "OK";
+                      sub.classList.add("ok");
+                    } else if (turno.estado === "Rechazado") {
+                      sub.textContent = "NOK";
+                      sub.classList.add("nok");
+                    } else if (turno.estado === "Reprogramado") {
+                      sub.textContent = "REPRO";
+                      sub.classList.add("repro");
+                    }
+
+                    // Tooltip dinámico
                     btn.addEventListener("mouseenter", () => {
                       let tooltip = document.createElement("div");
                       tooltip.classList.add("tooltip");
                       tooltip.innerHTML = `
-                        <strong>Cliente:</strong> ${turno.cliente}<br>
-                        <strong>Técnico:</strong> ${turno.tecnico}<br>
-                        <strong>T:</strong> ${turno.t}<br>
-                        <strong>Rango:</strong> ${turno.rango}<br>
-                        <strong>Estado:</strong> ${turno.estado}
+                      <strong>Cliente:</strong> ${turno.cliente}<br>
+                      <strong>Técnico:</strong> ${turno.tecnico}<br>
+                      <strong>T:</strong> ${turno.t}<br>
+                      <strong>Rango:</strong> ${turno.rango}<br>
+                      <strong>Estado:</strong> ${turno.estado}
                       `;
                       document.body.appendChild(tooltip);
 
                       const moveHandler = (e) => {
-                        tooltip.style.top = e.pageY + 15 + "px";
-                        tooltip.style.left = e.pageX + 15 + "px";
+                      tooltip.style.top = e.pageY + 15 + "px";
+                      tooltip.style.left = e.pageX + 15 + "px";
                       };
 
                       btn.addEventListener("mousemove", moveHandler);
 
                       btn.addEventListener("mouseleave", () => {
-                        tooltip.remove();
-                        btn.removeEventListener("mousemove", moveHandler);
+                      tooltip.remove();
+                      btn.removeEventListener("mousemove", moveHandler);
                       });
                     });
 
-                    divBloques.appendChild(btn);
-                  }
+                    wrapper.appendChild(btn);
+                    if (turno.estado) wrapper.appendChild(sub);
+                    divBloques.appendChild(wrapper);
+                    }
                 }
               }
             }
