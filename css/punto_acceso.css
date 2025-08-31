@@ -1,23 +1,22 @@
 /* FUENTES */
 
 @font-face {
-  font-family: 'RobotoMonoBold'; /* Un nombre que tú elijas para la fuente */
-  src: url('../fuentes/RobotoMono/RobotoMono-Bold.ttf') format('truetype'); /* Ruta al archivo de tu fuente */
-  font-weight: normal; /* El peso de la fuente, si aplica */
-  font-style: normal;  /* El estilo de la fuente, si aplica */
+  font-family: 'RobotoMonoBold'; 
+  src: url('../fuentes/RobotoMono/RobotoMono-Bold.ttf') format('truetype'); 
+  font-weight: normal; 
+  font-style: normal;  
 }
 
 @font-face{
-  font-family: 'AncizarSanzBold'; /* Un nombre que tú elijas para la fuente */
-  src: url('../fuentes/AncizarSans/AncizarSans-Bold.ttf') format('truetype'); /* Ruta al archivo de tu fuente */
-  font-weight: normal; /* El peso de la fuente, si aplica */
-  font-style: normal;  /* El estilo de la fuente, si aplica */
+  font-family: 'AncizarSanzBold'; 
+  src: url('../fuentes/AncizarSans/AncizarSans-Bold.ttf') format('truetype'); 
+  font-weight: normal; 
+  font-style: normal;  
 }
-
 
 /* === FORMULARIO PUNTO DE ACCESO === */
 #punto-acceso {
-  background: rgba(240, 245, 255, 0.95); /* tono más suave y azulado */
+  background: rgba(240, 245, 255, 0.95); 
   color: #333;
   border-radius: 15px;
   padding: 30px 25px;
@@ -40,7 +39,8 @@
 }
 
 /* Inputs */
-#formPuntoAcceso input {
+#formPuntoAcceso input,
+#formPuntoAcceso select {
   width: 95%;
   padding: 14px 16px;
   margin: 12px 0;
@@ -49,11 +49,21 @@
   font-size: 18px;
   outline: none;
   transition: all 0.3s ease;
+  font-family: 'AncizarSanzBold', sans-serif;
 }
 
-#formPuntoAcceso input:focus {
+#formPuntoAcceso input:focus,
+#formPuntoAcceso select:focus {
   border-color: #2A5298;
   box-shadow: 0 0 10px rgba(42,82,152,0.4);
+}
+
+/* Para que el select se vea más uniforme y moderno */
+#formPuntoAcceso select {
+  background-color: #fff;
+  color: #333;
+  appearance: none; /* Quita estilo predeterminado del navegador */
+  cursor: pointer;
 }
 
 /* Botones */
@@ -134,7 +144,7 @@
 }
 
 .punto-card .actions button.edit {
-  background: #3b66c1; /* azul suave */
+  background: #3b66c1; 
   color: #fff;
 }
 
@@ -144,7 +154,7 @@
 }
 
 .punto-card .actions button.delete {
-  background: #0d1f4f; /* azul oscuro */
+  background: #0d1f4f; 
   color: #fff;
 }
 
@@ -154,7 +164,7 @@
 }
 
 .punto-card .actions button.view {
-  background: #3b66c1; /* azul suave */
+  background: #3b66c1; 
   color: #fff;
 }
 
@@ -168,7 +178,6 @@
   from { opacity: 0; transform: translateY(-15px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
 
 /* === MODAL === */
 .modal-overlay {

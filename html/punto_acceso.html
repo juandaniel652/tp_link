@@ -20,6 +20,15 @@
 
     <form id="formPuntoAcceso" class="form">
         <input type="number" id="numero" placeholder="Número NAP (1-999)" required>
+
+        <!-- Select de rango horario -->
+        <label for="rangoHorario">Rango horario:</label>
+        <select id="rangoHorario" required>
+            <option value="" disabled selected>Seleccione AM o PM</option>
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+        </select>
+
         <div class="btn-group">
             <button type="submit" id="btnGuardar" class="btn-guardar-punto">Guardar</button>
             <button type="button" id="btnCancelar" class="btn-guardar-punto hidden">Cancelar</button>

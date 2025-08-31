@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('formPuntoAcceso');
   const numeroInput = document.getElementById('numero');
+  const rangoSelect = document.getElementById('rangoHorario'); // <-- referencia al select
   const puntosContainer = document.getElementById('puntosContainer');
   const btnGuardar = document.getElementById('btnGuardar');
   const btnCancelar = document.getElementById('btnCancelar');
@@ -13,9 +14,14 @@ document.addEventListener('DOMContentLoaded', () => {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const numero = parseInt(numeroInput.value);
+    const rango = rangoSelect.value; // <-- obtenemos el rango seleccionado
 
     if (isNaN(numero) || numero <= 0 || numero > 999) {
       alert("Ingrese un número válido (1-999).");
+      return;
+    }
+    if (!rango) {
+      alert("Seleccione un rango horario (AM o PM).");
       return;
     }
 
@@ -27,22 +33,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (editIndex !== null) {
       puntos[editIndex].numero = numero;
+      puntos[editIndex].rango = rango; // <-- actualizamos el rango
       editIndex = null;
       btnGuardar.textContent = "Guardar";
       btnCancelar.classList.add("hidden");
     } else {
-      // ⚡ guardamos con un array vacío de técnicos para asociar luego
-      puntos.push({ numero, tecnicos: [] });
+      puntos.push({ numero, rango, tecnicos: [] }); // <-- guardamos rango
     }
 
     localStorage.setItem('puntosAcceso', JSON.stringify(puntos));
     numeroInput.value = '';
+    rangoSelect.value = ''; // <-- limpiar select
     renderPuntos();
   });
 
   btnCancelar.addEventListener('click', () => {
     editIndex = null;
     numeroInput.value = '';
+    rangoSelect.value = '';
     btnGuardar.textContent = "Guardar";
     btnCancelar.classList.add("hidden");
   });
@@ -55,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const card = document.createElement('div');
       card.className = 'punto-card';
       card.innerHTML = `
-        <h3>NAP ${p.numero}</h3>
+        <h3>NAP ${p.numero} (${p.rango})</h3> <!-- <-- mostramos el rango -->
         <div class="actions">
           <button class="edit">Editar</button>
           <button class="delete">Eliminar</button>
@@ -66,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // editar
       card.querySelector('.edit').addEventListener('click', () => {
         numeroInput.value = p.numero;
+        rangoSelect.value = p.rango; // <-- al editar, cargamos el rango
         editIndex = index;
         btnGuardar.textContent = "Actualizar";
         btnCancelar.classList.remove("hidden");
@@ -90,48 +99,38 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // === Modal para mostrar técnicos ===
-function mostrarTecnicos(punto) {
-  // cargamos tecnicos desde localStorage
-  const tecnicos = JSON.parse(localStorage.getItem('tecnicos')) || [];
+  function mostrarTecnicos(punto) {
+    const tecnicos = JSON.parse(localStorage.getItem('tecnicos')) || [];
+    const tecnicosAsociados = tecnicos.filter(t =>
+      Array.isArray(t.puntosAcceso) && t.puntosAcceso.includes(punto.numero)
+    );
 
-  // filtramos los técnicos que tienen este NAP
-  const tecnicosAsociados = tecnicos.filter(t =>
-    Array.isArray(t.puntosAcceso) && t.puntosAcceso.includes(punto.numero)
-  );
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+      <div class="modal">
+        <h2>Técnicos de NAP ${punto.numero}</h2>
+        <ul class="lista-tecnicos">
+          ${
+            tecnicosAsociados.length > 0
+              ? tecnicosAsociados.map(t => `
+                  <li>
+                    <strong>${t.nombre} ${t.apellido}</strong><br>
+                    📞 ${t.telefono}<br>
+                    ⏱ ${t.duracionTurnoMinutos} min
+                  </li>
+                `).join('')
+              : '<li>No hay técnicos asociados a este NAP.</li>'
+          }
+        </ul>
+        <button class="cerrar-modal">Cerrar</button>
+      </div>
+    `;
 
-  // creamos modal dinámico
-  const modal = document.createElement('div');
-  modal.className = 'modal-overlay';
-  modal.innerHTML = `
-    <div class="modal">
-      <h2>Técnicos de NAP ${punto.numero}</h2>
-      <ul class="lista-tecnicos">
-        ${
-          tecnicosAsociados.length > 0
-            ? tecnicosAsociados.map(t => `
-                <li>
-                  <strong>${t.nombre} ${t.apellido}</strong><br>
-                  📞 ${t.telefono}<br>
-                  ⏱ ${t.duracionTurnoMinutos} min
-                </li>
-              `).join('')
-            : '<li>No hay técnicos asociados a este NAP.</li>'
-        }
-      </ul>
-      <button class="cerrar-modal">Cerrar</button>
-    </div>
-  `;
+    document.body.appendChild(modal);
 
-  document.body.appendChild(modal);
-
-  // cerrar modal
-  modal.querySelector('.cerrar-modal').addEventListener('click', () => {
-    modal.remove();
-  });
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) modal.remove();
-  });
-}
-
+    modal.querySelector('.cerrar-modal').addEventListener('click', () => modal.remove());
+    modal.addEventListener('click', (e) => { if(e.target === modal) modal.remove(); });
+  }
 
 });
