@@ -1,5 +1,5 @@
 // main.js
-import { renderTurnos, renderClientes, renderTecnicos, renderT, renderRango, renderEstadoTicket } from "./ui.js";
+import { renderTurnos, renderClientes, renderTecnicos, renderT, renderRango, renderEstadoTicket, renderNaps } from "./ui.js";
 import { registrarEventos } from "./eventos.js";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderTurnos();
     renderClientes();
     renderTecnicos();
+    renderNaps();
     renderT();
     renderRango();
     renderEstadoTicket();

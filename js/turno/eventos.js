@@ -7,6 +7,7 @@ import { esTurnoDuplicado, clienteYaTieneTecnico, clienteYaTieneTurnoConTecnico,
 const formTurno = document.getElementById("formTurno");
 const fechaInput = document.getElementById("turnoFecha");
 const selectHora = document.getElementById("turnoHora");
+const selectNap = document.getElementById("selectNap");
 const selectCliente = document.getElementById("selectCliente");
 const selectTecnico = document.getElementById("selectTecnico");
 const selectT = document.getElementById("selectT");
@@ -49,6 +50,7 @@ export function registrarEventos() {
     const nuevoTurno = {
       fecha: fechaInput.value,
       hora: selectHora.value,
+      nap: selectNap.value,
       cliente: selectCliente.value,
       tecnico: selectTecnico.value,
       t: `T${selectT.value}`,
@@ -56,7 +58,7 @@ export function registrarEventos() {
       estado: selectEstadoTicket.value
     };
 
-    if (!nuevoTurno.fecha || !nuevoTurno.hora || !nuevoTurno.cliente || !nuevoTurno.tecnico || !nuevoTurno.t || !nuevoTurno.rango || !nuevoTurno.estado) {
+    if (!nuevoTurno.fecha || !nuevoTurno.hora || !nuevoTurno.nap || !nuevoTurno.cliente || !nuevoTurno.tecnico || !nuevoTurno.t || !nuevoTurno.rango || !nuevoTurno.estado) {
       mostrarAlerta("⚠️ Por favor, complete todos los campos.", "error");
       return;
     }

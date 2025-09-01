@@ -5,6 +5,7 @@ import { mostrarAlerta } from "./ui.js";
 const fechaInput = document.getElementById("turnoFecha");
 const selectHora = document.getElementById("turnoHora");
 const selectTecnico = document.getElementById("selectTecnico");
+const selectNap = document.getElementById('selectNap');
 const selectT = document.getElementById("selectT");
 const selectRango = document.getElementById("selectRango");
 const selectCliente = document.getElementById("selectCliente");

@@ -1,5 +1,5 @@
 // ui.js
-import { turnos, clientes, tecnicos, guardarTurnos } from "./state.js";
+import { turnos, clientes, tecnicos, guardarTurnos, naps } from "./state.js";
 import { generarHorasDisponibles, actualizarClientesDisponibles } from "./helpers.js";
 
 /* ==========  
@@ -10,6 +10,7 @@ const els = () => ({
   turnosContainer: $("turnosContainer"),
   selectCliente: $("selectCliente"),
   selectTecnico: $("selectTecnico"),
+  selectNap: $("selectNap"),
   selectT: $("selectT"),
   selectRango: $("selectRango"),
   selectEstadoTicket: $("selectEstadoTicket"),
@@ -83,6 +84,7 @@ export function renderTurnos() {
       <p><strong>Cliente:</strong> ${t.cliente}</p>
       <p><strong>Técnico:</strong> ${t.tecnico}</p>
       <p><strong>T:</strong> ${t.t}</p>
+      <p><strong>Punto de Acceso:</strong> ${t.nap}</p>   <!-- 👈 agregado -->
       <p><strong>Rango:</strong> ${t.rango}</p>
       <span class="turno-estado ${estadoClase(t.estado)}">${renderEtiquetaEstado(t.estado)}</span>
       <br><br>
@@ -242,5 +244,22 @@ function bindTurnosContainerEvents() {
       abrirModalEstado(idx);
       return;
     }
+  });
+}
+
+
+export function renderNaps() {
+  const { selectNap } = els();
+  if (!selectNap) return;
+
+  // Limpiar
+  selectNap.innerHTML = "<option value=''>Seleccionar Punto de Acceso</option>";
+
+  // Recorrer los NAPs
+  naps.forEach((nap) => {
+    const option = document.createElement("option");
+    option.value = nap.numero;   // valor del NAP
+    option.textContent = `NAP ${nap.numero}`; // lo que se muestra
+    selectNap.appendChild(option);
   });
 }

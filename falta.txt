@@ -1,5 +1,6 @@
-1. Que un nap pueda tener distintos rangos, am o permitir
-2. por ultimo en turnos, que automáticamente permita mostrar los técnicos disponibles en base a su nap
+1. Que un nap pueda tener distintos rangos, am o permitir (Hecho)
+2. por ultimo en turnos, que automáticamente permita mostrar los técnicos disponibles en base a su nap (De esa manera,
+se arma su relación)
 3. luego se muestra en agenda y estariamos
 
 
