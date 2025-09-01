@@ -243,3 +243,53 @@
   from { transform: translateY(-20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
+
+
+#diasTrabajo {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #666;
+  background-color: #2a2a2a;
+  color: #fff;
+  font-size: 14px;
+}
+
+#diasTrabajo option {
+  padding: 6px;
+  background-color: #2a2a2a;
+  color: #fff;
+}
+
+#diasTrabajo option:checked {
+  background-color: #4caf50;
+  color: white;
+}
+
+.chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.chip {
+  padding: 10px 14px;
+  background: #f0f0f0;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  border: 2px solid #bbb;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.chip:hover {
+  background: #e0e0e0;
+}
+
+.chip.selected {
+  background: linear-gradient(135deg, #2A5298, #1E3C72);
+  color: #fff;
+  border-color: #1E3C72;
+}
