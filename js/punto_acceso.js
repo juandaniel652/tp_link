@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
     puntos = puntos.map(p => {
       const copy = Object.assign({}, p);
       if (!Array.isArray(copy.horarios) || !copy.horarios.length) {
-        // si tiene formato viejo (rango + dias)
         const rango = copy.rango || copy.rangoHorario || null;
         const dias = Array.isArray(copy.dias) ? copy.dias : [];
         const horarios = [];
@@ -75,11 +74,10 @@ document.addEventListener('DOMContentLoaded', () => {
       diasGrid.appendChild(row);
     });
 
-    // listeners botones AM/PM
     diasGrid.querySelectorAll('.range-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const dia = btn.dataset.dia;
-        const rango = btn.dataset.range; // "AM" o "PM"
+        const rango = btn.dataset.range;
         selectionMap[dia][rango] = !selectionMap[dia][rango];
         btn.classList.toggle('active', selectionMap[dia][rango]);
       });
@@ -114,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function mergeHorarios(existing, nuevos) {
-    // evita duplicados (dia+rango únicos)
     const map = new Map();
     (existing || []).forEach(h => map.set(h.dia + '|' + h.rango, h));
     (nuevos || []).forEach(h => map.set(h.dia + '|' + h.rango, h));
@@ -130,7 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const card = document.createElement('div');
       card.className = 'punto-card';
 
-      // crear chips horarios
       const horarios = Array.isArray(p.horarios) ? p.horarios : [];
       const chips = horarios.map(h => {
         const clase = (h.rango === 'AM') ? 'horario-chip am' : 'horario-chip pm';
@@ -150,7 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
 
-      // eliminar horario individual (delegación por tarjeta)
       card.addEventListener('click', (ev) => {
         const rem = ev.target.closest('.remove-horario');
         if (!rem) return;
@@ -162,19 +157,16 @@ document.addEventListener('DOMContentLoaded', () => {
         renderPuntos();
       });
 
-      // editar
       card.querySelector('.edit').addEventListener('click', () => {
         numeroInput.value = p.numero;
         setSelectionFromHorarios(p.horarios || []);
         editIndex = idx;
         btnGuardar.textContent = 'Actualizar';
         btnCancelar.classList.remove('hidden');
-        // scroll / foco práctico:
         numeroInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
         numeroInput.focus();
       });
 
-      // eliminar NAP completo
       card.querySelector('.delete').addEventListener('click', () => {
         if (!confirm(`¿Eliminar NAP ${p.numero} y todos sus horarios?`)) return;
         puntos.splice(idx, 1);
@@ -182,7 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderPuntos();
       });
 
-      // ver tecnicos (igual que antes)
       card.querySelector('.view').addEventListener('click', () => {
         mostrarTecnicos(p);
       });
@@ -194,9 +185,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // === Form submit ===
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const numero = parseInt(numeroInput.value, 10);
-    if (isNaN(numero) || numero <= 0 || numero > 999) {
-      alert('Ingrese un número válido (1-999).');
+    const numero = numeroInput.value.trim(); // <-- alfanumérico
+
+    if (!numero) { 
+      alert('Ingrese un NAP válido.');
       return;
     }
 
@@ -206,21 +198,18 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Si editando: comprobación duplicado excluyendo index; si creado nuevo, verificar duplicado
     if (editIndex === null) {
-      if (puntos.some(p => Number(p.numero) === numero)) {
-        alert('Ese número ya existe. Usa editar para agregar o modificar horarios.');
+      if (puntos.some(p => p.numero === numero)) {
+        alert('Ese NAP ya existe. Usa editar para agregar o modificar horarios.');
         return;
       }
       puntos.push({ numero, horarios: horariosToSave, tecnicos: [] });
     } else {
-      // actualización: permitir cambiar número, pero evitar duplicado con otros
-      if (puntos.some((p, i) => Number(p.numero) === numero && i !== editIndex)) {
-        alert('Ese número ya existe en otro NAP.');
+      if (puntos.some((p, i) => p.numero === numero && i !== editIndex)) {
+        alert('Ese NAP ya existe en otro registro.');
         return;
       }
       puntos[editIndex].numero = numero;
-      // Reemplazamos horarios -> si quieres "agregar" en lugar de reemplazar, usa mergeHorarios
       puntos[editIndex].horarios = mergeHorarios(puntos[editIndex].horarios || [], horariosToSave);
       editIndex = null;
       btnGuardar.textContent = 'Guardar';
@@ -250,7 +239,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateGridUIFromSelection();
   });
 
-  // cancelar edición
   btnCancelar?.addEventListener('click', () => {
     editIndex = null;
     resetForm();
@@ -264,7 +252,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateGridUIFromSelection();
   }
 
-  // === Modal técnicos (igual a tu versión) ===
   function mostrarTecnicos(punto) {
     const tecnicos = JSON.parse(localStorage.getItem('tecnicos')) || [];
     const tecnicosAsociados = tecnicos.filter(t =>
