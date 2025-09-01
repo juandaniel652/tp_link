@@ -152,3 +152,54 @@
   border-radius: 20px;
   box-shadow: 0 3px 6px rgba(0,0,0,0.2);
 }
+
+.tecnico-card {
+  background: #1E3C72;
+  color: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  margin: 10px 0;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+  transition: transform 0.2s ease;
+}
+.tecnico-card:hover {
+  transform: translateY(-2px);
+}
+.tecnico-card h3 {
+  margin: 0 0 6px;
+}
+.tecnico-card p {
+  margin: 4px 0;
+}
+
+.acciones {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+.btn-chip {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.btn-chip.editar {
+  background: #4caf50;
+  color: white;
+}
+.btn-chip.editar:hover {
+  background: #45a049;
+}
+
+.btn-chip.eliminar {
+  background: #e53935;
+  color: white;
+}
+.btn-chip.eliminar:hover {
+  background: #d32f2f;
+}
