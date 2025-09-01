@@ -1,5 +1,6 @@
-1. Al tenr turno abierto no hay problema (funcionalidad igual), pero si está cerrado, debe tener etiqueta, si es OK o NOK
-debo permitir elegir el tipo de OK y de NOK para consecuentemente mostrar en agenda
+1. Que un nap pueda tener distintos rangos, am o permitir
+2. por ultimo en turnos, que automáticamente permita mostrar los técnicos disponibles en base a su nap
+3. luego se muestra en agenda y estariamos
 
 
 -- Según el tipo de estado (Abierto por ejemplo) que se elije al crear el turno aparecen las opciones

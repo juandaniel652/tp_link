@@ -19,26 +19,23 @@
     <h2>Administrar NAPs</h2>
 
     <form id="formPuntoAcceso" class="form">
+        <label>Número del NAP</label>
         <input type="number" id="numero" placeholder="Número NAP (1-999)" required>
 
-        <!-- Select de rango horario -->
-        <label for="rangoHorario">Rango horario:</label>
-        <select id="rangoHorario" required>
-            <option value="" disabled selected>Seleccione AM o PM</option>
-            <option value="AM">AM</option>
-            <option value="PM">PM</option>
-        </select>
+        <!-- DÍAS + FRANJAS (reemplaza select+chips anteriores) -->
+        <label>Días y franjas horarias:</label>
 
-        <label>Días de trabajo:</label>
-        <div id="diasTrabajo" class="chips-container">
-            <span class="chip" data-value="todos">Todos los días</span>
-            <span class="chip" data-value="lunes">Lunes</span>
-            <span class="chip" data-value="martes">Martes</span>
-            <span class="chip" data-value="miercoles">Miércoles</span>
-            <span class="chip" data-value="jueves">Jueves</span>
-            <span class="chip" data-value="viernes">Viernes</span>
-            <span class="chip" data-value="sabado">Sábado</span>
+        <div id="diasHorarioGrid" class="dias-grid">
+            <!-- El JS generará las filas para Lunes..Sábado -->
         </div>
+
+        <div class="dia-controls">
+            <button type="button" id="selectAllAM" class="control-btn">Seleccionar todo AM</button>
+            <button type="button" id="selectAllPM" class="control-btn">Seleccionar todo PM</button>
+            <button type="button" id="selectAllBoth" class="control-btn">Seleccionar AM+PM</button>
+            <button type="button" id="clearAll" class="control-btn">Borrar selección</button>
+        </div>
+
 
         <div class="btn-group">
             <button type="submit" id="btnGuardar" class="btn-guardar-punto">Guardar</button>

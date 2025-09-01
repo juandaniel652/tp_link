@@ -1,124 +1,148 @@
+// punto_acceso.js
 document.addEventListener('DOMContentLoaded', () => {
-  // === Elementos del DOM ===
+  // === DOM ===
   const form = document.getElementById('formPuntoAcceso');
   const numeroInput = document.getElementById('numero');
-  const rangoSelect = document.getElementById('rangoHorario');
-  const chipsContainer = document.getElementById('diasTrabajo'); // <div> con chips
+  const diasGrid = document.getElementById('diasHorarioGrid'); // nuevo
   const puntosContainer = document.getElementById('puntosContainer');
   const btnGuardar = document.getElementById('btnGuardar');
   const btnCancelar = document.getElementById('btnCancelar');
+  const btnAllAM = document.getElementById('selectAllAM');
+  const btnAllPM = document.getElementById('selectAllPM');
+  const btnAllBoth = document.getElementById('selectAllBoth');
+  const btnClear = document.getElementById('clearAll');
 
-  // === Estado ===
+  // === Constantes y estado ===
+  const DAYS = ['lunes','martes','miercoles','jueves','viernes','sabado'];
+  const NOMBRES_DIAS = { lunes:'Lunes', martes:'Martes', miercoles:'Miércoles', jueves:'Jueves', viernes:'Viernes', sabado:'Sábado' };
+
   let puntos = JSON.parse(localStorage.getItem('puntosAcceso')) || [];
   let editIndex = null;
-  let diasSeleccionados = ['todos']; // por defecto "Todos los días"
 
-  // === Utilidades ===
-  const NOMBRES_DIAS = {
-    lunes: 'Lunes',
-    martes: 'Martes',
-    miercoles: 'Miércoles',
-    jueves: 'Jueves',
-    viernes: 'Viernes',
-    sabado: 'Sábado',
-  };
+  // selectionMap: { lunes: {AM:false, PM:false}, ... }
+  let selectionMap = {};
+  function resetSelectionMap() {
+    selectionMap = {};
+    DAYS.forEach(d => selectionMap[d] = { AM: false, PM: false });
+  }
+  resetSelectionMap();
 
+  // === Normalize datos viejos (compatibilidad) ===
+  function normalizeStoredPuntos() {
+    let changed = false;
+    puntos = puntos.map(p => {
+      const copy = Object.assign({}, p);
+      if (!Array.isArray(copy.horarios) || !copy.horarios.length) {
+        // si tiene formato viejo (rango + dias)
+        const rango = copy.rango || copy.rangoHorario || null;
+        const dias = Array.isArray(copy.dias) ? copy.dias : [];
+        const horarios = [];
+        if (rango && dias.length) {
+          if (dias.includes('todos')) {
+            DAYS.forEach(d => horarios.push({ dia: d, rango }));
+          } else {
+            dias.forEach(d => horarios.push({ dia: d, rango }));
+          }
+          changed = true;
+        }
+        copy.horarios = horarios;
+        delete copy.rango; delete copy.dias; delete copy.rangoHorario;
+      }
+      copy.horarios = copy.horarios || [];
+      copy.tecnicos = Array.isArray(copy.tecnicos) ? copy.tecnicos : [];
+      return copy;
+    });
+    if (changed) localStorage.setItem('puntosAcceso', JSON.stringify(puntos));
+  }
+  normalizeStoredPuntos();
+
+  // === Helpers ===
   function setLocalStorage() {
     localStorage.setItem('puntosAcceso', JSON.stringify(puntos));
   }
 
-  function setChipsUIFromArray(arr) {
-    diasSeleccionados = [...arr];
-    const allChips = chipsContainer.querySelectorAll('.chip');
-    allChips.forEach(chip => {
-      const val = chip.dataset.value;
-      if (diasSeleccionados.includes('todos')) {
-        chip.classList.toggle('selected', val === 'todos');
-      } else {
-        chip.classList.toggle('selected', diasSeleccionados.includes(val));
-      }
+  function buildDaysGrid() {
+    diasGrid.innerHTML = '';
+    DAYS.forEach(dia => {
+      const row = document.createElement('div');
+      row.className = 'dia-row';
+      row.dataset.dia = dia;
+      row.innerHTML = `
+        <span class="dia-name">${NOMBRES_DIAS[dia]}</span>
+        <button type="button" class="range-btn" data-dia="${dia}" data-range="AM">AM</button>
+        <button type="button" class="range-btn" data-dia="${dia}" data-range="PM">PM</button>
+      `;
+      diasGrid.appendChild(row);
     });
 
-    // Si quedó vacío, volvemos a "todos" para asegurar estado válido visual
-    if (diasSeleccionados.length === 0) {
-      diasSeleccionados = ['todos'];
-      const chipTodos = chipsContainer.querySelector('[data-value="todos"]');
-      allChips.forEach(c => c.classList.remove('selected'));
-      if (chipTodos) chipTodos.classList.add('selected');
-    }
-  }
-
-  function getDiasTexto(diasArr) {
-    if (!Array.isArray(diasArr) || diasArr.length === 0 || diasArr.includes('todos')) {
-      return 'Todos los días';
-    }
-    return diasArr.map(d => NOMBRES_DIAS[d] || d).join(', ');
-  }
-
-  // === Inicializar chips por defecto (seleccionar "todos") ===
-  (function initChipsDefault() {
-    const chipTodos = chipsContainer?.querySelector('[data-value="todos"]');
-    if (chipTodos) chipTodos.classList.add('selected');
-  })();
-
-  // === Lógica de chips (click) ===
-  chipsContainer.addEventListener('click', (e) => {
-    const target = e.target;
-    if (!target.classList.contains('chip')) return;
-
-    const value = target.dataset.value;
-
-    if (value === 'todos') {
-      // Selecciona solo "todos"
-      diasSeleccionados = ['todos'];
-      chipsContainer.querySelectorAll('.chip').forEach(c => {
-        c.classList.toggle('selected', c.dataset.value === 'todos');
+    // listeners botones AM/PM
+    diasGrid.querySelectorAll('.range-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const dia = btn.dataset.dia;
+        const rango = btn.dataset.range; // "AM" o "PM"
+        selectionMap[dia][rango] = !selectionMap[dia][rango];
+        btn.classList.toggle('active', selectionMap[dia][rango]);
       });
-      return;
-    }
+    });
+  }
 
-    // Quitar "todos" si estaba
-    diasSeleccionados = diasSeleccionados.filter(d => d !== 'todos');
+  function updateGridUIFromSelection() {
+    diasGrid.querySelectorAll('.range-btn').forEach(btn => {
+      const dia = btn.dataset.dia;
+      const rango = btn.dataset.range;
+      btn.classList.toggle('active', !!selectionMap[dia][rango]);
+    });
+  }
 
-    // Toggle del día
-    if (diasSeleccionados.includes(value)) {
-      diasSeleccionados = diasSeleccionados.filter(d => d !== value);
-      target.classList.remove('selected');
-    } else {
-      diasSeleccionados.push(value);
-      target.classList.add('selected');
-    }
+  function setSelectionFromHorarios(horarios) {
+    resetSelectionMap();
+    horarios.forEach(h => {
+      if (h && h.dia && h.rango && selectionMap[h.dia]) {
+        selectionMap[h.dia][h.rango] = true;
+      }
+    });
+    updateGridUIFromSelection();
+  }
 
-    // Si no quedó ninguno, volvemos a "todos"
-    if (diasSeleccionados.length === 0) {
-      diasSeleccionados = ['todos'];
-      chipsContainer.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
-      const chipTodos = chipsContainer.querySelector('[data-value="todos"]');
-      if (chipTodos) chipTodos.classList.add('selected');
-    } else {
-      // Asegurar que el chip "todos" quede desmarcado
-      const chipTodos = chipsContainer.querySelector('[data-value="todos"]');
-      if (chipTodos) chipTodos.classList.remove('selected');
-    }
-  });
+  function gatherHorariosFromSelection() {
+    const out = [];
+    DAYS.forEach(dia => {
+      if (selectionMap[dia].AM) out.push({ dia, rango: 'AM' });
+      if (selectionMap[dia].PM) out.push({ dia, rango: 'PM' });
+    });
+    return out;
+  }
 
-  // === Render de tarjetas ===
+  function mergeHorarios(existing, nuevos) {
+    // evita duplicados (dia+rango únicos)
+    const map = new Map();
+    (existing || []).forEach(h => map.set(h.dia + '|' + h.rango, h));
+    (nuevos || []).forEach(h => map.set(h.dia + '|' + h.rango, h));
+    return Array.from(map.values());
+  }
+
+  // === Render ===
   function renderPuntos() {
     puntosContainer.innerHTML = '';
-    // ordenar por número asc
-    puntos.sort((a, b) => (Number(a.numero) || 0) - (Number(b.numero) || 0));
+    puntos.sort((a,b) => (Number(a.numero)||0) - (Number(b.numero)||0));
 
-    puntos.forEach((p, index) => {
-      // compatibilidad con registros viejos
-      const rango = p.rango || p.rangoHorario || '—';
-      const dias = Array.isArray(p.dias) && p.dias.length ? p.dias : ['todos'];
-
+    puntos.forEach((p, idx) => {
       const card = document.createElement('div');
       card.className = 'punto-card';
+
+      // crear chips horarios
+      const horarios = Array.isArray(p.horarios) ? p.horarios : [];
+      const chips = horarios.map(h => {
+        const clase = (h.rango === 'AM') ? 'horario-chip am' : 'horario-chip pm';
+        return `<span class="${clase}" data-dia="${h.dia}" data-rango="${h.rango}">
+                  ${NOMBRES_DIAS[h.dia]} ${h.rango}
+                  <button class="remove-horario" title="Eliminar horario" data-dia="${h.dia}" data-rango="${h.rango}">×</button>
+                </span>`;
+      }).join(' ');
+
       card.innerHTML = `
         <h3>NAP ${p.numero}</h3>
-        <p><strong>Horario:</strong> ${rango}</p>
-        <p><strong>Días:</strong> ${getDiasTexto(dias)}</p>
+        <div class="horarios-list">${chips || '<em style="color:#fff8">Sin horarios</em>'}</div>
         <div class="actions">
           <button class="edit">Editar</button>
           <button class="delete">Eliminar</button>
@@ -126,28 +150,39 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
 
+      // eliminar horario individual (delegación por tarjeta)
+      card.addEventListener('click', (ev) => {
+        const rem = ev.target.closest('.remove-horario');
+        if (!rem) return;
+        const dia = rem.dataset.dia;
+        const rango = rem.dataset.rango;
+        if (!confirm(`Eliminar ${NOMBRES_DIAS[dia]} ${rango} de NAP ${p.numero}?`)) return;
+        p.horarios = (p.horarios || []).filter(h => !(h.dia === dia && h.rango === rango));
+        setLocalStorage();
+        renderPuntos();
+      });
+
       // editar
       card.querySelector('.edit').addEventListener('click', () => {
         numeroInput.value = p.numero;
-        rangoSelect.value = rango !== '—' ? rango : '';
-
-        setChipsUIFromArray(dias);
-
-        editIndex = index;
+        setSelectionFromHorarios(p.horarios || []);
+        editIndex = idx;
         btnGuardar.textContent = 'Actualizar';
         btnCancelar.classList.remove('hidden');
+        // scroll / foco práctico:
+        numeroInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        numeroInput.focus();
       });
 
-      // eliminar
+      // eliminar NAP completo
       card.querySelector('.delete').addEventListener('click', () => {
-        if (confirm(`¿Eliminar NAP ${p.numero}?`)) {
-          puntos.splice(index, 1);
-          setLocalStorage();
-          renderPuntos();
-        }
+        if (!confirm(`¿Eliminar NAP ${p.numero} y todos sus horarios?`)) return;
+        puntos.splice(idx, 1);
+        setLocalStorage();
+        renderPuntos();
       });
 
-      // ver técnicos
+      // ver tecnicos (igual que antes)
       card.querySelector('.view').addEventListener('click', () => {
         mostrarTecnicos(p);
       });
@@ -156,56 +191,40 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // === Submit del formulario ===
+  // === Form submit ===
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-
     const numero = parseInt(numeroInput.value, 10);
-    const rango = rangoSelect.value.trim();
-
-    // Validaciones
     if (isNaN(numero) || numero <= 0 || numero > 999) {
       alert('Ingrese un número válido (1-999).');
       return;
     }
-    if (!rango) {
-      alert('Seleccione un rango horario (AM o PM).');
-      return;
-    }
-    if (!diasSeleccionados.length) {
-      alert('Seleccione al menos un día de trabajo.');
-      return;
-    }
 
-    const duplicado = puntos.some((p, i) => p.numero === numero && i !== editIndex);
-    if (duplicado) {
-      alert('Ese número ya existe.');
+    const horariosToSave = gatherHorariosFromSelection();
+    if (!horariosToSave.length) {
+      alert('Seleccione al menos una franja (AM/PM) en algún día.');
       return;
     }
 
-    // Si el usuario dejó "todos", guardamos ['todos'] como bandera;
-    // si prefieres guardar los 6 días explícitos, cambia la línea siguiente por:
-    // const diasAGuardar = diasSeleccionados.includes('todos')
-    //   ? ['lunes','martes','miercoles','jueves','viernes','sabado']
-    //   : [...diasSeleccionados];
-    const diasAGuardar = [...diasSeleccionados];
-
-    const registro = {
-      numero,
-      rango,
-      dias: diasAGuardar,
-      tecnicos: Array.isArray(puntos[editIndex]?.tecnicos) ? puntos[editIndex].tecnicos : []
-    };
-
-    if (editIndex !== null) {
-      puntos[editIndex] = registro;
+    // Si editando: comprobación duplicado excluyendo index; si creado nuevo, verificar duplicado
+    if (editIndex === null) {
+      if (puntos.some(p => Number(p.numero) === numero)) {
+        alert('Ese número ya existe. Usa editar para agregar o modificar horarios.');
+        return;
+      }
+      puntos.push({ numero, horarios: horariosToSave, tecnicos: [] });
+    } else {
+      // actualización: permitir cambiar número, pero evitar duplicado con otros
+      if (puntos.some((p, i) => Number(p.numero) === numero && i !== editIndex)) {
+        alert('Ese número ya existe en otro NAP.');
+        return;
+      }
+      puntos[editIndex].numero = numero;
+      // Reemplazamos horarios -> si quieres "agregar" en lugar de reemplazar, usa mergeHorarios
+      puntos[editIndex].horarios = mergeHorarios(puntos[editIndex].horarios || [], horariosToSave);
       editIndex = null;
       btnGuardar.textContent = 'Guardar';
       btnCancelar.classList.add('hidden');
-    } else {
-      // si no trae tecnicos, iniciar vacío para consistencia
-      registro.tecnicos = [];
-      puntos.push(registro);
     }
 
     setLocalStorage();
@@ -213,8 +232,26 @@ document.addEventListener('DOMContentLoaded', () => {
     renderPuntos();
   });
 
-  // === Cancelar edición ===
-  btnCancelar.addEventListener('click', () => {
+  // === Controls: select all / clear ===
+  btnAllAM?.addEventListener('click', () => {
+    DAYS.forEach(d => selectionMap[d].AM = true);
+    updateGridUIFromSelection();
+  });
+  btnAllPM?.addEventListener('click', () => {
+    DAYS.forEach(d => selectionMap[d].PM = true);
+    updateGridUIFromSelection();
+  });
+  btnAllBoth?.addEventListener('click', () => {
+    DAYS.forEach(d => { selectionMap[d].AM = true; selectionMap[d].PM = true; });
+    updateGridUIFromSelection();
+  });
+  btnClear?.addEventListener('click', () => {
+    resetSelectionMap();
+    updateGridUIFromSelection();
+  });
+
+  // cancelar edición
+  btnCancelar?.addEventListener('click', () => {
     editIndex = null;
     resetForm();
     btnGuardar.textContent = 'Guardar';
@@ -223,14 +260,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function resetForm() {
     form.reset();
-    // reset chips a "todos"
-    diasSeleccionados = ['todos'];
-    chipsContainer.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
-    const chipTodos = chipsContainer.querySelector('[data-value="todos"]');
-    if (chipTodos) chipTodos.classList.add('selected');
+    resetSelectionMap();
+    updateGridUIFromSelection();
   }
 
-  // === Modal de técnicos (igual a tu versión) ===
+  // === Modal técnicos (igual a tu versión) ===
   function mostrarTecnicos(punto) {
     const tecnicos = JSON.parse(localStorage.getItem('tecnicos')) || [];
     const tecnicosAsociados = tecnicos.filter(t =>
@@ -258,13 +292,13 @@ document.addEventListener('DOMContentLoaded', () => {
         <button class="cerrar-modal">Cerrar</button>
       </div>
     `;
-
     document.body.appendChild(modal);
-
     modal.querySelector('.cerrar-modal').addEventListener('click', () => modal.remove());
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
   }
 
-  // === Primer render ===
+  // === Init ===
+  buildDaysGrid();
+  resetForm();
   renderPuntos();
 });

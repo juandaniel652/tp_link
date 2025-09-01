@@ -293,3 +293,76 @@
   color: #fff;
   border-color: #1E3C72;
 }
+
+
+/* grid días + botones AM/PM */
+.dias-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 6px 0;
+}
+.dia-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  background: #f6f9ff;
+  border: 1px solid #d6e1ff;
+  font-family: 'AncizarSanzBold', sans-serif;
+}
+.dia-name {
+  min-width: 70px;
+  font-size: 14px;
+  color: #123;
+}
+.range-btn {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #bbb;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 700;
+}
+.range-btn.active {
+  background: linear-gradient(135deg,#2A5298,#1E3C72);
+  color: #fff;
+  border-color: #1E3C72;
+  transform: translateY(-1px);
+}
+.dia-controls { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+.control-btn {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: none;
+  background: #e6eefc;
+  cursor: pointer;
+  font-weight: 700;
+}
+.control-btn:hover { filter: brightness(.98); }
+
+/* chips horarios en la tarjeta */
+.horario-chip {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 8px;
+  border-radius:14px;
+  margin:4px 4px 0 0;
+  background:#ffffff22;
+  color:#fff;
+  font-weight:700;
+  font-size:13px;
+}
+.horario-chip .remove-horario {
+  margin-left:6px;
+  background:transparent;
+  border:none;
+  color:inherit;
+  cursor:pointer;
+  font-size:14px;
+  padding:0 6px;
+}
+.horario-chip.am { background: rgba(0,123,255,0.15); border:1px solid rgba(0,123,255,0.3); color:#eaf4ff; }
+.horario-chip.pm { background: rgba(40,167,69,0.15); border:1px solid rgba(40,167,69,0.3); color:#eaffef; }
