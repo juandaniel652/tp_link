@@ -60,8 +60,8 @@ export class AgendaUI {
 
           this.agenda.turnos.forEach(turno => {
             if (turno.fecha.replace(/\//g, '-') === fStr) {
-              if (!filtroTec || turno.tecnico === filtroTec) {
-                const bloquesTurno = parseInt(turno.t?.replace('T', '')) || 1;
+              if (!filtroTec || (Array.isArray(turno.tecnicos) && turno.tecnicos.includes(filtroTec))) {
+                const bloquesTurno = Number(turno.t?.toString().replace('T','')) || 1;
                 const [horaTurno, minTurno] = turno.hora.split(':').map(Number);
 
                 for (let b = 0; b < bloquesTurno; b++) {
@@ -70,18 +70,16 @@ export class AgendaUI {
                   const mm = totalMin % 60;
                   const bloqueHora = `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
 
-                    if (bloqueHora === hStr) {
+                  if (bloqueHora === hStr) {
                     const wrapper = document.createElement('div');
                     wrapper.classList.add('bloque-turno');
 
-                    // Botón principal
                     const btn = document.createElement('button');
                     btn.textContent = turno.cliente;
                     btn.disabled = true;
                     btn.classList.add('btn-ocupado');
                     btn.style.backgroundColor = turno.color || '#1E90FF';
 
-                    // Sub-etiqueta como cuadradito debajo del botón
                     const sub = document.createElement("div");
                     sub.classList.add("sub-etiqueta");
                     if (turno.estado === "Confirmado") {
@@ -99,32 +97,33 @@ export class AgendaUI {
                     btn.addEventListener("mouseenter", () => {
                       let tooltip = document.createElement("div");
                       tooltip.classList.add("tooltip");
+                      const tecnicoStr = Array.isArray(turno.tecnicos) ? turno.tecnicos.join(", ") : "";
                       tooltip.innerHTML = `
-                      <strong>Cliente:</strong> ${turno.cliente}<br>
-                      <strong>Técnico:</strong> ${turno.tecnico}<br>
-                      <strong>T:</strong> ${turno.t}<br>
-                      <strong>Rango:</strong> ${turno.rango}<br>
-                      <strong>Estado:</strong> ${turno.estado}
+                        <strong>Cliente:</strong> ${turno.cliente}<br>
+                        <strong>Técnico:</strong> ${tecnicoStr}<br>
+                        <strong>T:</strong> ${turno.t}<br>
+                        <strong>Rango:</strong> ${turno.rango}<br>
+                        <strong>Estado:</strong> ${turno.estado}
                       `;
                       document.body.appendChild(tooltip);
 
                       const moveHandler = (e) => {
-                      tooltip.style.top = e.pageY + 15 + "px";
-                      tooltip.style.left = e.pageX + 15 + "px";
+                        tooltip.style.top = e.pageY + 15 + "px";
+                        tooltip.style.left = e.pageX + 15 + "px";
                       };
 
                       btn.addEventListener("mousemove", moveHandler);
 
                       btn.addEventListener("mouseleave", () => {
-                      tooltip.remove();
-                      btn.removeEventListener("mousemove", moveHandler);
+                        tooltip.remove();
+                        btn.removeEventListener("mousemove", moveHandler);
                       });
                     });
 
                     wrapper.appendChild(btn);
                     if (turno.estado) wrapper.appendChild(sub);
                     divBloques.appendChild(wrapper);
-                    }
+                  }
                 }
               }
             }

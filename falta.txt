@@ -11,3 +11,10 @@ SI es Rechazado marca directamente NOK y así tienen esa relación. luego llevar
 
 
 Por último. Agregar especialidad a técnico (Luego de terminar esto para tener sencillez)
+
+
+Que falta: 
+
+1. Segun el cliente, nap, T y AM o PM tener 3 opcines automaticas a elegir, y un boton de muestra de agenda para hacerlo manual
+
+2. Mejorar diseño de la app, (está demasiado tosco)

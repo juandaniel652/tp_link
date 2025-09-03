@@ -2,69 +2,51 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Turnos</title>
-  <link rel="stylesheet" href="../css/general.css">
-  <link rel="stylesheet" href="../css/menu.css">
+  <title>Gestión de Turnos</title>
   <link rel="stylesheet" href="../css/turnos.css">
-  <link rel="stylesheet" href="../css/clientes.css"> <!-- Reutilizamos estilos de tarjetas -->
   <link rel="icon" type="image/png" href="../img/icono_logo.ico">
 </head>
 <body>
 
-<header class="titulo">
+<header class="header">
   <img src="../img/logo_s_link.png" alt="Logo" class="logo">
-  <h1>Turnos</h1>
+  <h1>Gestión de Turnos</h1>
 </header>
 
-<div id="turno" class="tab-content">
-  <h2>Crear Turno</h2>
-  <form id="formTurno">
+<main class="layout">
+  <!-- Panel izquierdo -->
+  <aside class="sidebar">
+    <h2>Crear Turno</h2>
+    <form id="formTurno" class="form-turno">
+      <label for="selectCliente">Cliente</label>
+      <select id="selectCliente" required></select>
 
-    <label for="selectCliente">Cliente</label>
-    <select id="selectCliente" required>
-      <option value="">Seleccionar Cliente</option>
-    </select>
+      <label for="selectNap">Punto Acceso</label>
+      <select id="selectNap" required></select>
 
-    <label for="selectTecnico">Técnico</label>
-    <select id="selectTecnico" required>
-      <option value="">Seleccionar Técnico</option>
-    </select>
+      <label for="selectT">Tipo de Turno</label>
+      <select id="selectT" required></select>
 
-    <label for="selectNap">Punto Acceso</label>
-    <select id="selectNap" required>
-      <option value="">Seleccionar Punto de Acceso</option>
-    </select>
+      <label for="selectRango">Rango Horario</label>
+      <select id="selectRango" required></select>
 
-    <label for="turnoFecha">Fecha</label>
-    <input type="date" id="turnoFecha" required>
+      <label for="selectEstadoTicket">Estado del Ticket</label>
+      <select id="selectEstadoTicket" required></select>
 
-    <label for="turnoHora">Hora</label>
-    <select id="turnoHora" required class="hora-select">
-      <option value="">Seleccionar Hora</option>
-    </select>
+      <button id="btnMostrarTurnos" type="button" class="btn-primary">Mostrar Turnos</button>
+    </form>
+  </aside>
 
-    <label for="selectTecnico">Tipo de Turno</label>
-    <select id="selectT" required>
-      <option value="">Seleccionar T</option>
-    </select>
+  <!-- Panel derecho -->
+  <section class="content">
+    <h2>Turnos Disponibles</h2>
+    <div id="turnosContainer" class="grilla-turnos"></div>
 
-    <label for="selectTecnico">Tipo de Rango</label>
-    <select id="selectRango" required>
-      <option value="">Seleccionar Rango</option>
-    </select>
+    <h2>Historial de Turnos</h2>
+    <div id="historialTurnos" class="historial-turnos"></div>
+  </section>
+</main>
 
-    <label for="selectEstadoTicket">Estado del Ticket</label>
-    <select id="selectEstadoTicket" required>
-      <option value="">Seleccionar Estado del Ticket</option>
-    </select>
-
-    <button type="submit" class="btn-guardar-turno">Guardar Turno</button>
-  </form>
-
-  <h2>Lista de Turnos</h2>
-  <div id="turnosContainer"></div>
-</div>
-
-<script type = "module" src="../js/turno/turnosModule.js"></script>
+<script type="module" src="../js/turno/turno.js"></script>
 </body>
 </html>

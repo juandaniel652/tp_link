@@ -1,49 +1,90 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Técnicos</title>
+  <meta charset="UTF-8">
+  <title>Técnicos</title>
   <link rel="stylesheet" href="../css/general.css">
   <link rel="stylesheet" href="../css/menu.css">
   <link rel="stylesheet" href="../css/tecnicos.css">
   <link rel="icon" type="image/png" href="../img/icono_logo.ico">
 </head>
 <body>
-
-<header class="titulo">
-  <img src="../img/logo_s_link.png" alt="Logo" class="logo">
-  <h1>Técnicos</h1>
-</header>
-
-<div id="tecnico" class="tab-content">
-  <h2>Formulario Técnico</h2>
-  <form id="formTecnico">
-    
-    <label for="tecnicoNombre" class="label">Nombre</label>
-    <input type="text" id="tecnicoNombre" placeholder="Ingrese nombre" required>
-
-    <label for="tecnicoApellido" class="label">Apellido</label>
-    <input type="text" id="tecnicoApellido" placeholder="Ingrese apellido" required>
-
-    <label for="tecnicoTelefono" class="label">Teléfono</label>
-    <input type="text" id="tecnicoTelefono" maxlength="12" placeholder="Ingrese teléfono" required>
-
-    <label for="duracionTurnoMinutos" class="label">Duración del turno (minutos)</label>
-    <input type="text" id="duracionTurnoMinutos" placeholder="Ej: 15" required>
-
-    <!-- Reemplazo del select multiple -->
-    <label class="select">Punto de acceso</label>
-    <div id="puntoAcceso" class="chips-container">
-      
+  <header class="header">
+    <div class="container header-container">
+      <img src="../img/logo_s_link.png" alt="Logo" class="logo">
+      <h1>Técnicos</h1>
     </div>
+  </header>
 
-    <button type="submit" class="btn-guardar-tecnico">Guardar Técnico</button>
-  </form>
+  <main class="container main-content">
+    <!-- === FORMULARIO TÉCNICO === -->
+    <section class="form-card">
+      <h2>Formulario Técnico</h2>
+      <form id="formTecnico">
+        <fieldset>
+          <legend>Datos del Técnico</legend>
 
-  <h2>Lista de Técnicos</h2>
-  <div id="tecnicosContainer"></div>
-</div>
+          <div class="form-group">
+            <label for="tecnicoNombre">Nombre</label>
+            <input type="text" id="tecnicoNombre" placeholder="Ingrese nombre" required>
+          </div>
 
-<script src="../js/tecnicosModule.js"></script>
+          <div class="form-group">
+            <label for="tecnicoApellido">Apellido</label>
+            <input type="text" id="tecnicoApellido" placeholder="Ingrese apellido" required>
+          </div>
+
+          <div class="form-group">
+            <label for="tecnicoTelefono">Teléfono</label>
+            <input type="text" id="tecnicoTelefono" maxlength="12" placeholder="Ingrese teléfono" required>
+          </div>
+
+          <div class="form-group">
+            <label for="duracionTurnoMinutos">Duración del turno (minutos)</label>
+            <input type="number" id="duracionTurnoMinutos" placeholder="Ej: 15" required>
+          </div>
+
+          <div class="form-group">
+            <label>Punto de acceso</label>
+            <div id="puntoAcceso" class="chips-container"></div>
+          </div>
+        </fieldset>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-guardar-tecnico">Guardar Técnico</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- === LISTA DE TÉCNICOS EN TABLA === -->
+    <section class="list-card">
+      <h2>Lista de Técnicos</h2>
+      <div class="tabla-container">
+        <table class="tabla-tecnicos">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Teléfono</th>
+              <th>Duración turno</th>
+              <th>Puntos de acceso</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tecnicosContainer">
+            <!-- JS renderiza dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 Sistema de Turnos — Todos los derechos reservados</p>
+    </div>
+  </footer>
+
+  <script src="../js/tecnicosModule.js"></script>
 </body>
 </html>

@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
    *  Constantes y Estado
    *  ===================== */
   const form = document.getElementById('formCliente');
-  const container = document.getElementById('clientesContainer');
+  const tablaBody = document.querySelector('#clientesTable tbody');
 
   const inputNumeroCliente = document.getElementById('NumeroCliente');
   const inputNombre = document.getElementById('clienteNombre');
@@ -28,14 +28,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const limpiarNumeros = (valor) => valor.replace(/\D/g, '');
 
   function limpiarCamposFormulario() {
-    // 🔥 Limpia solo inputs de texto obligatorios
     inputNumeroCliente.value = "";
     inputNombre.value = "";
     inputApellido.value = "";
     inputDomicilio.value = "";
     inputNumeroDomicilio.value = "";
 
-    // Teléfono siempre reinicia en "11"
     inputTelefono.value = "11";
     contadorTelefono.textContent = "0/8 dígitos";
     contadorTelefono.style.color = "orange";
@@ -52,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const mensajeValidacion = document.createElement('small');
   mensajeValidacion.style.display = "block";
-  mensajeValidacion.style.marginTop = "4px";
+  mensajeValidacion.style.marginTop = "8px";
   mensajeValidacion.style.color = "red";
   form.insertAdjacentElement("beforeend", mensajeValidacion);
 
@@ -84,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
    *  Validación en Submit
    *  ===================== */
   function validarCliente(cliente) {
-    mensajeValidacion.textContent = ""; // reset mensaje
+    mensajeValidacion.textContent = "";
 
     if (!cliente.numeroCliente || !cliente.nombre || !cliente.apellido ||
         !cliente.telefono || !cliente.domicilio || !cliente.numeroDomicilio) {
@@ -126,27 +124,20 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /** =====================
-   *  Render
+   *  Render en Tabla
    *  ===================== */
   function renderizarClientes() {
-    container.innerHTML = '';
+    tablaBody.innerHTML = '';
     clientes.forEach(cliente => {
-      const card = document.createElement('div');
-      card.classList.add('cliente-card');
-      card.style.border = "1px solid #ccc";
-      card.style.padding = "10px";
-      card.style.marginBottom = "8px";
-      card.style.borderRadius = "5px";
-      card.style.backgroundColor = "#f9f9f9";
-      card.innerHTML = `
-        <h3>Número Cliente: ${cliente.numeroCliente}</h3>
-        <h3>Nombre: ${cliente.nombre}</h3>
-        <h3>Apellido: ${cliente.apellido}</h3>
-        <h3>Teléfono: ${cliente.telefono}</h3>
-        <h3>Domicilio: ${cliente.domicilio}</h3>
-        <h3>Número: ${cliente.numeroDomicilio}</h3>
+      const fila = document.createElement('tr');
+      fila.innerHTML = `
+        <td>${cliente.numeroCliente}</td>
+        <td>${cliente.nombre}</td>
+        <td>${cliente.apellido}</td>
+        <td>${cliente.telefono}</td>
+        <td>${cliente.domicilio} ${cliente.numeroDomicilio}</td>
       `;
-      container.appendChild(card);
+      tablaBody.appendChild(fila);
     });
   }
 
@@ -183,9 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
     clientes.push(cliente);
     localStorage.setItem('clientes', JSON.stringify(clientes));
 
-    // 🔥 limpieza controlada (no se pierde info útil)
     limpiarCamposFormulario();
-
     renderizarClientes();
   });
 

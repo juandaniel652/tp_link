@@ -1,205 +1,232 @@
-/* === FUENTES === */
-@font-face {
-  font-family: 'RobotoMonoBold';
-  src: url('../fuentes/RobotoMono/RobotoMono-Bold.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
+/* === CONTENEDORES GENERALES === */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  font-family: 'Arial', sans-serif;
 }
 
-@font-face {
-  font-family: 'AncizarSanzBold';
-  src: url('../fuentes/AncizarSans/AncizarSans-Bold.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
+/* === HEADER === */
+.header {
+  background: linear-gradient(135deg, #1E3C72, #2A5298);
+  padding: 20px 0;
+  color: #fff;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header .logo {
+  height: 50px;
+  object-fit: contain;
+}
+
+.header h1 {
+  font-size: 32px;
+  font-weight: 700;
 }
 
 /* === FORMULARIO TÉCNICO === */
-#tecnico {
-  background: rgba(255, 255, 255, 0.9);
-  color: #333;
+.form-card {
+  background: #fff;
   border-radius: 15px;
-  padding: 25px 20px;
-  max-width: 500px;
-  margin: 20px auto;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-  animation: fadeIn 0.6s ease-in-out;
-}
-#tecnico h2 {
-  text-align: center;
-  font-size: 30px;
-  margin-bottom: 20px;
-  color: #2A5298;
-  font-weight: bold;
-  border-bottom: 2px solid #1E3C72;
-  padding-bottom: 8px;
-  font-family: 'AncizarSanzBold', sans-serif;
-}
-#tecnico form input {
-  width: 90%;
-  padding: 12px 14px;
-  margin: 10px 0;
-  border: 2px solid #ccc;
-  border-radius: 10px;
-  font-size: 18px;
-  outline: none;
-  transition: all 0.3s ease;
-  font-family: 'AncizarSanzBold', sans-serif;
-}
-#tecnico form input:focus {
-  border-color: #1E3C72;
-  box-shadow: 0 0 8px rgba(30,60,114,0.4);
+  padding: 30px 25px;
+  margin: 25px 0;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
-#tecnico .btn-guardar-tecnico {
+.form-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.form-card h2 {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 25px;
+  color: #2A5298;
+  border-bottom: 2px solid #1E3C72;
+  padding-bottom: 8px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #1E3C72;
+}
+
+.form-group input {
+  width: 90%;
+  padding: 12px 14px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+  border-color: #1E3C72;
+  box-shadow: 0 0 8px rgba(30,60,114,0.3);
+}
+
+.chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: #f0f0f0;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.chip input {
+  cursor: pointer;
+}
+
+.chip span {
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.chip:hover {
+  background: #e0e0e0;
+}
+
+.btn-guardar-tecnico {
   width: 100%;
   padding: 12px;
   background: linear-gradient(135deg, #1E3C72, #2A5298);
-  color: white;
+  color: #fff;
   border: none;
   border-radius: 10px;
   font-size: 17px;
   font-weight: bold;
   cursor: pointer;
-  margin-top: 15px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  font-family: 'AncizarSanzBold', sans-serif;
 }
-#tecnico .btn-guardar-tecnico:hover {
+
+.btn-guardar-tecnico:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.25);
 }
 
-/* === LISTA DE TÉCNICOS === */
-#tecnicosContainer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-top: 20px;
-  justify-content: center;
-}
-.tecnico-card {
-  background: linear-gradient(135deg, #2A5298, #1E3C72);
-  color: #fff;
-  padding: 15px 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-  width: 200px;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.tecnico-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-}
-.tecnico-card h3 {
-  margin: 0 0 5px 0;
-  font-size: 18px;
-}
-.tecnico-card p {
-  margin: 2px 0;
-  font-size: 14px;
-}
-
-/* === LABELS === */
-.label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: bold;
-  color: #333;
-  font-family: 'RobotoMonoBold', monospace;
-}
-.select {
-  display: block;
-  margin-bottom: 12px;
-  font-weight: bold;
-  color: #333;
-  font-family: 'RobotoMonoBold', monospace;
-}
-
-/* === CHIPS / TAGS === */
-.chips-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 10px 0;
-  padding: 10px;
-  border: 2px solid #ccc;
-  border-radius: 12px;
+/* === TABLA DE TÉCNICOS === */
+.list-card {
   background: #fff;
-  font-family: 'AncizarSanzBold', sans-serif;
+  border-radius: 15px;
+  padding: 25px;
+  margin: 25px 0;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  transition: transform 0.3s, box-shadow 0.3s;
 }
-.chip {
-  background: #f4f4f4;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 14px;
-  color: #333;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  user-select: none;
+
+.list-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
 }
-.chip input[type="checkbox"] {
-  display: none;
-}
-.chip:hover {
-  background: rgba(42,82,152,0.1);
+
+.list-card h2 {
+  text-align: center;
+  font-size: 26px;
+  margin-bottom: 20px;
   color: #1E3C72;
 }
-.chip input[type="checkbox"]:checked + span {
-  background: linear-gradient(135deg, #1E3C72, #2A5298);
-  color: #fff;
-  font-weight: bold;
-  padding: 6px 12px;
-  border-radius: 20px;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+
+.tabla-container {
+  overflow-x: auto;
 }
 
-.tecnico-card {
+.tabla-tecnicos {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  min-width: 700px;
+}
+
+.tabla-tecnicos thead {
   background: #1E3C72;
   color: #fff;
-  padding: 16px;
-  border-radius: 12px;
-  margin: 10px 0;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
-  transition: transform 0.2s ease;
-}
-.tecnico-card:hover {
-  transform: translateY(-2px);
-}
-.tecnico-card h3 {
-  margin: 0 0 6px;
-}
-.tecnico-card p {
-  margin: 4px 0;
 }
 
+.tabla-tecnicos th, .tabla-tecnicos td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.tabla-tecnicos tbody tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+.tabla-tecnicos tbody tr:hover {
+  background: rgba(30,60,114,0.1);
+  transition: background 0.2s ease-in-out;
+}
+
+/* === BOTONES DE ACCIÓN === */
 .acciones {
-  margin-top: 10px;
   display: flex;
-  gap: 8px;
+  gap: 6px;
+  justify-content: center;
 }
 
-.btn-chip {
+.btn-accion {
   border: none;
   padding: 6px 12px;
-  border-radius: 20px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 0.9em;
   font-weight: bold;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.1s;
 }
 
-.btn-chip.editar {
+.btn-accion.editar {
   background: #4caf50;
-  color: white;
-}
-.btn-chip.editar:hover {
-  background: #45a049;
+  color: #fff;
 }
 
-.btn-chip.eliminar {
-  background: #e53935;
-  color: white;
+.btn-accion.editar:hover {
+  background: #43a047;
 }
-.btn-chip.eliminar:hover {
+
+.btn-accion.eliminar {
+  background: #e53935;
+  color: #fff;
+}
+
+.btn-accion.eliminar:hover {
   background: #d32f2f;
+}
+
+/* === MENSAJE SIN DATOS === */
+.no-data {
+  text-align: center;
+  padding: 20px;
+  color: #555;
+  font-style: italic;
+}
+
+/* === FOOTER === */
+.footer {
+  background: #1E3C72;
+  color: #fff;
+  padding: 15px 0;
+  text-align: center;
+  margin-top: 40px;
 }

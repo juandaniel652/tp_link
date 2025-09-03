@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // === DOM ===
   const form = document.getElementById('formPuntoAcceso');
   const numeroInput = document.getElementById('numero');
-  const diasGrid = document.getElementById('diasHorarioGrid'); // nuevo
+  const diasGrid = document.getElementById('diasHorarioGrid');
   const puntosContainer = document.getElementById('puntosContainer');
   const btnGuardar = document.getElementById('btnGuardar');
   const btnCancelar = document.getElementById('btnCancelar');
@@ -18,16 +18,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let puntos = JSON.parse(localStorage.getItem('puntosAcceso')) || [];
   let editIndex = null;
-
-  // selectionMap: { lunes: {AM:false, PM:false}, ... }
   let selectionMap = {};
+
   function resetSelectionMap() {
     selectionMap = {};
     DAYS.forEach(d => selectionMap[d] = { AM: false, PM: false });
   }
   resetSelectionMap();
 
-  // === Normalize datos viejos (compatibilidad) ===
   function normalizeStoredPuntos() {
     let changed = false;
     puntos = puntos.map(p => {
@@ -55,7 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   normalizeStoredPuntos();
 
-  // === Helpers ===
   function setLocalStorage() {
     localStorage.setItem('puntosAcceso', JSON.stringify(puntos));
   }
@@ -118,7 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return Array.from(map.values());
   }
 
-  // === Render ===
   function renderPuntos() {
     puntosContainer.innerHTML = '';
     puntos.sort((a,b) => (Number(a.numero)||0) - (Number(b.numero)||0));
@@ -174,6 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderPuntos();
       });
 
+      // 🔹 Aquí: comparar como string
       card.querySelector('.view').addEventListener('click', () => {
         mostrarTecnicos(p);
       });
@@ -182,10 +179,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // === Form submit ===
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const numero = numeroInput.value.trim(); // <-- alfanumérico
+    const numero = numeroInput.value.trim();
 
     if (!numero) { 
       alert('Ingrese un NAP válido.');
@@ -221,7 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
     renderPuntos();
   });
 
-  // === Controls: select all / clear ===
   btnAllAM?.addEventListener('click', () => {
     DAYS.forEach(d => selectionMap[d].AM = true);
     updateGridUIFromSelection();
@@ -255,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function mostrarTecnicos(punto) {
     const tecnicos = JSON.parse(localStorage.getItem('tecnicos')) || [];
     const tecnicosAsociados = tecnicos.filter(t =>
-      Array.isArray(t.puntosAcceso) && t.puntosAcceso.includes(punto.numero)
+      Array.isArray(t.puntosAcceso) && t.puntosAcceso.includes(String(punto.numero)) // 🔹 comparar como string
     );
 
     const modal = document.createElement('div');
@@ -284,7 +279,6 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
   }
 
-  // === Init ===
   buildDaysGrid();
   resetForm();
   renderPuntos();

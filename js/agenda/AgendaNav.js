@@ -27,7 +27,11 @@ export class AgendaNav {
       select.appendChild(new Option(t.nombre, t.nombre));
     });
 
-    select.value = this.agenda.tecnicoFiltro;
+    // Seleccionar automáticamente el técnico filtrado si existe
+    if (this.agenda.tecnicoFiltro) {
+      select.value = this.agenda.tecnicoFiltro;
+    }
+
     select.addEventListener('change', e => {
       this.agenda.tecnicoFiltro = e.target.value;
       this.agenda.cargarClientesPorTecnico(this.agenda.tecnicoFiltro);
@@ -53,7 +57,7 @@ export class AgendaNav {
         // Evitar duplicar la opción de semana actual
         if (i === 0) continue;
         const fecha = new Date(lunesActual);
-        fecha.setDate(fecha.getDate() + i*7);
+        fecha.setDate(fecha.getDate() + i * 7);
         const fechaFin = new Date(fecha);
         fechaFin.setDate(fecha.getDate() + 6);
 
@@ -71,7 +75,7 @@ export class AgendaNav {
     select.addEventListener('change', e => {
       this.agenda.semanaSeleccionada = parseInt(e.target.value);
       const fecha = getFechaLunes(new Date());
-      fecha.setDate(fecha.getDate() + this.agenda.semanaSeleccionada*7);
+      fecha.setDate(fecha.getDate() + this.agenda.semanaSeleccionada * 7);
       this.agenda.fechaInicioSemana = fecha;
       this.agenda.generarTabla();
     });

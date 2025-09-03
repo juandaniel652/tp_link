@@ -1,49 +1,95 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Clientes</title>
+  <meta charset="UTF-8">
+  <title>Clientes</title>
   <link rel="stylesheet" href="../css/general.css">
   <link rel="stylesheet" href="../css/menu.css">
   <link rel="stylesheet" href="../css/clientes.css">
   <link rel="icon" type="image/png" href="../img/icono_logo.ico">
 </head>
 <body>
+  <!-- HEADER UNIFICADO -->
+  <header class="header">
+    <div class="container header-container">
+      <img src="../img/logo_s_link.png" alt="Logo" class="logo">
+      <h1>Clientes</h1>
+    </div>
+  </header>
 
-<header class="titulo">
-  <img src="../img/logo_s_link.png" alt="Logo" class="logo">
-  <h1>Clientes</h1>
-</header>
+  <main class="container main-content">
+    <!-- === FORMULARIO CLIENTE === -->
+    <section class="form-card">
+      <h2>Formulario Cliente</h2>
+      <form id="formCliente" class="form-clansis">
+        <fieldset>
+          <legend>Datos del Cliente</legend>
 
-<div id="cliente" class="tab-content">
-  <h2>Formulario Cliente</h2>
-  <form id="formCliente">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="NumeroCliente">Número Cliente</label>
+              <input type="text" id="NumeroCliente" placeholder="Ej: 001" required>
+            </div>
+            <div class="form-group">
+              <label for="clienteNombre">Nombre</label>
+              <input type="text" id="clienteNombre" placeholder="Ej: Juan" required>
+            </div>
+            <div class="form-group">
+              <label for="clienteApellido">Apellido</label>
+              <input type="text" id="clienteApellido" placeholder="Ej: Pérez" required>
+            </div>
+          </div>
 
-    <label for="NumeroCliente" class="label">Número Cliente</label>
-    <input type="text" id="NumeroCliente" placeholder="Ingrese número de cliente" required>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="clienteTelefono">Teléfono</label>
+              <input type="tel" id="clienteTelefono" maxlength="10" placeholder="Ej: 1234567890" required>
+            </div>
+            <div class="form-group">
+              <label for="clienteDomicilio">Calle</label>
+              <input type="text" id="clienteDomicilio" placeholder="Ej: Calle Falsa" required>
+            </div>
+            <div class="form-group">
+              <label for="clienteNumeroDomicilio">Número</label>
+              <input type="text" id="clienteNumeroDomicilio" placeholder="Ej: 123" required>
+            </div>
+          </div>
+        </fieldset>
 
-    <label for="clienteNombre" class="label">Nombre</label>
-    <input type="text" id="clienteNombre" placeholder="Ingrese nombre" required>
+        <div class="form-actions">
+          <button type="submit" class="btn-guardar">Guardar Cliente</button>
+        </div>
+      </form>
+    </section>
 
-    <label for="clienteApellido" class="label">Apellido</label>
-    <input type="text" id="clienteApellido" placeholder="Ingrese apellido" required>
+    <!-- === LISTA DE CLIENTES EN TABLA === -->
+    <section class="list-card">
+      <h2>Lista de Clientes</h2>
+      <div class="tabla-container">
+        <table id="clientesTable" class="tabla-clientes">
+          <thead>
+            <tr>
+              <th>Número</th>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Teléfono</th>
+              <th>Domicilio</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- JS llenará la tabla -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
 
-    <label for="clienteDomicilio" class="label">Domicilio (calle)</label>
-    <input type="text" id="clienteDomicilio" placeholder="Ingrese domicilio" required>
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 Sistema de Turnos — Todos los derechos reservados</p>
+    </div>
+  </footer>
 
-    <label for="clienteNumeroDomicilio" class="label">Número Domicilio</label>
-    <input type="text" id="clienteNumeroDomicilio" placeholder="Ingrese número del domicilio" required>
-
-    <label for="clienteTelefono" class="label">Teléfono</label>
-    <input type="tel" id="clienteTelefono" maxlength="10"  placeholder="Ingrese teléfono" required>
-
-    <button type="submit" class="btn-guardar">Guardar Cliente</button>
-  </form>
-
-  <h2>Lista de Clientes</h2>
-  <div id="clientesContainer"></div>
-</div>
-
-<script src="../js/clientesModule.js"></script>
+  <script src="../js/clientesModule.js"></script>
 </body>
 </html>

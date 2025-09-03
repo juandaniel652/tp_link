@@ -1,132 +1,251 @@
-/* FUENTES */
-
+/* ================================
+   TIPOGRAFÍA Y BASE
+================================ */
 @font-face {
-  font-family: 'RobotoMonoBold'; /* Un nombre que tú elijas para la fuente */
-  src: url('../fuentes/RobotoMono/RobotoMono-Bold.ttf') format('truetype'); /* Ruta al archivo de tu fuente */
-  font-weight: normal; /* El peso de la fuente, si aplica */
-  font-style: normal;  /* El estilo de la fuente, si aplica */
+  font-family: 'RobotoMonoBold';
+  src: url('../fuentes/RobotoMono/RobotoMono-Bold.ttf') format('truetype');
 }
 
-@font-face{
-  font-family: 'AncizarSanzBold'; /* Un nombre que tú elijas para la fuente */
-  src: url('../fuentes/AncizarSans/AncizarSans-Bold.ttf') format('truetype'); /* Ruta al archivo de tu fuente */
-  font-weight: normal; /* El peso de la fuente, si aplica */
-  font-style: normal;  /* El estilo de la fuente, si aplica */
-}
-
-/* === FORMULARIO CLIENTE === */
-#cliente {
-  background: rgba(255, 255, 255, 0.9);
-  color: #333;
-  border-radius: 15px;
-  padding: 25px 20px;
-  max-width: 500px;
-  margin: 20px auto;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-  animation: fadeIn 0.6s ease-in-out;
-}
-#cliente h2 {
-  text-align: center;
-  font-size: 30px;
-  margin-bottom: 20px;
-  color: #1E3C72;
-  font-weight: bold;
-  border-bottom: 2px solid #2A5298;
-  padding-bottom: 8px;
-  font-family: 'AncizarSanzBold', sans-serif;
-}
-#cliente form input {
-  width: 90%;
-  padding: 12px 14px;
-  margin: 10px 0;
-  border: 2px solid #ccc;
-  border-radius: 10px;
-  font-size: 18px;
-  outline: none;
-  transition: all 0.3s ease;
-  font-family: "AncizarSanzBold", sans-serif;
-}
-#cliente form input:focus {
-  border-color: #2A5298;
-  box-shadow: 0 0 8px rgba(42,82,152,0.4);
-}
-#cliente .btn-guardar {
-  width: 100%;
-  padding: 12px;
-  background: linear-gradient(135deg, #1E3C72, #2A5298);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-size: 17px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 15px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  font-family: 'AncizarSanzBold', sans-serif;
-}
-#cliente .btn-guardar:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-}
-#listaClientes {
-  margin-top: 20px;
-  list-style: none;
+body {
+  font-family: 'RobotoMonoBold', monospace;
+  background-color: #f4f6fb;
+  color: #2d2d2d;
+  line-height: 1.5;
+  margin: 0;
   padding: 0;
 }
-#listaClientes li {
-  background: #f4f4f4;
-  margin: 5px 0;
-  padding: 10px;
-  border-radius: 8px;
-  border-left: 4px solid #2A5298;
-  font-size: 14px;
+
+/* ================================
+   CONTENEDORES GENERALES
+================================ */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 30px 20px;
 }
 
-#listaClientes li:hover {
-  background: #e0eaff;
-  transform: translateX(5px);
-  transition: all 0.2s ease;
-}
-
-
-#clientesContainer {
+.main-content {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* ================================
+   HEADER Y FOOTER
+================================ */
+.header {
+  background: linear-gradient(135deg, #1E3C72, #2A5298);
+  color: #fff;
+  padding: 20px 0;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
   gap: 15px;
-  margin-top: 20px;
   justify-content: center;
 }
 
-.cliente-card {
+.header .logo {
+  height: 50px;
+  object-fit: contain;
+}
+
+.header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.footer {
+  background: #1E3C72;
+  color: #fff;
+  text-align: center;
+  padding: 18px 0;
+  margin-top: 40px;
+  font-size: 14px;
+  box-shadow: 0 -3px 12px rgba(0,0,0,0.1);
+}
+
+/* ================================
+   TARJETAS (FORM Y LISTA)
+================================ */
+.form-card,
+.list-card {
+  background-color: #fff;
+  padding: 35px 30px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.form-card:hover,
+.list-card:hover {
+  box-shadow: 0 10px 28px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
+}
+
+.form-card h2,
+.list-card h2 {
+  font-size: 22px;
+  color: #1E3C72;
+  margin-bottom: 20px;
+  font-weight: 700;
+  position: relative;
+}
+
+.form-card h2::after,
+.list-card h2::after {
+  content: "";
+  display: block;
+  width: 45%;
+  height: 3px;
+  background: linear-gradient(90deg, #1E3C72, #2A5298);
+  border-radius: 2px;
+  margin-top: 6px;
+}
+
+/* ================================
+   FORMULARIO
+================================ */
+form fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+form legend {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2A5298;
+  margin-bottom: 15px;
+}
+
+.form-clansis {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.form-group {
+  flex: 1 1 220px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 14px;
+  color: #1E3C72;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.form-group input {
+  padding: 12px 14px;
+  border: 1px solid #d4d8e0;
+  border-radius: 12px;
+  font-size: 15px;
+  outline: none;
+  transition: border 0.25s ease, box-shadow 0.25s ease;
+  background-color: #fafbfc;
+}
+
+.form-group input:focus {
+  border-color: #2A5298;
+  box-shadow: 0 0 10px rgba(42,82,152,0.25);
+  background-color: #fff;
+}
+
+.form-actions {
+  margin-top: 15px;
+}
+
+.btn-guardar {
+  width: 100%;
+  padding: 14px;
   background: linear-gradient(135deg, #1E3C72, #2A5298);
   color: #fff;
-  padding: 15px 20px;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-  width: 200px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  letter-spacing: 0.5px;
 }
 
-.cliente-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+.btn-guardar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(30,60,114,0.25);
 }
 
-.cliente-card h3 {
-  margin: 0 0 5px 0;
-  font-size: 18px;
+.btn-guardar:active {
+  transform: scale(0.98);
 }
 
-.cliente-card p {
-  margin: 2px 0;
+/* ================================
+   TABLA DE CLIENTES
+================================ */
+.tabla-container {
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+#clientesTable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+#clientesTable th {
+  background: linear-gradient(135deg, #1E3C72, #2A5298);
+  color: #fff;
+  font-weight: 600;
   font-size: 14px;
+  text-align: left;
+  padding: 14px 16px;
+  letter-spacing: 0.3px;
 }
 
+#clientesTable td {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: #2d2d2d;
+  border-bottom: 1px solid #f0f2f7;
+}
 
-.label{
-  display: block;
-  margin-bottom: 8px;
-  font-weight: bold;
-  color: #333;
-  font-family: 'RobotoMonoBold', monospace;
+#clientesTable tbody tr:nth-child(even) {
+  background-color: #fafbff;
+}
+
+#clientesTable tbody tr:hover {
+  background-color: #edf3ff;
+  transform: translateY(-1px);
+  transition: all 0.25s ease;
+}
+
+/* ================================
+   RESPONSIVE
+================================ */
+@media (max-width: 768px) {
+  .form-row { flex-direction: column; }
+  .form-clansis { padding: 20px; }
+  #clientesTable th, #clientesTable td { padding: 10px; }
+}
+
+@media (max-width: 480px) {
+  .form-clansis { padding: 15px; }
+  #clientesTable th, #clientesTable td { padding: 8px; font-size: 13px; }
 }

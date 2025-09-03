@@ -1,365 +1,174 @@
-/* ===================== */
-/* ===  FUENTES  === */
-/* ===================== */
-@font-face {
-  font-family: 'RobotoMonoBold';
-  src: url('../fuentes/RobotoMono/RobotoMono-Bold.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
+/* ================================ */
+/* TIPOGRAFÍA Y BASE */
+/* ================================ */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Inter:wght@500;700&display=swap');
 
-@font-face {
-  font-family: 'AncizarSanzBold';
-  src: url('../fuentes/AncizarSans/AncizarSans-Bold.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
-/* ===================== */
-/* ===  FORMULARIO TURNOS  === */
-/* ===================== */
-#turno {
-  background: rgba(255, 255, 255, 0.9);
-  color: #333;
-  border-radius: 15px;
-  padding: 25px 20px;
-  max-width: 550px;
-  margin: 20px auto;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-  animation: fadeIn 0.6s ease-in-out;
-}
-
-#turno h2 {
-  text-align: center;
-  font-size: 32px;
-  margin-bottom: 20px;
-  color: #1E3C72;
-  font-weight: bold;
-  border-bottom: 3px solid #1E3C72;
-  padding-bottom: 8px;
-  font-family: 'AncizarSanzBold', sans-serif;
-}
-
-#turno form select,
-#turno form input {
-  width: 95%;
-  padding: 12px 14px;
-  margin: 10px 0;
-  border: 2px solid #ccc;
-  border-radius: 10px;
-  font-size: 14px;
-  outline: none;
-  transition: all 0.3s ease;
-  background: #fdfdfd;
-}
-
-#turno form select:focus,
-#turno form input:focus {
-  border-color: #1E3C72;
-  box-shadow: 0 0 8px rgba(30,60,114,0.4);
-}
-
-#turno .btn-guardar-turno {
-  width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, #1E3C72, #4CAF50);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 15px;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-#turno .btn-guardar-turno:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.35);
-}
-
-/* ===================== */
-/* ===  LISTA DE TURNOS (TARJETAS)  === */
-/* ===================== */
-#turnosContainer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-top: 20px;
-  justify-content: center;
-}
-
-/* ===================== */
-/* === TARJETAS COMPACTAS === */
-/* ===================== */
-.tarjeta-turno {
-  background: linear-gradient(135deg, #2A3C72, #1E5298);
-  color: #fff;
-  padding: 12px 15px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-  width: 220px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  transition: transform 0.2s, box-shadow 0.2s;
-  font-size: 14px;
-}
-
-.tarjeta-turno h3 {
-  margin: 0 0 3px 0;
-  font-size: 15px;
-  line-height: 1.2;
-}
-
-.tarjeta-turno p {
+body {
   margin: 0;
-  font-size: 13px;
-  line-height: 1.2;
+  background-color: #f7f9fc;
+  font-family: 'Roboto', sans-serif;
+  color: #333;
 }
 
-.tarjeta-turno .acciones {
+/* ================================ */
+/* HEADER */
+/* ================================ */
+.header {
   display: flex;
-  gap: 8px;
-  margin-top: 5px;
-}
-
-.tarjeta-turno .btn-estado,
-.tarjeta-turno .btn-eliminar {
-  width: calc(50% - 4px);
-  padding: 7px 10px;
-  font-size: 12px;
-}
-
-.tarjeta-turno:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.3);
-}
-
-/* Mobile: botones apilados */
-@media (max-width: 420px) {
-  .tarjeta-turno .btn-estado,
-  .tarjeta-turno .btn-eliminar {
-    width: 100%;
-  }
-}
-
-.tarjeta-turno h3 {
-  margin: 0 0 5px 0;
-  font-size: 16px;
-}
-
-.tarjeta-turno p {
-  margin: 2px 0;
-  font-size: 14px;
-}
-
-/* ===================== */
-/* ===  BOTONES  === */
-/* ===================== */
-.btn-estado,
-.btn-eliminar {
-  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 9px 12px;
-  border: none;
-  border-radius: 10px;
-  font-family: 'AncizarSanzBold', 'RobotoMonoBold', sans-serif;
-  font-weight: 700;
-  font-size: 13px;
-  cursor: pointer;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.14);
-  text-decoration: none;
+  padding: 16px 32px;
+  background: #1E3C72;
   color: #fff;
-  -webkit-tap-highlight-color: transparent;
-  width: calc(50% - 6px);
-  box-sizing: border-box;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.header .logo {
+  height: 40px;
+  margin-right: 16px;
+}
+.header h1 {
+  font-size: 22px;
+  font-weight: 600;
 }
 
-.btn-estado {
-  background: linear-gradient(135deg, #1E3C72 0%, #4CAF50 100%);
+/* ================================ */
+/* LAYOUT */
+/* ================================ */
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  padding: 24px;
 }
 
-.btn-eliminar {
-  background: linear-gradient(135deg, #E53935 0%, #B71C1C 100%);
+/* ================================ */
+/* SIDEBAR (FORM) */
+/* ================================ */
+.sidebar {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.sidebar h2 {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: #1E3C72;
+  font-weight: 600;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 6px;
 }
 
-.btn-estado:hover,
-.btn-eliminar:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 24px rgba(0,0,0,0.2);
-  opacity: 0.98;
-}
-
-.btn-estado:focus,
-.btn-eliminar:focus {
-  outline: 3px solid rgba(30,60,114,0.12);
-  outline-offset: 2px;
-}
-
-/* Contenedor interno de acciones */
-.tarjeta-turno .acciones {
-  display: flex;
-  gap: 12px;
-}
-
-/* Mobile: botones apilados a pantalla pequeña */
-@media (max-width: 420px) {
-  .tarjeta-turno .btn-estado,
-  .tarjeta-turno .btn-eliminar {
-    width: 100%;
-  }
-}
-
-/* =========================== */
-/* ===  ETIQUETAS / ESTADO  === */
-/* =========================== */
-.turno-estado {
-  color: #fff;
-  font-family: 'AncizarSanzBold', sans-serif;
-  padding: 6px 10px;
-  border-radius: 999px;
-  display: inline-block;
-  min-width: 56px;
-  text-align: center;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.14);
-  font-size: 12px;
-}
-
-.turno-estado.confirmado    { background: linear-gradient(135deg,#43A047 0%, #66BB6A 100%); }
-.turno-estado.rechazado     { background: linear-gradient(135deg,#E53935 0%, #FF6F61 100%); }
-.turno-estado.reprogramado  { background: linear-gradient(135deg,#FB8C00 0%, #FFA726 100%); }
-.turno-estado.abierto       { background: linear-gradient(135deg,#29B6F6 0%, #0288D1 100%); }
-.turno-estado.en-progreso   { background: linear-gradient(135deg,#8E24AA 0%, #5b3ce7 100%); }
-.turno-estado.cerrado       { background: linear-gradient(135deg,#6B7280 0%, #374151 100%); }
-
-/* =========================== */
-/* ===  MENSAJES MODERNOS  === */
-/* =========================== */
-.mensaje {
-  position: relative;
-  width: 95%;
-  margin: 10px auto;
-  padding: 12px 18px;
-  border-radius: 10px;
+.form-turno label {
+  display: block;
   font-size: 14px;
   font-weight: 500;
-  text-align: center;
+  margin-top: 12px;
+  color: #555;
+}
+.form-turno select {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #fafafa;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-turno select:focus {
+  border-color: #1E3C72;
+}
+.btn-primary {
+  margin-top: 20px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #1E3C72;
   color: #fff;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-  opacity: 0;
-  transform: translateY(-10px);
-  animation: slideDown 0.4s forwards;
-  z-index: 100;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-primary:hover {
+  background: #153061;
 }
 
-.mensaje.success {
-  background: linear-gradient(135deg, #4CAF50, #66BB6A);
-}
-
-.mensaje.error {
-  background: linear-gradient(135deg, #E74C3C, #FF6F61);
-}
-
-.mensaje.info {
-  background: linear-gradient(135deg, #3498DB, #5DADE2);
-}
-
-@keyframes slideDown {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* =========================== */
-/* ===  MODAL DE ESTADO  === */
-/* =========================== */
-#modalEstado {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
-#modalEstado.show {
-  display: flex;
-  opacity: 1;
-  pointer-events: auto;
-}
-
-#modalEstado > div {
-  background: #fff;
-  padding: 25px 20px;
-  border-radius: 12px;
-  min-width: 300px;
-  max-width: 90%;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-  transform: translateY(-20px);
-  transition: transform 0.3s ease;
-}
-
-#modalEstado.show > div {
-  transform: translateY(0);
-}
-
-#modalEstado h3 {
-  margin: 0 0 15px 0;
-  font-size: 20px;
-  font-family: 'AncizarSanzBold', sans-serif;
+/* ================================ */
+/* CONTENT */
+/* ================================ */
+.content h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 16px 0 12px;
   color: #1E3C72;
 }
 
-#modalSelectEstado {
-  width: 100%;
-  padding: 10px 12px;
-  border: 2px solid #ccc;
+.grilla-turnos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+/* CARD TURNOS */
+.card-turno {
+  background: #fff;
   border-radius: 10px;
-  font-size: 14px;
-  outline: none;
-  background: #fdfdfd;
-  transition: all 0.3s ease;
+  padding: 16px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+  transition: transform 0.15s;
+}
+.card-turno:hover {
+  transform: translateY(-3px);
+}
+.card-turno h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #1E3C72;
+}
+.card-turno p {
+  font-size: 13px;
+  margin: 4px 0;
+  color: #444;
 }
 
-#modalSelectEstado:focus {
-  border-color: #1E3C72;
-  box-shadow: 0 0 8px rgba(30,60,114,0.4);
-}
-
-#modalEstado button {
-  padding: 10px 16px;
+/* Botones dentro de cards */
+button.turno-disponible {
+  margin-top: 8px;
+  padding: 8px;
   border: none;
-  border-radius: 10px;
-  font-family: 'AncizarSanzBold', sans-serif;
-  font-weight: 700;
-  font-size: 14px;
+  border-radius: 6px;
+  background: #1E3C72;
+  color: #fff;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  font-size: 13px;
+  width: 100%;
+  transition: background 0.2s;
+}
+button.turno-disponible:hover {
+  background: #153061;
+}
+button.turno-ocupado {
+  margin-top: 8px;
+  padding: 8px;
+  border: none;
+  border-radius: 6px;
+  background: #e0e0e0;
+  color: #888;
+  cursor: not-allowed;
+  width: 100%;
 }
 
-#modalCancelar {
-  background: linear-gradient(135deg, #E53935, #B71C1C);
-  color: #fff;
-  margin-right: 10px;
+/* ================================ */
+/* HISTORIAL */
+/* ================================ */
+.historial-turnos {
+  margin-top: 20px;
+  display: grid;
+  gap: 12px;
 }
-
-#modalGuardar {
-  background: linear-gradient(135deg, #1E3C72, #4CAF50);
-  color: #fff;
-}
-
-#modalCancelar:hover,
-#modalGuardar:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.35);
+.historial-turnos .card-turno {
+  border-left: 4px solid #4a90e2;
 }
