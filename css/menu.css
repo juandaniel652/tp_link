@@ -1,3 +1,104 @@
+/* ================================
+   HEADER CORPORATIVO
+================================ */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #ffffff;
+  border-bottom: 1px solid #e6e6e6;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-container .logo {
+  max-height: 40px;
+  object-fit: contain;
+}
+
+.brand-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2a2a2a;
+}
+
+/* NAV superior */
+.top-nav ul {
+  list-style: none;
+  display: flex;
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+}
+
+.top-nav a {
+  text-decoration: none;
+  font-weight: 500;
+  color: #2a2a2a;
+  transition: color 0.2s ease, border-bottom 0.2s ease;
+  padding-bottom: 2px;
+  border-bottom: 2px solid transparent;
+}
+
+.top-nav a:hover {
+  color: #0077cc;
+  border-bottom: 2px solid #0077cc;
+}
+
+/* ================================
+   FOOTER
+================================ */
+.footer {
+  margin-top: 60px;
+  padding: 20px;
+  background: #f9f9f9;
+  border-top: 1px solid #e6e6e6;
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+}
+
+.footer a {
+  color: #0077cc;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+/* ================================
+   RESPONSIVE HEADER
+================================ */
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .top-nav ul {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+}
+
+
+
 /* ===================== */
 /* ===  FUENTES  === */
 /* ===================== */

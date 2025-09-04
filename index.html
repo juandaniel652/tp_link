@@ -2,50 +2,79 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>TP s - Link</title>
-  <link rel="stylesheet" href="/css/menu.css">
-  <link rel="stylesheet" href="/css/general.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sistema de gestión S-Link: clientes, técnicos, turnos, puntos de acceso y agenda.">
+  <meta name="author" content="Juan Dominguez">
+  <meta name="robots" content="index, follow">
+
+  <title>TPs - S-Link</title>
+
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="img/icono_logo.ico">
+  <link rel="shortcut icon" href="img/icono_logo.ico" type="image/x-icon">
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="/css/general.css">
+  <link rel="stylesheet" href="/css/menu.css">
 </head>
 <body>
 
-<div class="main-container">
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-container">
+      <div class="logo-container">
+        <img src="img/logo_s_link.png" alt="Logo S-Link" class="logo">
+        <span class="brand-name">S-Link</span>
+      </div>
 
-  <!-- TITULO -->
-  <header class="titulo">
-    <img src="img/logo_s_link.png" alt="Logo" class="logo">
+      <nav class="top-nav" aria-label="Menú principal">
+        <ul>
+          <li><a href="html/cliente.html">Clientes</a></li>
+          <li><a href="html/tecnico.html">Técnicos</a></li>
+          <li><a href="html/turno.html">Turnos</a></li>
+          <li><a href="html/punto_acceso.html">NAPs</a></li>
+          <li><a href="html/agenda.html">Agenda</a></li>
+        </ul>
+      </nav>
+    </div>
   </header>
 
-  <!-- MENÚ PRINCIPAL -->
-  <div id="menuPrincipal" class="menu-principal">
-    <a href="html/cliente.html" class="menu-button" target="_blank" rel="noopener noreferrer">
-      <img src="img/clientes.png" alt="Cliente">
-      <span class="fuente-botones">Cliente</span>
-    </a>
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="main-container">
+    <!-- Menú tipo dashboard -->
+    <section class="menu-principal">
+      <a href="html/cliente.html" class="menu-button" target="_blank" rel="noopener noreferrer">
+        <img src="img/clientes.png" alt="Clientes">
+        <span>Cliente</span>
+      </a>
 
-    <a href="html/tecnico.html" class="menu-button" target="_blank" rel="noopener noreferrer">
-      <img src="img/tecnico.png" alt="Técnico">
-      <span class="fuente-botones">Técnico</span>
-    </a>
+      <a href="html/tecnico.html" class="menu-button" target="_blank" rel="noopener noreferrer">
+        <img src="img/tecnico.png" alt="Técnicos">
+        <span>Técnico</span>
+      </a>
 
-    <a href="html/turno.html" class="menu-button" target="_blank" rel="noopener noreferrer">
-      <img src="img/ticket_turno.png" alt="Turno">
-      <span class="fuente-botones">Turno</span>
-    </a>
+      <a href="html/turno.html" class="menu-button" target="_blank" rel="noopener noreferrer">
+        <img src="img/ticket_turno.png" alt="Turnos">
+        <span>Turno</span>
+      </a>
 
-    <a href="html/punto_acceso.html" class="menu-button" target="_blank" rel="noopener noreferrer">
-      <img src="img/punto_acceso.png" alt="Nap">
-      <span class="fuente-botones">Punto de Acceso</span>
-    </a>
+      <a href="html/punto_acceso.html" class="menu-button" target="_blank" rel="noopener noreferrer">
+        <img src="img/punto_acceso.png" alt="NAPs">
+        <span>Punto de Acceso</span>
+      </a>
 
-    <a href="html/agenda.html" class="menu-button" target="_blank" rel="noopener noreferrer">
-      <img src="img/agenda.png" alt="Agenda">
-      <span class="fuente-botones">Agenda</span>
-    </a>
+      <a href="html/agenda.html" class="menu-button" target="_blank" rel="noopener noreferrer">
+        <img src="img/agenda.png" alt="Agenda">
+        <span>Agenda</span>
+      </a>
+    </section>
+  </main>
 
-  </div>
-
-</div>
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>&copy; 2025 S-Link. Todos los derechos reservados.</p>
+    <p>Desarrollado por <a href="https://portafolio-juan-daniel-dom-men-05.netlify.app/" target="_blank" rel="noopener noreferrer">Juan Dominguez</a></p>
+  </footer>
 
 </body>
 </html>
