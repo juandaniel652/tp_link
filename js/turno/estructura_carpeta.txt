@@ -1,7 +1,0 @@
-turnos/
-│── main.js                # Punto de entrada (listener DOMContentLoaded)
-│── state.js               # Estado global y persistencia (localStorage)
-│── ui.js                  # Renderizado de UI (clientes, técnicos, turnos, selects, alertas)
-│── helpers.js             # Funciones utilitarias generales
-│── validaciones.js        # Validaciones de turnos
-│── eventos.js             # Listeners de eventos (formulario, selects, etc.)

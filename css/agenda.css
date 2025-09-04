@@ -2,9 +2,10 @@
 body {
   font-family: Arial, sans-serif;
   background-color: #fff;
-  color: #fff;
+  color: #2d2d2d;
   margin: 0;
-  padding: 20px;
+  padding: 0;
+  line-height: 1.5;
 }
 
 h1 {
@@ -51,22 +52,20 @@ td button {
   font-size: 0.8rem;
 }
 
-/* BOTON LIBRE */
 .btn-libre {
   background-color: #4CAF50;
   color: #fff;
 }
+
 .btn-libre:hover {
   background-color: #45a049;
 }
 
-/* BOTON OCUPADO */
 .btn-ocupado {
   background-color: #1E90FF;
   color: #fff;
 }
 
-/* TARJETAS DENTRO DE CELDA */
 .turno-card {
   background-color: #1E90FF;
   color: white;
@@ -85,9 +84,8 @@ td button {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  align-items: center; /* centra todos los bloques en la celda */
+  align-items: center;
 }
-
 
 /* ======== TOOLTIP MODERNO ======== */
 td button:hover::after {
@@ -116,7 +114,7 @@ td button::after {
 /* ======== NAVEGACIÓN ======== */
 #agendaContainer > div {
   text-align: center;
-  margin-bottom: 20px;
+  margin: 20px 0; /* espacio uniforme con header */
 }
 
 #selectSemana, #selectTecnico, #selectRango {
@@ -175,14 +173,14 @@ td button::after {
 .bloque-turno {
   display: flex;
   flex-direction: column;
-  align-items: center; /* centra botón y sub-etiqueta */
-  gap: 2px; /* espacio entre botón y sub-etiqueta */
+  align-items: center;
+  gap: 2px;
 }
 
 .sub-etiqueta {
   margin-top: 4px;
-  width: 36px;           /* más ancho para el texto */
-  height: 18px;          /* altura suficiente para centrar texto */
+  width: 36px;
+  height: 18px;
   border-radius: 4px;
   display: flex;
   justify-content: center;
@@ -193,17 +191,56 @@ td button::after {
   box-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
-.sub-etiqueta.ok {
-  background-color: #4CAF50; /* Verde */
-  border: 1px solid #2e7d32;
+.sub-etiqueta.ok { background-color: #4CAF50; border: 1px solid #2e7d32; }
+.sub-etiqueta.nok { background-color: #F44336; border: 1px solid #b71c1c; }
+.sub-etiqueta.repro { background-color: #FF9800; border: 1px solid #ef6c00; }
+
+/* ======== HEADER FIJO SOBRIO ======== */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background: linear-gradient(135deg, #1E3C72, #2A5298);
+  color: #fff;
+  padding: 20px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-.sub-etiqueta.nok {
-  background-color: #F44336; /* Rojo */
-  border: 1px solid #b71c1c;
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* logo a la izquierda, título centrado */
+  gap: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
-.sub-etiqueta.repro {
-  background-color: #FF9800; /* Naranja */
-  border: 1px solid #ef6c00;
+.header .logo {
+  height: 50px;
+  object-fit: contain;
+}
+
+.header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin: 0;
+  text-align: center;
+  flex: 1;
+}
+
+/* ======== MAIN CONTENT CON ESPACIO PARA HEADER ======== */
+.main-content {
+  padding-top: 100px; /* ajusta según altura real del header */
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* ======== ESPACIO PARA AGENDA ======== */
+#agendaContainer {
+  margin-top: 20px; /* separación uniforme con header */
 }

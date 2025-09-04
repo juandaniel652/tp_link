@@ -3,21 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Agenda de turnos organizada con vista clara y responsiva.">
   <title>Agenda</title>
+
+  <!-- Estilos -->
   <link rel="stylesheet" href="../css/general.css">
   <link rel="stylesheet" href="../css/menu.css">
   <link rel="stylesheet" href="../css/agenda.css">
+
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="../img/icono_logo.ico">
 </head>
 <body>
 
-  <header class="titulo">
-    <img src="../img/logo_s_link.png" alt="Logo" class="logo">
-    <h1>Agenda de Turnos</h1>
+  <!-- HEADER FIJO -->
+  <header class="header">
+    <div class="container header-container">
+      <img src="../img/logo_s_link.png" alt="Logo" class="logo">
+      <h1>Agenda de Turnos</h1>
+    </div>
   </header>
 
-  <div id="agendaContainer"></div>
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="container main-content">
+    <div id="agendaContainer"></div>
+  </main>
 
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 S-Link | Gestión de Agenda</p>
+    </div>
+  </footer>
+
+  <!-- SCRIPT -->
   <script type="module">
     import { Agenda } from '../js/agenda/principal.js';
     const miAgenda = new Agenda('agendaContainer');
