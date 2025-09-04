@@ -79,7 +79,7 @@ td button {
 
 /* TARJETAS DENTRO DE CELDA */
 .turno-card {
-  background-color: #1E90FF;
+  background-color: #45a049; /* verde */
   color: white;
   font-weight: bold;
   padding: 2px 4px;
