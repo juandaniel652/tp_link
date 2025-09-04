@@ -61,98 +61,106 @@ document.addEventListener("DOMContentLoaded", () => {
     const cliente = clientes.find(c => String(c.numeroCliente) === String(clienteId));
     const nap = puntosAcceso.find(p => String(p.numero) === String(napNumero));
     if (!cliente || !nap) return alert("Cliente o NAP no encontrado");
-
+    
     const napStr = String(nap.numero);
     const tecnicosDisp = tecnicos.filter(t =>
       Array.isArray(t.puntosAcceso) && t.puntosAcceso.map(String).includes(napStr)
     );
     if (!tecnicosDisp.length) return alert("No hay técnicos que cubran este NAP");
-
-    const hoy = new Date();
-    const fechaISO = hoy.toISOString().slice(0,10);
-    const diaStr = DAYS[hoy.getDay()];
-    const diaNombre = NOMBRES_DIAS[diaStr];
-
+  
     const tNum = Number(tSeleccionado);
     const horaBase = rangoSeleccionado === "AM" ? 9 : 14;
     const minutos = (tNum - 1) * 15;
     const horaStr = `${horaBase.toString().padStart(2,"0")}:${minutos.toString().padStart(2,"0")}`;
-
-    // === VALIDACIONES ===
+  
     if (turnos.some(turno => turno.clienteId === cliente.numeroCliente)) {
       return alert("Este cliente ya tiene un turno asignado.");
     }
+  
+    const diasDisponiblesNAP = nap.dias && Array.isArray(nap.dias) ? nap.dias.map(d => d.toLowerCase()) : DAYS;
 
-    if (turnos.some(turno =>
-      turno.clienteId === cliente.numeroCliente &&
-      turno.fecha === fechaISO
-    )) {
-      return alert("Este cliente ya tiene un turno en esta fecha.");
-    }
+    // === Generar fechas distribuidas aleatoriamente dentro del mes ===
+    const hoy = new Date();
+    const fechasOpciones = [];
+    const diasMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).getDate();
 
-    if (turnos.some(turno =>
-      turno.fecha === fechaISO &&
-      turno.hora === horaStr &&
-      turno.nap === nap.numero
-    )) {
-      return alert("Este turno ya está ocupado en este NAP.");
-    }
+    while (fechasOpciones.length < 3) {
+      const diaAleatorio = Math.floor(Math.random() * diasMes) + 1;
+      const fecha = new Date(hoy.getFullYear(), hoy.getMonth(), diaAleatorio);
+      const diaNombre = DAYS[fecha.getDay()];
 
-    const card = document.createElement("div");
-    card.className = "card-turno";
-    card.innerHTML = `
-      <h3>${diaNombre} ${hoy.toLocaleDateString("es-ES",{day:"numeric", month:"long"})}</h3>
-      <p><strong>Cliente:</strong> ${cliente.numeroCliente} - ${cliente.nombre} ${cliente.apellido}</p>
-      <p><strong>NAP:</strong> NAP ${nap.numero}</p>
-      <p><strong>T:</strong> ${tNum}</p>
-      <p><strong>Rango:</strong> ${rangoSeleccionado}</p>
-      <p><strong>Técnicos disponibles:</strong> ${tecnicosDisp.map(t => t.nombre + ' ' + (t.apellido||'')).join(", ")}</p>
-      <button id="btnSeleccionarTurno">Seleccionar</button>
-    `;
+      if (!diasDisponiblesNAP.includes(diaNombre)) continue;
 
-    // evento botón
-    card.querySelector("#btnSeleccionarTurno").addEventListener("click", () => {
-      const disponibles = tecnicosDisp.filter(t =>
-        !turnos.some(turno =>
-          turno.fecha === fechaISO &&
-          turno.hora === horaStr &&
-          turno.tecnicos.includes(t.nombre + ' ' + (t.apellido||''))
-        )
+      const fechaISO = fecha.toISOString().slice(0,10);
+      const conflicto = turnos.some(turno =>
+        (turno.clienteId === cliente.numeroCliente) ||
+        (turno.fecha === fechaISO && turno.hora === horaStr && turno.nap === nap.numero)
       );
 
-      if (!disponibles.length) return alert("No hay técnicos disponibles para este horario");
+      if (!conflicto && !fechasOpciones.some(f => f.fechaISO === fechaISO)) {
+        fechasOpciones.push({fecha, fechaISO, diaNombre});
+      }
 
-      const tecnicoElegido = disponibles.reduce((prev, curr) => {
-        const prevCount = turnos.filter(turno =>
-          turno.tecnicos.includes(prev.nombre + ' ' + (prev.apellido||''))).length;
-        const currCount = turnos.filter(turno =>
-          turno.tecnicos.includes(curr.nombre + ' ' + (curr.apellido||''))).length;
-        return prevCount <= currCount ? prev : curr;
+      if (fechasOpciones.length < 3 && fechasOpciones.length + fechasOpciones.filter(f => f.fecha.getMonth() === hoy.getMonth()).length >= diasMes) break;
+    }
+
+    if (!fechasOpciones.length) return alert("No hay fechas disponibles para este NAP");
+  
+    fechasOpciones.forEach(opcion => {
+      const card = document.createElement("div");
+      card.className = "card-turno";
+      card.innerHTML = `
+        <h3>${NOMBRES_DIAS[opcion.diaNombre]} ${opcion.fecha.toLocaleDateString("es-ES",{day:"numeric", month:"long"})}</h3>
+        <p><strong>Cliente:</strong> ${cliente.numeroCliente} - ${cliente.nombre} ${cliente.apellido}</p>
+        <p><strong>NAP:</strong> NAP ${nap.numero}</p>
+        <p><strong>T:</strong> ${tNum}</p>
+        <p><strong>Rango:</strong> ${rangoSeleccionado}</p>
+        <p><strong>Técnicos disponibles:</strong> ${tecnicosDisp.map(t => t.nombre + ' ' + (t.apellido||'')).join(", ")}</p>
+        <button class="btnSeleccionarTurno">Seleccionar</button>
+      `;
+    
+      card.querySelector(".btnSeleccionarTurno").addEventListener("click", () => {
+        const disponibles = tecnicosDisp.filter(t =>
+          !turnos.some(turno =>
+            turno.fecha === opcion.fechaISO &&
+            turno.hora === horaStr &&
+            turno.tecnicos.includes(t.nombre + ' ' + (t.apellido||''))
+          )
+        );
+        if (!disponibles.length) return alert("No hay técnicos disponibles para este horario");
+      
+        const tecnicoElegido = disponibles.reduce((prev, curr) => {
+          const prevCount = turnos.filter(turno =>
+            turno.tecnicos.includes(prev.nombre + ' ' + (prev.apellido||''))).length;
+          const currCount = turnos.filter(turno =>
+            turno.tecnicos.includes(curr.nombre + ' ' + (curr.apellido||''))).length;
+          return prevCount <= currCount ? prev : curr;
+        });
+      
+        const nuevoTurno = {
+          id: Date.now(),
+          clienteId: cliente.numeroCliente,
+          cliente: `${cliente.nombre} ${cliente.apellido}`.trim(),
+          nap: nap.numero,
+          t: tNum,
+          rango: rangoSeleccionado,
+          fecha: opcion.fechaISO,
+          fechaStr: `${NOMBRES_DIAS[opcion.diaNombre]} ${opcion.fecha.toLocaleDateString("es-ES",{day:"numeric", month:"long"})}`,
+          hora: horaStr,
+          tecnicos: [tecnicoElegido.nombre + ' ' + (tecnicoElegido.apellido||'')]
+        };
+      
+        turnos.push(nuevoTurno);
+        localStorage.setItem("turnos", JSON.stringify(turnos));
+        alert(`Turno guardado. Técnico asignado: ${tecnicoElegido.nombre} ${tecnicoElegido.apellido||''}`);
+        renderHistorialTurnos();
+        turnosContainer.innerHTML = "";
       });
-
-      const nuevoTurno = {
-        id: Date.now(),
-        clienteId: cliente.numeroCliente,
-        cliente: `${cliente.nombre} ${cliente.apellido}`.trim(),
-        nap: nap.numero,
-        t: tNum,
-        rango: rangoSeleccionado,
-        fecha: fechaISO,
-        fechaStr: `${diaNombre} ${hoy.toLocaleDateString("es-ES",{day:"numeric", month:"long"})}`,
-        hora: horaStr,
-        tecnicos: [tecnicoElegido.nombre + ' ' + (tecnicoElegido.apellido||'')]
-      };
-
-      turnos.push(nuevoTurno);
-      localStorage.setItem("turnos", JSON.stringify(turnos));
-      alert(`Turno guardado. Técnico asignado: ${tecnicoElegido.nombre} ${tecnicoElegido.apellido||''}`);
-
-      renderHistorialTurnos();
-      turnosContainer.innerHTML = "";
+    
+      turnosContainer.appendChild(card);
     });
-
-    turnosContainer.appendChild(card);
   }
+
 
   function renderHistorialTurnos() {
     let historial = document.getElementById("historialTurnos");
@@ -182,7 +190,6 @@ document.addEventListener("DOMContentLoaded", () => {
       historial.appendChild(card);
     });
 
-    // Eventos de eliminar
     document.querySelectorAll(".btnEliminarTurno").forEach(btn => {
       btn.addEventListener("click", (e) => {
         const id = e.target.dataset.id;
@@ -193,7 +200,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // === BOTÓN MOSTRAR TURNOS ===
   btnMostrarTurnos.addEventListener("click", () => {
     const clienteId = selectCliente.value;
     const napNumero = selectNap.value;
@@ -206,6 +212,5 @@ document.addEventListener("DOMContentLoaded", () => {
     renderGrillaTurnos(clienteId, napNumero, tSeleccionado, rangoSeleccionado);
   });
 
-  // === INICIAL ===
   renderHistorialTurnos();
 });

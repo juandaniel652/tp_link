@@ -15,6 +15,12 @@ Por último. Agregar especialidad a técnico (Luego de terminar esto para tener 
 
 Que falta: 
 
-1. Segun el cliente, nap, T y AM o PM tener 3 opcines automaticas a elegir, y un boton de muestra de agenda para hacerlo manual
+1. Segun el cliente, nap, T y AM o PM tener 3 opcines automaticas a elegir, y un boton de muestra de agenda para hacerlo manual (HECHO)
 
 2. Mejorar diseño de la app, (está demasiado tosco)
+
+FALTA:
+
+1. MOstrar variadas fechas y horarios segun el nap
+2.  Que en agenda muestre los turnos individuales (no los muestra)
+3. Diseño homogéneo y correlacionado entre sí (Mismo hilo conductor)
