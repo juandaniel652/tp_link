@@ -1,8 +1,8 @@
 /* ======== GENERAL ======== */
 body {
   font-family: Arial, sans-serif;
-  background-color: #fff;
-  color: #2d2d2d;
+  background-color: #fff; /* Fondo general claro */
+  color: #2d2d2d;         /* Texto oscuro para lectura sobre fondo claro */
   margin: 0;
   padding: 0;
   line-height: 1.5;
@@ -26,18 +26,22 @@ th, td {
   text-align: center;
 }
 
+/* ======== ENCABEZADOS ======== */
 th {
-  background-color: #0b3d91;
-  color: #fff;
+  background-color: #0b3d91; /* Azul oscuro del encabezado */
+  color: #fff;               /* Letras claras sobre fondo oscuro */
 }
 
+/* ======== CELDAS ======== */
 td {
-  background-color: #224d22;
+  background-color: #e0f0e0; /* Fondo claro para lectura de letras oscuras */
+  color: #2d2d2d;            /* Letras oscuras */
 }
 
-/* ======== HORAS ======== */
+/* ======== COLUMNA HORAS ======== */
 .hora {
-  background-color: #333;
+  background-color: #333; /* Fondo oscuro */
+  color: #fff;            /* Letras blancas para contraste */
 }
 
 /* ======== BOTONES EN CELDAS ======== */
@@ -52,20 +56,22 @@ td button {
   font-size: 0.8rem;
 }
 
+/* BOTÓN LIBRE (+) */
 .btn-libre {
-  background-color: #4CAF50;
-  color: #fff;
+  background-color: #4CAF50; /* VERDE clásico */
+  color: #fff;                /* letras blancas */
 }
-
 .btn-libre:hover {
-  background-color: #45a049;
+  background-color: #45a049; /* verde hover */
 }
 
+/* BOTÓN OCUPADO */
 .btn-ocupado {
-  background-color: #1E90FF;
+  background-color: #1E90FF; /* azul */
   color: #fff;
 }
 
+/* TARJETAS DENTRO DE CELDA */
 .turno-card {
   background-color: #1E90FF;
   color: white;
@@ -114,7 +120,7 @@ td button::after {
 /* ======== NAVEGACIÓN ======== */
 #agendaContainer > div {
   text-align: center;
-  margin: 20px 0; /* espacio uniforme con header */
+  margin: 20px 0; /* separación uniforme con header */
 }
 
 #selectSemana, #selectTecnico, #selectRango {
