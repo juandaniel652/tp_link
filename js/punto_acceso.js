@@ -1,4 +1,4 @@
-// punto_acceso.js
+// punto_acceso.js 
 document.addEventListener('DOMContentLoaded', () => {
   // === DOM ===
   const form = document.getElementById('formPuntoAcceso');
@@ -117,43 +117,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderPuntos() {
     puntosContainer.innerHTML = '';
+
+    if (puntos.length === 0) {
+      puntosContainer.innerHTML = `<tr><td colspan="3" class="no-data">No hay NAPs registrados.</td></tr>`;
+      return;
+    }
+
     puntos.sort((a,b) => (Number(a.numero)||0) - (Number(b.numero)||0));
 
     puntos.forEach((p, idx) => {
-      const card = document.createElement('div');
-      card.className = 'punto-card';
+      const row = document.createElement('tr');
 
+      // Columna NAP
+      const colNap = document.createElement('td');
+      colNap.textContent = p.numero;
+
+      // Columna Horarios combinados
+      const colHorarios = document.createElement('td');
       const horarios = Array.isArray(p.horarios) ? p.horarios : [];
-      const chips = horarios.map(h => {
-        const clase = (h.rango === 'AM') ? 'horario-chip am' : 'horario-chip pm';
-        return `<span class="${clase}" data-dia="${h.dia}" data-rango="${h.rango}">
-                  ${NOMBRES_DIAS[h.dia]} ${h.rango}
-                  <button class="remove-horario" title="Eliminar horario" data-dia="${h.dia}" data-rango="${h.rango}">×</button>
-                </span>`;
-      }).join(' ');
+      colHorarios.innerHTML = horarios.length
+        ? horarios.map(h => `${NOMBRES_DIAS[h.dia]} ${h.rango} ×`).join(' ')
+        : '<em class="no-horarios">Sin horarios</em>';
 
-      card.innerHTML = `
-        <h3>NAP ${p.numero}</h3>
-        <div class="horarios-list">${chips || '<em style="color:#fff8">Sin horarios</em>'}</div>
-        <div class="actions">
-          <button class="edit">Editar</button>
-          <button class="delete">Eliminar</button>
-          <button class="view">Ver Técnicos</button>
-        </div>
+      // Columna Acciones
+      const colAcciones = document.createElement('td');
+      colAcciones.innerHTML = `
+        <button class="btn-edit">✏️ Editar</button>
+        <button class="btn-delete">🗑 Eliminar</button>
+        <button class="btn-view">👤 Técnicos</button>
       `;
 
-      card.addEventListener('click', (ev) => {
-        const rem = ev.target.closest('.remove-horario');
-        if (!rem) return;
-        const dia = rem.dataset.dia;
-        const rango = rem.dataset.rango;
-        if (!confirm(`Eliminar ${NOMBRES_DIAS[dia]} ${rango} de NAP ${p.numero}?`)) return;
-        p.horarios = (p.horarios || []).filter(h => !(h.dia === dia && h.rango === rango));
-        setLocalStorage();
-        renderPuntos();
-      });
-
-      card.querySelector('.edit').addEventListener('click', () => {
+      // Eventos
+      colAcciones.querySelector('.btn-edit').addEventListener('click', () => {
         numeroInput.value = p.numero;
         setSelectionFromHorarios(p.horarios || []);
         editIndex = idx;
@@ -163,19 +158,22 @@ document.addEventListener('DOMContentLoaded', () => {
         numeroInput.focus();
       });
 
-      card.querySelector('.delete').addEventListener('click', () => {
+      colAcciones.querySelector('.btn-delete').addEventListener('click', () => {
         if (!confirm(`¿Eliminar NAP ${p.numero} y todos sus horarios?`)) return;
         puntos.splice(idx, 1);
         setLocalStorage();
         renderPuntos();
       });
 
-      // 🔹 Aquí: comparar como string
-      card.querySelector('.view').addEventListener('click', () => {
+      colAcciones.querySelector('.btn-view').addEventListener('click', () => {
         mostrarTecnicos(p);
       });
 
-      puntosContainer.appendChild(card);
+      row.appendChild(colNap);
+      row.appendChild(colHorarios);
+      row.appendChild(colAcciones);
+
+      puntosContainer.appendChild(row);
     });
   }
 
@@ -250,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function mostrarTecnicos(punto) {
     const tecnicos = JSON.parse(localStorage.getItem('tecnicos')) || [];
     const tecnicosAsociados = tecnicos.filter(t =>
-      Array.isArray(t.puntosAcceso) && t.puntosAcceso.includes(String(punto.numero)) // 🔹 comparar como string
+      Array.isArray(t.puntosAcceso) && t.puntosAcceso.includes(String(punto.numero))
     );
 
     const modal = document.createElement('div');
