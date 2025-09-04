@@ -58,9 +58,15 @@ td button {
 
 /* BOTÓN LIBRE (+) */
 .btn-libre {
-  background-color: #4CAF50; /* VERDE clásico */
-  color: #fff;                /* letras blancas */
+    background-color: #4CAF50 !important; /* fuerza el verde */
+    color: #fff !important;
+    -webkit-appearance: none; /* elimina estilo nativo en Safari/Edge */
+    -moz-appearance: none;    /* elimina estilo nativo en Firefox */
+    appearance: none;         /* elimina estilo nativo en todos */
+    border: none;
+    box-shadow: none;         /* elimina sombras por defecto */
 }
+
 .btn-libre:hover {
   background-color: #45a049; /* verde hover */
 }
