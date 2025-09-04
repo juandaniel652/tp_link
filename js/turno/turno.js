@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const T_VALUES = [1, 2, 3, 4, 5, 6];
   const RANGOS = ["AM", "PM"];
-  const ESTADOS = ["Pendiente", "En curso", "Finalizado"];
   const NOMBRES_DIAS = {
     domingo: 'Domingo', lunes: 'Lunes', martes: 'Martes', miercoles: 'Miércoles',
     jueves: 'Jueves', viernes: 'Viernes', sabado: 'Sábado'
@@ -17,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const selectNap = document.getElementById("selectNap");
   const selectT = document.getElementById("selectT");
   const selectRango = document.getElementById("selectRango");
-  const selectEstadoTicket = document.getElementById("selectEstadoTicket");
   const turnosContainer = document.getElementById("turnosContainer");
   const btnMostrarTurnos = document.getElementById("btnMostrarTurnos");
 
@@ -56,10 +54,9 @@ document.addEventListener("DOMContentLoaded", () => {
   renderSelectNaps();
   renderSelectGen(selectT, T_VALUES, "Seleccionar T");
   renderSelectGen(selectRango, RANGOS, "Seleccionar Rango");
-  renderSelectGen(selectEstadoTicket, ESTADOS, "Seleccionar Estado");
 
   // === FUNCIONES ===
-  function renderGrillaTurnos(clienteId, napNumero, tSeleccionado, rangoSeleccionado, estadoSeleccionado) {
+  function renderGrillaTurnos(clienteId, napNumero, tSeleccionado, rangoSeleccionado) {
     turnosContainer.innerHTML = "";
     const cliente = clientes.find(c => String(c.numeroCliente) === String(clienteId));
     const nap = puntosAcceso.find(p => String(p.numero) === String(napNumero));
@@ -110,7 +107,6 @@ document.addEventListener("DOMContentLoaded", () => {
       <p><strong>T:</strong> ${tNum}</p>
       <p><strong>Rango:</strong> ${rangoSeleccionado}</p>
       <p><strong>Técnicos disponibles:</strong> ${tecnicosDisp.map(t => t.nombre + ' ' + (t.apellido||'')).join(", ")}</p>
-      <p><strong>Estado:</strong> ${estadoSeleccionado}</p>
       <button id="btnSeleccionarTurno">Seleccionar</button>
     `;
 
@@ -144,8 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
         fecha: fechaISO,
         fechaStr: `${diaNombre} ${hoy.toLocaleDateString("es-ES",{day:"numeric", month:"long"})}`,
         hora: horaStr,
-        tecnicos: [tecnicoElegido.nombre + ' ' + (tecnicoElegido.apellido||'')],
-        estado: estadoSeleccionado
+        tecnicos: [tecnicoElegido.nombre + ' ' + (tecnicoElegido.apellido||'')]
       };
 
       turnos.push(nuevoTurno);
@@ -182,7 +177,6 @@ document.addEventListener("DOMContentLoaded", () => {
         <p><strong>T:</strong> ${t.t}</p>
         <p><strong>Rango:</strong> ${t.rango}</p>
         <p><strong>Técnicos:</strong> ${t.tecnicos.join(", ")}</p>
-        <p><strong>Estado:</strong> ${t.estado}</p>
         <button class="btnEliminarTurno" data-id="${t.id}">❌ Eliminar</button>
       `;
       historial.appendChild(card);
@@ -205,12 +199,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const napNumero = selectNap.value;
     const tSeleccionado = selectT.value;
     const rangoSeleccionado = selectRango.value;
-    const estadoSeleccionado = selectEstadoTicket.value;
 
-    if (!clienteId || !napNumero || !tSeleccionado || !rangoSeleccionado || !estadoSeleccionado)
-      return alert("Debe seleccionar Cliente, NAP, T, Rango y Estado");
+    if (!clienteId || !napNumero || !tSeleccionado || !rangoSeleccionado)
+      return alert("Debe seleccionar Cliente, NAP, T y Rango");
 
-    renderGrillaTurnos(clienteId, napNumero, tSeleccionado, rangoSeleccionado, estadoSeleccionado);
+    renderGrillaTurnos(clienteId, napNumero, tSeleccionado, rangoSeleccionado);
   });
 
   // === INICIAL ===
