@@ -178,7 +178,7 @@ body {
 
 .grilla-turnos {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
 }
 
@@ -242,4 +242,115 @@ button.turno-ocupado {
 }
 .historial-turnos .card-turno {
   border-left: 4px solid #4a90e2;
+}
+
+
+/* ================================ */
+/* RESPONSIVE GENERAL */
+/* ================================ */
+
+/* Para tablets y pantallas medianas */
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 220px 1fr;
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .sidebar {
+    padding: 16px;
+  }
+
+  .site-header .site-title {
+    font-size: 22px;
+    text-align: center;
+  }
+}
+
+/* Para móviles (smartphones) */
+@media (max-width: 768px) {
+  /* Layout se vuelve una sola columna */
+  .layout {
+    grid-template-columns: 1fr;
+    padding: 12px;
+    gap: 12px;
+  }
+
+  /* Sidebar ocupa todo el ancho */
+  .sidebar {
+    width: 100%;
+  }
+
+  /* Grilla de turnos ocupa todo el ancho y se ajusta automáticamente */
+  .grilla-turnos {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* Header ya lo tenías responsive, solo ajustamos tamaños */
+  .site-header .site-title {
+    font-size: 20px;
+  }
+}
+
+/* Para móviles muy pequeños */
+@media (max-width: 480px) {
+  .header, .site-header .header-container {
+    padding: 12px 16px;
+  }
+
+  .site-header .site-title {
+    font-size: 18px;
+  }
+
+  .site-header .site-nav ul {
+    gap: 8px;
+  }
+
+  .form-turno label {
+    font-size: 13px;
+  }
+
+  .form-turno select, .btn-primary {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .card-turno h3 {
+    font-size: 14px;
+  }
+
+  .card-turno p {
+    font-size: 12px;
+  }
+
+  button.turno-disponible, button.turno-ocupado {
+    font-size: 12px;
+    padding: 6px;
+  }
+}
+
+
+/* Ajustes para tablets */
+@media (max-width: 1024px) {
+  .grilla-turnos {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+  }
+}
+
+/* Ajustes para móviles */
+@media (max-width: 768px) {
+  .grilla-turnos {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+  }
+}
+
+/* Ajustes para móviles muy pequeños */
+@media (max-width: 480px) {
+  .grilla-turnos {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
 }
