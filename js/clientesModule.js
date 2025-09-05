@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputDomicilio = document.getElementById('clienteDomicilio');
   const inputNumeroDomicilio = document.getElementById('clienteNumeroDomicilio');
 
-  const clientes = JSON.parse(localStorage.getItem('clientes')) || [];
+  let clientes = JSON.parse(localStorage.getItem('clientes')) || [];
+  let indiceEdicion = null;
 
   /** =====================
    *  Regex
@@ -37,6 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
     inputTelefono.value = "11";
     contadorTelefono.textContent = "0/8 dígitos";
     contadorTelefono.style.color = "orange";
+
+    indiceEdicion = null;
+    form.querySelector("button[type='submit']").textContent = "Guardar Cliente";
   }
 
   /** =====================
@@ -111,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (!regexSoloLetras.test(cliente.domicilio)) {
-      mensajeValidacion.textContent = 'El domicilio solo puede contener letras.';
+      mensajeValidacion.textContent = 'La calle solo puede contener letras.';
       return false;
     }
 
@@ -128,15 +132,51 @@ document.addEventListener('DOMContentLoaded', () => {
    *  ===================== */
   function renderizarClientes() {
     tablaBody.innerHTML = '';
-    clientes.forEach(cliente => {
+
+    if (clientes.length === 0) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td colspan="6" class="no-data">No hay clientes registrados</td>`;
+      tablaBody.appendChild(tr);
+      return;
+    }
+
+    clientes.forEach((cliente, index) => {
       const fila = document.createElement('tr');
       fila.innerHTML = `
-        <td>${cliente.numeroCliente}</td>
-        <td>${cliente.nombre}</td>
-        <td>${cliente.apellido}</td>
-        <td>${cliente.telefono}</td>
-        <td>${cliente.domicilio} ${cliente.numeroDomicilio}</td>
+        <td data-label="Número">${cliente.numeroCliente}</td>
+        <td data-label="Nombre">${cliente.nombre}</td>
+        <td data-label="Apellido">${cliente.apellido}</td>
+        <td data-label="Teléfono">${cliente.telefono}</td>
+        <td data-label="Domicilio">${cliente.domicilio} ${cliente.numeroDomicilio}</td>
+        <td data-label="Acciones" class="acciones">
+          <button class="btn-accion editar">✏️</button>
+          <button class="btn-accion eliminar">🗑️</button>
+        </td>
       `;
+
+      // Editar
+      fila.querySelector(".editar").addEventListener("click", () => {
+        indiceEdicion = index;
+        const c = clientes[index];
+        inputNumeroCliente.value = c.numeroCliente;
+        inputNombre.value = c.nombre;
+        inputApellido.value = c.apellido;
+        inputTelefono.value = c.telefono;
+        inputDomicilio.value = c.domicilio;
+        inputNumeroDomicilio.value = c.numeroDomicilio;
+        form.querySelector("button[type='submit']").textContent = "Guardar Cambios";
+        form.scrollIntoView({ behavior: "smooth" });
+      });
+
+      // Eliminar
+      fila.querySelector(".eliminar").addEventListener("click", () => {
+        if (confirm(`¿Seguro que quieres eliminar al cliente ${cliente.nombre} ${cliente.apellido}?`)) {
+          clientes.splice(index, 1);
+          localStorage.setItem("clientes", JSON.stringify(clientes));
+          renderizarClientes();
+        }
+      });
+
       tablaBody.appendChild(fila);
     });
   }
@@ -171,7 +211,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!validarCliente(cliente)) return;
 
-    clientes.push(cliente);
+    if (indiceEdicion !== null) {
+      clientes[indiceEdicion] = cliente;
+      indiceEdicion = null;
+    } else {
+      clientes.push(cliente);
+    }
+
     localStorage.setItem('clientes', JSON.stringify(clientes));
 
     limpiarCamposFormulario();

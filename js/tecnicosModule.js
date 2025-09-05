@@ -1,16 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const formulario = document.getElementById('formTecnico');
-  const contenedor = document.getElementById('tecnicosContainer');
-  const chipsContainer = document.getElementById('puntoAcceso');
+  const formulario = document.getElementById('formGeneral');
+  const contenedor = document.getElementById('generalContainer');
+  const chipsContainer = document.getElementById('puntosAcceso');
 
-  let tecnicos = JSON.parse(localStorage.getItem('tecnicos')) || [];
+  let registros = JSON.parse(localStorage.getItem('tecnicos')) || [];
   let indiceEdicion = null;
 
   const inputs = {
-    nombre: document.getElementById('tecnicoNombre'),
-    apellido: document.getElementById('tecnicoApellido'),
-    telefono: document.getElementById('tecnicoTelefono'),
-    duracion: document.getElementById('duracionTurnoMinutos'),
+    nombre: document.getElementById('nombre'),
+    apellido: document.getElementById('apellido'),
+    telefono: document.getElementById('telefono'),
+    duracion: document.getElementById('duracionTurno'),
     punto: chipsContainer
   };
 
@@ -56,46 +56,46 @@ document.addEventListener('DOMContentLoaded', () => {
   function render() {
     contenedor.innerHTML = '';
 
-    if (tecnicos.length === 0) {
+    if (registros.length === 0) {
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td colspan="6" class="no-data">No hay técnicos registrados</td>`;
+      tr.innerHTML = `<td colspan="6" class="no-data">No hay registros</td>`;
       contenedor.appendChild(tr);
       return;
     }
 
-    tecnicos.forEach((t, index) => {
+    registros.forEach((r, index) => {
       const tr = document.createElement('tr');
-      const naps = Array.isArray(t.puntosAcceso) ? t.puntosAcceso.join(', ') : '';
+      const naps = Array.isArray(r.puntosAcceso) ? r.puntosAcceso.join(', ') : '';
       tr.innerHTML = `
-          <td data-label="Nombre">${t.nombre}</td>
-          <td data-label="Apellido">${t.apellido}</td>
-          <td data-label="Teléfono">${t.telefono}</td>
-          <td data-label="Duración turno">${t.duracionTurnoMinutos}</td>
+          <td data-label="Nombre">${r.nombre}</td>
+          <td data-label="Apellido">${r.apellido}</td>
+          <td data-label="Teléfono">${r.telefono}</td>
+          <td data-label="Duración turno">${r.duracionTurnoMinutos}</td>
           <td data-label="Puntos de acceso">${naps}</td>
-          <td data-label="Acciones" class="acciones">
-            <button class="btn-accion editar">✏️</button>
-            <button class="btn-accion eliminar">🗑️</button>
+          <td data-label="Acciones" class="actions">
+            <button class="btn-action edit">✏️</button>
+            <button class="btn-action delete">🗑️</button>
           </td>
         `;
 
-      tr.querySelector(".editar").addEventListener("click", () => {
+      tr.querySelector(".edit").addEventListener("click", () => {
         indiceEdicion = index;
-        const tecnico = tecnicos[index];
-        inputs.nombre.value = tecnico.nombre;
-        inputs.apellido.value = tecnico.apellido;
-        inputs.telefono.value = tecnico.telefono;
-        inputs.duracion.value = tecnico.duracionTurnoMinutos;
+        const registro = registros[index];
+        inputs.nombre.value = registro.nombre;
+        inputs.apellido.value = registro.apellido;
+        inputs.telefono.value = registro.telefono;
+        inputs.duracion.value = registro.duracionTurnoMinutos;
         [...chipsContainer.querySelectorAll("input[type='checkbox']")].forEach(chk => {
-          chk.checked = tecnico.puntosAcceso.includes(chk.value);
+          chk.checked = registro.puntosAcceso.includes(chk.value);
         });
         formulario.querySelector("button[type='submit']").textContent = "Guardar Cambios";
         formulario.scrollIntoView({ behavior: "smooth" });
       });
 
-      tr.querySelector(".eliminar").addEventListener("click", () => {
-        if (confirm(`¿Seguro que quieres eliminar al técnico ${t.nombre} ${t.apellido}?`)) {
-          tecnicos.splice(index, 1);
-          localStorage.setItem("tecnicos", JSON.stringify(tecnicos));
+      tr.querySelector(".delete").addEventListener("click", () => {
+        if (confirm(`¿Seguro que quieres eliminar a ${r.nombre} ${r.apellido}?`)) {
+          registros.splice(index, 1);
+          localStorage.setItem("tecnicos", JSON.stringify(registros));
           render();
         }
       });
@@ -105,11 +105,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /** =====================
-   *  Guardar o actualizar técnico
+   *  Guardar o actualizar registro
    *  ===================== */
   formulario.addEventListener('submit', (e) => {
     e.preventDefault();
-    const tecnico = {
+    const registro = {
       nombre: inputs.nombre.value.trim(),
       apellido: inputs.apellido.value.trim(),
       telefono: inputs.telefono.value.trim(),
@@ -117,19 +117,19 @@ document.addEventListener('DOMContentLoaded', () => {
       puntosAcceso: [...chipsContainer.querySelectorAll("input[type='checkbox']:checked")].map(chk => chk.value)
     };
 
-    if (!tecnico.nombre || !tecnico.apellido || !tecnico.telefono || !tecnico.duracionTurnoMinutos) {
+    if (!registro.nombre || !registro.apellido || !registro.telefono || !registro.duracionTurnoMinutos) {
       alert("Todos los campos son obligatorios");
       return;
     }
 
     if (indiceEdicion !== null) {
-      tecnicos[indiceEdicion] = tecnico;
+      registros[indiceEdicion] = registro;
       indiceEdicion = null;
     } else {
-      tecnicos.push(tecnico);
+      registros.push(registro);
     }
 
-    localStorage.setItem('tecnicos', JSON.stringify(tecnicos));
+    localStorage.setItem('tecnicos', JSON.stringify(registros));
     limpiarCamposFormulario();
     render();
   });

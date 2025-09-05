@@ -5,7 +5,7 @@
   <title>Clientes</title>
   <link rel="stylesheet" href="../css/general.css">
   <link rel="stylesheet" href="../css/menu.css">
-  <link rel="stylesheet" href="../css/clientes.css">
+  <link rel="stylesheet" href="../css/formularios_tablas.css">
   <link rel="icon" type="image/png" href="../img/icono_logo.ico">
 </head>
 <body>
@@ -17,11 +17,11 @@
     </div>
   </header>
 
-  <main class="container main-content">
+  <main class="container main-container">
     <!-- === FORMULARIO CLIENTE === -->
-    <section class="form-card">
-      <h2>Formulario Cliente</h2>
-      <form id="formCliente" class="form-clansis">
+    <section class="box">
+      <h2>Formulario</h2>
+      <form id="formCliente">
         <fieldset>
           <legend>Datos del Cliente</legend>
 
@@ -57,23 +57,24 @@
         </fieldset>
 
         <div class="form-actions">
-          <button type="submit" class="btn-guardar">Guardar Cliente</button>
+          <button type="submit" class="btn-submit">Guardar Cliente</button>
         </div>
       </form>
     </section>
 
     <!-- === LISTA DE CLIENTES EN TABLA === -->
-    <section class="list-card">
-      <h2>Lista de Clientes</h2>
-      <div class="tabla-container">
-        <table id="clientesTable" class="tabla-clientes">
+    <section class="box">
+      <h2>Listado</h2>
+      <div class="table-container">
+        <table id="clientesTable" class="table-general">
           <thead>
             <tr>
-              <th>Número</th>
-              <th>Nombre</th>
-              <th>Apellido</th>
-              <th>Teléfono</th>
-              <th>Domicilio</th>
+              <td data-label="Número">Número</td>
+              <td data-label="Nombre">Nombre</td>
+              <td data-label="Apellido">Apellido</td>
+              <td data-label="Teléfono">Teléfono</td>
+              <td data-label="Domicilio">Domicilio</td>
+              <td data-label="Acciones">Acciones</td>
             </tr>
           </thead>
           <tbody>

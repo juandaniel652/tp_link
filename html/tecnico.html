@@ -5,7 +5,7 @@
   <title>Técnicos</title>
   <link rel="stylesheet" href="../css/general.css">
   <link rel="stylesheet" href="../css/menu.css">
-  <link rel="stylesheet" href="../css/tecnicos.css">
+  <link rel="stylesheet" href="../css/formularios_tablas.css">
   <link rel="icon" type="image/png" href="../img/icono_logo.ico">
 </head>
 <body>
@@ -16,62 +16,62 @@
     </div>
   </header>
 
-  <main class="main-container">
-    <!-- === FORMULARIO TÉCNICO === -->
-    <section class="form-box">
-      <h2>Formulario Técnico</h2>
-      <form id="formTecnico">
+  <main class="container main-container">
+    <!-- === FORMULARIO === -->
+    <section class="box">
+      <h2>Formulario</h2>
+      <form id="formGeneral">
         <fieldset>
-          <legend>Datos del Técnico</legend>
+          <legend>Técnicos</legend>
 
           <div class="form-group">
-            <label for="tecnicoNombre">Nombre</label>
-            <input type="text" id="tecnicoNombre" placeholder="Ingrese nombre" required>
+            <label for="nombre">Nombre</label>
+            <input type="text" id="nombre" placeholder="Ingrese nombre" required>
           </div>
 
           <div class="form-group">
-            <label for="tecnicoApellido">Apellido</label>
-            <input type="text" id="tecnicoApellido" placeholder="Ingrese apellido" required>
+            <label for="apellido">Apellido</label>
+            <input type="text" id="apellido" placeholder="Ingrese apellido" required>
           </div>
 
           <div class="form-group">
-            <label for="tecnicoTelefono">Teléfono</label>
-            <input type="text" id="tecnicoTelefono" maxlength="12" placeholder="Ingrese teléfono" required>
+            <label for="telefono">Teléfono</label>
+            <input type="text" id="telefono" maxlength="12" placeholder="Ingrese teléfono" required>
           </div>
 
           <div class="form-group">
-            <label for="duracionTurnoMinutos">Duración del turno (minutos)</label>
-            <input type="number" id="duracionTurnoMinutos" placeholder="Ej: 15" required>
+            <label for="duracionTurno">Duración del turno (minutos)</label>
+            <input type="number" id="duracionTurno" placeholder="Ej: 15" required>
           </div>
 
           <div class="form-group">
-            <label>Punto de acceso</label>
-            <div id="puntoAcceso" class="chips-container"></div>
+            <label>Puntos de acceso</label>
+            <div id="puntosAcceso" class="chips-container"></div>
           </div>
         </fieldset>
 
         <div class="form-actions">
-          <button type="submit" class="btn-guardar-tecnico">Guardar Técnico</button>
+          <button type="submit" class="btn-submit">Guardar</button>
         </div>
       </form>
     </section>
 
-    <!-- === LISTA DE TÉCNICOS EN TABLA === -->
-    <section class="list-box">
-      <h2>Lista de Técnicos</h2>
-      <div class="tabla-container">
-        <table class="tabla-tecnicos">
+    <!-- === LISTA EN TABLA === -->
+    <section class="box">
+      <h2>Listado</h2>
+      <div class="table-container">
+        <table class="table-general">
           <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Apellido</th>
-              <th>Teléfono</th>
-              <th>Duración turno</th>
-              <th>Puntos de acceso</th>
-              <th>Acciones</th>
+              <td data-label="Nombre">Nombre</td>
+              <td data-label="Apellido">Apellido</td>
+              <td data-label="Teléfono">Teléfono</td>
+              <td data-label="Duración turno">Duración Turnos</td>
+              <td data-label="Puntos de acceso">Puntos Acceso</td>
+              <td data-label="Acciones">Acciones</td>
             </tr>
           </thead>
-          <tbody id="tecnicosContainer">
+          <tbody id="generalContainer">
             <!-- JS renderiza dinámicamente -->
           </tbody>
         </table>
