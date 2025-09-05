@@ -8,6 +8,89 @@ body {
   line-height: 1.5;
 }
 
+
+/* ================================
+   HEADER MODERNO AGENDA
+================================ */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background: linear-gradient(135deg, #1E3C72, #2A5298);
+  color: #fff;
+  padding: 15px 25px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  font-family: 'RobotoMonoBold', monospace;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1100px;
+  margin: 0 auto;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.header .logo {
+  height: 50px;
+  width: auto;
+  object-fit: contain;
+}
+
+.header h1 {
+  font-size: 28px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  margin: 0;
+  text-align: center;
+  flex: 1;
+  color: #fff;
+}
+
+/* ================================
+   MAIN CONTENT AJUSTADO
+================================ */
+.main-content {
+  padding-top: 100px; /* espacio suficiente para header fijo */
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* ================================
+   RESPONSIVE HEADER
+================================ */
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .header h1 {
+    font-size: 24px;
+    margin-top: 10px;
+  }
+
+  .header .logo {
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .header .logo {
+    height: 35px;
+  }
+}
+
+
 h1 {
   color: white;
   text-align: center;
@@ -25,6 +108,7 @@ th, td {
   padding: 8px;
   text-align: center;
 }
+
 
 /* ======== ENCABEZADOS ======== */
 th {
