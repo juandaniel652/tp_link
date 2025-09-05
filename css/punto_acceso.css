@@ -33,6 +33,11 @@ body {
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
+.site-header .site-nav a.active {
+  background: #fff;
+  color: #1E3C72;
+}
+
 .header-container {
   display: flex;
   align-items: center;
