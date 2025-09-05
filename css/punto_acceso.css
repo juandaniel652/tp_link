@@ -187,7 +187,7 @@ body {
 ================================ */
 #formPuntoAcceso input,
 #formPuntoAcceso select {
-  width: 100%;
+  width: 95%;
   padding: 14px 16px;
   margin: 12px 0;
   border: 1.5px solid #ccc;
