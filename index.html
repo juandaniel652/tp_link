@@ -27,6 +27,9 @@
         <span class="brand-name">S-Link</span>
       </div>
 
+      <!-- Botón hamburguesa -->
+      <button class="menu-toggle" aria-label="Abrir menú">&#9776;</button>
+
       <nav class="top-nav" aria-label="Menú principal">
         <ul>
           <li><a href="../index.html" class="active">Menú</a></li>
@@ -77,5 +80,21 @@
     <p>Desarrollado por <a href="https://portafolio-juan-daniel-dom-men-05.netlify.app/" target="_blank" rel="noopener noreferrer">Juan Dominguez</a></p>
   </footer>
 
+  <!-- JS MENÚ HAMBURGUESA -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const nav = document.querySelector('.top-nav');
+      
+    menuToggle.addEventListener('click', () => {
+      if(nav.style.display === 'flex') {
+        nav.style.display = 'none';
+      } else {
+        nav.style.display = 'flex';
+      }
+    });
+  });
+
+  </script>
 </body>
 </html>
