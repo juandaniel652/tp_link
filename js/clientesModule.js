@@ -142,22 +142,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     clientes.forEach((cliente, index) => {
       const fila = document.createElement('tr');
-      fila.innerHTML = `
+      fila.innerHTML =  `
         <td data-label="Número">${cliente.numeroCliente}</td>
         <td data-label="Nombre">${cliente.nombre}</td>
         <td data-label="Apellido">${cliente.apellido}</td>
         <td data-label="Teléfono">${cliente.telefono}</td>
         <td data-label="Domicilio">${cliente.domicilio} ${cliente.numeroDomicilio}</td>
-        <td data-label="Acciones" class="acciones">
-          <button class="btn-accion editar">✏️</button>
-          <button class="btn-accion eliminar">🗑️</button>
+        <td data-label="Acciones">
+          <button class="btn-action edit">✏️</button>
+          <button class="btn-action delete">🗑️</button>
         </td>
       `;
 
-      // Editar
-      fila.querySelector(".editar").addEventListener("click", () => {
-        indiceEdicion = index;
-        const c = clientes[index];
+      tablaBody.appendChild(fila);
+    });
+
+    // Eventos de edición y eliminación
+    tablaBody.querySelectorAll(".btn-action.edit").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        indiceEdicion = e.currentTarget.dataset.index;
+        const c = clientes[indiceEdicion];
         inputNumeroCliente.value = c.numeroCliente;
         inputNombre.value = c.nombre;
         inputApellido.value = c.apellido;
@@ -167,17 +171,18 @@ document.addEventListener('DOMContentLoaded', () => {
         form.querySelector("button[type='submit']").textContent = "Guardar Cambios";
         form.scrollIntoView({ behavior: "smooth" });
       });
+    });
 
-      // Eliminar
-      fila.querySelector(".eliminar").addEventListener("click", () => {
+    tablaBody.querySelectorAll(".btn-action.delete").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const index = e.currentTarget.dataset.index;
+        const cliente = clientes[index];
         if (confirm(`¿Seguro que quieres eliminar al cliente ${cliente.nombre} ${cliente.apellido}?`)) {
           clientes.splice(index, 1);
           localStorage.setItem("clientes", JSON.stringify(clientes));
           renderizarClientes();
         }
       });
-
-      tablaBody.appendChild(fila);
     });
   }
 
