@@ -8,9 +8,23 @@
 </head>
 <body>
 
-<header class="header">
-  <img src="../img/logo_s_link.png" alt="Logo" class="logo">
-  <h1>Gestión de Turnos</h1>
+<header class="site-header">
+  <div class="header-container">
+    <a href="turnos.html" class="logo-link">
+      <img src="../img/logo_s_link.png" alt="Logo" class="logo">
+    </a>
+    <h1 class="site-title">Gestión de Turnos</h1>
+
+    <nav class="site-nav">
+      <ul>
+        <li><a href="../index.html">Menú</a></li>
+        <li><a href="../html/cliente.html">Clientes</a></li>
+        <li><a href="../html/tecnico.html">Técnicos</a></li>
+        <li><a href="../html/turno.html" class="active">Turnos</a></li>
+        <li><a href="../html/punto_acceso.html">NAPs</a></li>
+      </ul>
+    </nav>
+  </div>
 </header>
 
 <main class="layout">
@@ -39,7 +53,6 @@
     <h2>Turnos Disponibles</h2>
     <div id="turnosContainer" class="grilla-turnos"></div>
 
-    <h2>Historial de Turnos</h2>
     <div id="historialTurnos" class="historial-turnos"></div>
   </section>
 </main>
