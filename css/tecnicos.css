@@ -1,9 +1,32 @@
-/* === CONTENEDORES GENERALES === */
+/* === BASE GENERAL === */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Permite que el footer se quede abajo si hay poco contenido */
+}
+
+main {
+  flex: 1; /* Hace que main ocupe todo el espacio disponible */
+  display: flex;
+  flex-direction: column;
+  gap: 25px; /* Mantiene espacio entre formulario y lista */
+}
+
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
-  font-family: 'Arial', sans-serif;
 }
 
 /* === HEADER === */
@@ -19,7 +42,7 @@
   gap: 20px;
 }
 
-.header .logo {
+.logo {
   height: 50px;
   object-fit: contain;
 }
@@ -29,30 +52,42 @@
   font-weight: 700;
 }
 
-/* === FORMULARIO TÉCNICO === */
-.form-card {
+/* === MAIN === */
+.main-container {
+  flex: 1; /* ocupa todo el alto disponible */
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  margin: 25px 0;
+}
+
+/* === CAJAS (formulario y lista) === */
+.form-box,
+.list-box {
   background: #fff;
   border-radius: 15px;
-  padding: 30px 25px;
-  margin: 25px 0;
+  padding: 25px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.12);
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.form-card:hover {
+.form-box:hover,
+.list-box:hover {
   transform: translateY(-3px);
   box-shadow: 0 10px 25px rgba(0,0,0,0.15);
 }
 
-.form-card h2 {
+.form-box h2,
+.list-box h2 {
   text-align: center;
-  font-size: 28px;
-  margin-bottom: 25px;
-  color: #2A5298;
+  font-size: 26px;
+  margin-bottom: 20px;
+  color: #1E3C72;
   border-bottom: 2px solid #1E3C72;
   padding-bottom: 8px;
 }
 
+/* === FORMULARIO === */
 .form-group {
   margin-bottom: 18px;
 }
@@ -65,7 +100,7 @@
 }
 
 .form-group input {
-  width: 90%;
+  width: 100%;
   padding: 12px 14px;
   border: 2px solid #ccc;
   border-radius: 10px;
@@ -95,17 +130,13 @@
   transition: background 0.2s ease;
 }
 
-.chip input {
-  cursor: pointer;
+.chip:hover {
+  background: #e0e0e0;
 }
 
 .chip span {
   font-size: 0.9em;
   font-weight: 500;
-}
-
-.chip:hover {
-  background: #e0e0e0;
 }
 
 .btn-guardar-tecnico {
@@ -118,7 +149,7 @@
   font-size: 17px;
   font-weight: bold;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .btn-guardar-tecnico:hover {
@@ -126,28 +157,7 @@
   box-shadow: 0 6px 12px rgba(0,0,0,0.25);
 }
 
-/* === TABLA DE TÉCNICOS === */
-.list-card {
-  background: #fff;
-  border-radius: 15px;
-  padding: 25px;
-  margin: 25px 0;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.list-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-}
-
-.list-card h2 {
-  text-align: center;
-  font-size: 26px;
-  margin-bottom: 20px;
-  color: #1E3C72;
-}
-
+/* === TABLA === */
 .tabla-container {
   overflow-x: auto;
 }
@@ -164,7 +174,8 @@
   color: #fff;
 }
 
-.tabla-tecnicos th, .tabla-tecnicos td {
+.tabla-tecnicos th,
+.tabla-tecnicos td {
   padding: 12px 15px;
   border: 1px solid #ddd;
   text-align: left;
@@ -228,5 +239,128 @@
   color: #fff;
   padding: 15px 0;
   text-align: center;
-  margin-top: 40px;
+  margin-top: auto; /* se queda abajo siempre */
+}
+
+/* === RESPONSIVE === */
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .header-container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .header h1 {
+    font-size: 26px;
+  }
+
+  .tabla-tecnicos {
+    font-size: 14px;
+  }
+}
+
+/* Celulares */
+@media (max-width: 768px) {
+  .header h1 { font-size: 22px; }
+
+  .form-box h2,
+  .list-box h2 {
+    font-size: 22px;
+  }
+
+  .form-group input {
+    font-size: 15px;
+    padding: 10px;
+  }
+
+  .acciones {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn-accion {
+    width: 100%;
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .tabla-tecnicos {
+    min-width: 600px;
+  }
+}
+
+/* Celulares chicos */
+@media (max-width: 480px) {
+  .header h1 { font-size: 20px; }
+
+  .form-box,
+  .list-box {
+    padding: 15px;
+    margin: 15px 0;
+  }
+
+  .form-box h2,
+  .list-box h2 {
+    font-size: 20px;
+  }
+
+  .form-group label {
+    font-size: 14px;
+  }
+
+  .form-group input {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .chip span { font-size: 0.75em; }
+
+  .btn-guardar-tecnico {
+    font-size: 14px;
+    padding: 9px;
+  }
+
+  .tabla-tecnicos {
+    font-size: 13px;
+  }
+
+  /* Tabla como tarjetas */
+  .tabla-tecnicos thead { display: none; }
+
+  .tabla-tecnicos,
+  .tabla-tecnicos tbody,
+  .tabla-tecnicos tr,
+  .tabla-tecnicos td {
+    display: block;
+    width: 100%;
+  }
+
+  .tabla-tecnicos tr {
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+    background: #fff;
+  }
+
+  .tabla-tecnicos td {
+    text-align: right;
+    padding: 8px 10px;
+    position: relative;
+  }
+
+  .tabla-tecnicos td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 10px;
+    font-weight: bold;
+    color: #1E3C72;
+    text-align: left;
+  }
+}
+
+/* Mejor interacción táctil */
+input, button, select {
+  min-height: 44px;
 }

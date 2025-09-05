@@ -67,16 +67,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const tr = document.createElement('tr');
       const naps = Array.isArray(t.puntosAcceso) ? t.puntosAcceso.join(', ') : '';
       tr.innerHTML = `
-        <td>${t.nombre}</td>
-        <td>${t.apellido}</td>
-        <td>${t.telefono}</td>
-        <td>${t.duracionTurnoMinutos}</td>
-        <td>${naps}</td>
-        <td class="acciones">
-          <button class="btn-accion editar">✏️</button>
-          <button class="btn-accion eliminar">🗑️</button>
-        </td>
-      `;
+          <td data-label="Nombre">${t.nombre}</td>
+          <td data-label="Apellido">${t.apellido}</td>
+          <td data-label="Teléfono">${t.telefono}</td>
+          <td data-label="Duración turno">${t.duracionTurnoMinutos}</td>
+          <td data-label="Puntos de acceso">${naps}</td>
+          <td data-label="Acciones" class="acciones">
+            <button class="btn-accion editar">✏️</button>
+            <button class="btn-accion eliminar">🗑️</button>
+          </td>
+        `;
 
       tr.querySelector(".editar").addEventListener("click", () => {
         indiceEdicion = index;

@@ -226,3 +226,18 @@ body {
 }
 
 
+/* Estructura para que el footer quede siempre abajo */
+html, body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1; /* El main ocupa todo el espacio disponible */
+}
+
+.footer {
+  margin-top: auto; /* Empuja el footer al fondo */
+}
