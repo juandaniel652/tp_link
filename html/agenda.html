@@ -16,7 +16,6 @@
 </head>
 <body>
 
-<!-- HEADER FIJO -->
 <header class="header">
   <div class="header-container">
     <!-- Logo -->
@@ -26,6 +25,13 @@
 
     <!-- Título centrado -->
     <h1>Agenda de Turnos</h1>
+
+    <!-- Toggle hamburguesa -->
+    <button class="menu-toggle" aria-label="Abrir menú">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
 
     <!-- Navegación / Módulos -->
     <nav class="top-nav">
@@ -60,6 +66,16 @@
     const miAgenda = new Agenda('agendaContainer');
     miAgenda.generarTabla();
   </script>
+
+  <script>document.addEventListener('DOMContentLoaded', () => {
+  const menuToggle = document.querySelector('.menu-toggle');
+  const nav = document.querySelector('.top-nav');
+
+  menuToggle.addEventListener('click', () => {
+    nav.classList.toggle('show');
+    menuToggle.classList.toggle('open');
+  });
+});</script>
 
 </body>
 </html>

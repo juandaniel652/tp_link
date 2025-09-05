@@ -340,3 +340,88 @@ td button::after {
 #agendaContainer {
   margin-top: 20px; /* separación uniforme con header */
 }
+
+
+/* ===== TOGGLE HAMBURGUESA ===== */
+.menu-toggle {
+  display: none; /* solo visible en móviles */
+  flex-direction: column;
+  justify-content: space-between;
+  width: 28px;
+  height: 22px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1100;
+}
+
+.menu-toggle .bar {
+  height: 3px;
+  width: 100%;
+  background-color: #fff;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* Animación del toggle abierto */
+.menu-toggle.open .bar:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.menu-toggle.open .bar:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle.open .bar:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* ===== NAV RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .top-nav {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    gap: 10px;
+    background: linear-gradient(135deg, #1E3C72, #2A5298);
+    border-radius: 8px;
+    padding: 10px 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    overflow: hidden;
+  }
+
+  .top-nav.show {
+    display: flex;
+  }
+
+  .top-nav ul {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    padding: 0 15px;
+  }
+
+  .top-nav a {
+    width: 100%;
+    padding: 8px 12px;
+    text-align: left;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 6px;
+  }
+
+  .top-nav a:hover {
+    background: rgba(255,255,255,0.2);
+  }
+
+  .menu-toggle {
+    display: flex;
+  }
+}
