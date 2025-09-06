@@ -22,6 +22,9 @@ Que falta:
 FALTA:
 
 1. MOstrar variadas fechas y horarios segun el nap (Hecho)
-2.  Que en agenda muestre los turnos individuales (no los muestra)
-3. Diseño homogéneo y correlacionado entre sí (Mismo hilo conductor)
-4. Añadir opcion manual en turnos
+2.  Que en agenda muestre los turnos individuales (no los muestra) (HECHO)
+3. Diseño homogéneo y correlacionado entre sí (Mismo hilo conductor) 
+Falta con respecto al 3° Punto, ver el responsive de los módulos en las tablas o historiales y que turnos tenga el toggle
+
+
+4. Añadir opcion manual en turnos (Verlo luego)

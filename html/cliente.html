@@ -67,7 +67,7 @@
             </div>
             <div class="form-group">
               <label for="clienteDomicilio">Calle</label>
-              <input type="text" id="clienteDomicilio" placeholder="Ej: Calle Falsa" required>
+              <input type="text" id="clienteDomicilio" placeholder="Ej: Calle" required>
             </div>
             <div class="form-group">
               <label for="clienteNumeroDomicilio">Número</label>
@@ -121,16 +121,12 @@
 
   <!-- Script menú hamburguesa -->
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+      document.addEventListener('DOMContentLoaded', () => {
       const menuToggle = document.querySelector('.menu-toggle');
       const nav = document.querySelector('.site-nav');
-
+        
       menuToggle.addEventListener('click', () => {
-        if (nav.style.display === 'flex') {
-          nav.style.display = 'none';
-        } else {
-          nav.style.display = 'flex';
-        }
+        nav.classList.toggle('active');
       });
     });
   </script>

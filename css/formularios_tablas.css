@@ -452,3 +452,70 @@ main {
 input, button, select {
   min-height: 44px;
 }
+
+button, .btn-submit, .btn-action {
+  touch-action: manipulation;
+}
+
+
+/* Ocultar menú por defecto en móviles */
+@media (max-width: 768px) {
+  .site-nav {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .site-nav.active {
+    display: flex;
+  }
+}
+
+
+.table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* scroll suave en iOS */
+}
+
+/* Para móviles muy pequeños: tablas tipo tarjetas */
+@media (max-width: 480px) {
+  .table-general {
+    border: none;
+  }
+
+  .table-general tr {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    display: block;
+    padding: 10px;
+  }
+
+  .table-general td {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 10px;
+  }
+
+  .table-general td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: #1E3C72;
+  }
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  padding-top: 15px; /* espacio extra opcional */
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
