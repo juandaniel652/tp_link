@@ -1,106 +1,109 @@
-/* ======== GENERAL ======== */
+/* ==============================
+   ======== VARIABLES ========
+   ============================== */
+:root {
+  /* Colores generales */
+  --color-fondo: #fff;
+  --color-texto: #2d2d2d;
+  --color-azul-header: #1E3C72;
+  --color-azul-header-alt: #2A5298;
+  --color-azul-th: #0b3d91;
+  --color-verde: #4d853a;
+  --color-verde-hover: #45a049;
+  --color-azul-btn: #1E90FF;
+  --color-rojo: #F44336;
+  --color-naranja: #FF9800;
+  --color-fondo-celda: #293c17;
+  --color-hora-bg: #333;
+  --color-hora-texto: #fff;
+
+  /* Tipografía */
+  --font-base: Arial, sans-serif;
+  --font-header: 'RobotoMonoBold', monospace;
+
+  /* Tamaños */
+  --header-height: 100px;
+  --logo-height: 50px;
+  --gap-base: 20px;
+  --btn-padding: 2px 4px;
+  --btn-radius: 4px;
+  --btn-font-size: 0.8rem;
+  --select-padding: 8px 14px;
+  --select-radius: 12px;
+}
+
+/* ==============================
+   ======== BASE GENERAL ========
+   ============================== */
 body {
-  font-family: Arial, sans-serif;
-  background-color: #fff; /* Fondo general claro */
-  color: #2d2d2d;         /* Texto oscuro para lectura sobre fondo claro */
+  font-family: var(--font-base);
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
   margin: 0;
   padding: 0;
   line-height: 1.5;
 }
 
-
-/* ================================
-   HEADER MODERNO AGENDA
-================================ */
+/* ==============================
+   ======== HEADER FIJO ========
+   ============================== */
 .header {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   z-index: 1000;
-  background: linear-gradient(135deg, #1E3C72, #2A5298);
+  background: linear-gradient(135deg, var(--color-azul-header), var(--color-azul-header-alt));
   color: #fff;
-  padding: 15px 25px;
+  padding: 20px 0;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  font-family: 'RobotoMonoBold', monospace;
+  font-family: var(--font-header);
 }
 
 .header-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--gap-base);
   max-width: 1100px;
   margin: 0 auto;
-  gap: 20px;
+  padding: 0 20px;
   flex-wrap: wrap;
 }
 
 .header .logo {
-  height: 50px;
+  height: var(--logo-height);
   width: auto;
   object-fit: contain;
 }
 
 .header h1 {
   font-size: 28px;
-  font-weight: bold;
-  letter-spacing: 1px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
   margin: 0;
   text-align: center;
   flex: 1;
-  color: #fff;
 }
 
-/* ================================
-   MAIN CONTENT AJUSTADO
-================================ */
+/* ==============================
+   ======== MAIN CONTENT ========
+   ============================== */
 .main-content {
-  padding-top: 100px; /* espacio suficiente para header fijo */
+  padding-top: var(--header-height);
   display: flex;
   flex-direction: column;
   gap: 40px;
 }
 
-/* ================================
-   RESPONSIVE HEADER
-================================ */
-@media (max-width: 768px) {
-  .header-container {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .header h1 {
-    font-size: 24px;
-    margin-top: 10px;
-  }
-
-  .header .logo {
-    height: 40px;
-  }
-}
-
-@media (max-width: 480px) {
-  .header h1 {
-    font-size: 20px;
-  }
-
-  .header .logo {
-    height: 35px;
-  }
-}
-
-
-h1 {
-  color: white;
-  text-align: center;
-}
-
+/* ==============================
+   ======== TABLAS ========
+   ============================== */
 table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
-  table-layout: fixed; /* columnas iguales */
+  table-layout: fixed;
 }
 
 th, td {
@@ -109,66 +112,60 @@ th, td {
   text-align: center;
 }
 
-
-/* ======== ENCABEZADOS ======== */
 th {
-  background-color: #0b3d91; /* Azul oscuro del encabezado */
-  color: #fff;               /* Letras claras sobre fondo oscuro */
+  background-color: var(--color-azul-th);
+  color: #fff;
 }
 
-/* ======== CELDAS ======== */
 td {
-  background-color: #e0f0e0; /* Fondo claro para lectura de letras oscuras */
-  color: #2d2d2d;            /* Letras oscuras */
+  background-color: var(--color-fondo-celda);
+  color: var(--color-texto);
 }
 
-/* ======== COLUMNA HORAS ======== */
 .hora {
-  background-color: #333; /* Fondo oscuro */
-  color: #fff;            /* Letras blancas para contraste */
+  background-color: var(--color-hora-bg);
+  color: var(--color-hora-texto);
 }
 
-/* ======== BOTONES EN CELDAS ======== */
+/* ==============================
+   ======== BOTONES CELDAS ========
+   ============================== */
 td button {
   position: relative;
   transition: all 0.2s ease;
   font-weight: bold;
-  border-radius: 4px;
+  border-radius: var(--btn-radius);
   border: none;
   cursor: pointer;
-  padding: 2px 4px;
-  font-size: 0.8rem;
+  padding: var(--btn-padding);
+  font-size: var(--btn-font-size);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  box-shadow: none;
 }
 
-/* BOTÓN LIBRE (+) */
 .btn-libre {
-    background-color: #4CAF50 !important; /* fuerza el verde */
-    color: #fff !important;
-    -webkit-appearance: none; /* elimina estilo nativo en Safari/Edge */
-    -moz-appearance: none;    /* elimina estilo nativo en Firefox */
-    appearance: none;         /* elimina estilo nativo en todos */
-    border: none;
-    box-shadow: none;         /* elimina sombras por defecto */
+  background-color: var(--color-verde) !important;
+  color: #fff !important;
 }
-
 .btn-libre:hover {
-  background-color: #45a049; /* verde hover */
+  background-color: var(--color-verde-hover);
 }
 
-/* BOTÓN OCUPADO */
 .btn-ocupado {
-  background-color: #1E90FF; /* azul */
+  background-color: var(--color-azul-btn);
   color: #fff;
 }
 
-/* TARJETAS DENTRO DE CELDA */
+/* tarjetas dentro de celda */
 .turno-card {
-  background-color: #45a049; /* verde */
-  color: white;
+  background-color: var(--color-verde-hover);
+  color: #fff;
   font-weight: bold;
   padding: 2px 4px;
   margin: 2px 0;
-  border-radius: 4px;
+  border-radius: var(--btn-radius);
   font-size: 12px;
   white-space: nowrap;
   overflow: hidden;
@@ -183,101 +180,39 @@ td button {
   align-items: center;
 }
 
-/* ======== TOOLTIP MODERNO ======== */
-td button:hover::after {
+/* ==============================
+   ======== TOOLTIP ========
+   ============================== */
+td button::after {
   content: attr(data-tooltip);
   position: absolute;
   top: -35px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #1E3C72, #2A5298);
+  background: linear-gradient(135deg, var(--color-azul-header), var(--color-azul-header-alt));
   color: #fff;
   padding: 6px 10px;
   border-radius: 6px;
   font-size: 12px;
   white-space: nowrap;
   z-index: 10;
-  opacity: 1;
-  pointer-events: none;
-}
-
-td button::after {
   opacity: 0;
+  pointer-events: none;
   transition: opacity 0.2s ease;
-  pointer-events: none;
 }
 
-/* ======== NAVEGACIÓN ======== */
-#agendaContainer > div {
-  text-align: center;
-  margin: 20px 0; /* separación uniforme con header */
+td button:hover::after {
+  opacity: 1;
 }
 
-#selectSemana, #selectTecnico, #selectRango {
-  padding: 8px 14px;
-  border-radius: 12px;
-  border: none;
-  font-weight: bold;
-  font-size: 14px;
-  color: #fff;
-  background: linear-gradient(135deg, #1E3C72, #2A5298);
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-#selectSemana:hover, #selectTecnico:hover, #selectRango:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  background: linear-gradient(135deg, #2A5298, #1E3C72);
-}
-
-#agendaContainer > div button {
-  padding: 10px 20px;
-  margin: 0 4px;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 15px;
-  color: #fff;
-  background: linear-gradient(135deg, #1E3C72, #2A5298);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
-}
-
-#agendaContainer > div button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.4);
-  background: linear-gradient(135deg, #2A5298, #1E3C72);
-}
-
-.tooltip {
-  position: absolute;
-  background: #333;
-  color: #fff;
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  line-height: 1.4;
-  z-index: 9999;
-  pointer-events: none;
-  max-width: 250px;
-  white-space: normal;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-}
-
-.bloque-turno {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
+/* ==============================
+   ======== SUB ETIQUETAS ========
+   ============================== */
 .sub-etiqueta {
   margin-top: 4px;
   width: 36px;
   height: 18px;
-  border-radius: 4px;
+  border-radius: var(--btn-radius);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -287,64 +222,121 @@ td button::after {
   box-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
-.sub-etiqueta.ok { background-color: #4CAF50; border: 1px solid #2e7d32; }
-.sub-etiqueta.nok { background-color: #F44336; border: 1px solid #b71c1c; }
-.sub-etiqueta.repro { background-color: #FF9800; border: 1px solid #ef6c00; }
+.sub-etiqueta.ok { background-color: var(--color-verde); border: 1px solid #2e7d32; }
+.sub-etiqueta.nok { background-color: var(--color-rojo); border: 1px solid #b71c1c; }
+.sub-etiqueta.repro { background-color: var(--color-naranja); border: 1px solid #ef6c00; }
 
-/* ======== HEADER FIJO SOBRIO ======== */
-.header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000;
-  background: linear-gradient(135deg, #1E3C72, #2A5298);
-  color: #fff;
-  padding: 20px 0;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.header-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* logo a la izquierda, título centrado */
-  gap: 20px;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-.header .logo {
-  height: 50px;
-  object-fit: contain;
-}
-
-.header h1 {
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  margin: 0;
-  text-align: center;
-  flex: 1;
-}
-
-/* ======== MAIN CONTENT CON ESPACIO PARA HEADER ======== */
-.main-content {
-  padding-top: 100px; /* ajusta según altura real del header */
+/* ==============================
+   ======== BLOQUES DE TURNO ========
+   ============================== */
+.bloque-turno {
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  align-items: center;
+  gap: 2px;
 }
 
-/* ======== ESPACIO PARA AGENDA ======== */
-#agendaContainer {
-  margin-top: 20px; /* separación uniforme con header */
+/* ==============================
+   ======== NAV & SELECTS ========
+   ============================== */
+#agendaContainer > div {
+  text-align: center;
+  margin: 20px 0;
 }
 
+#selectSemana, #selectTecnico, #selectRango {
+  padding: var(--select-padding);
+  border-radius: var(--select-radius);
+  border: none;
+  font-weight: bold;
+  font-size: 14px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--color-azul-header), var(--color-azul-header-alt));
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+}
 
-/* ===== TOGGLE HAMBURGUESA ===== */
+#selectSemana:hover, #selectTecnico:hover, #selectRango:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  background: linear-gradient(135deg, var(--color-azul-header-alt), var(--color-azul-header));
+}
+
+#agendaContainer > div button {
+  padding: 10px 20px;
+  margin: 0 4px;
+  border-radius: var(--select-radius);
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 15px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--color-azul-header), var(--color-azul-header-alt));
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+}
+
+#agendaContainer > div button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+  background: linear-gradient(135deg, var(--color-azul-header-alt), var(--color-azul-header));
+}
+
+/* ==============================
+   ======== RESPONSIVE ========
+   ============================== */
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .top-nav {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    gap: 10px;
+    background: linear-gradient(135deg, var(--color-azul-header), var(--color-azul-header-alt));
+    border-radius: 8px;
+    padding: 10px 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    overflow: hidden;
+  }
+
+  .top-nav.show { display: flex; }
+
+  .top-nav ul {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    padding: 0 15px;
+  }
+
+  .top-nav a {
+    width: 100%;
+    padding: 8px 12px;
+    text-align: left;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 6px;
+  }
+
+  .top-nav a:hover { background: rgba(255,255,255,0.2); }
+
+  .menu-toggle { display: flex; }
+}
+
+@media (max-width: 480px) {
+  .header h1 { font-size: 20px; }
+  .header .logo { height: 35px; }
+}
+
+/* ==============================
+   ======== HAMBURGUESA ========
+   ============================== */
 .menu-toggle {
-  display: none; /* solo visible en móviles */
+  display: none;
   flex-direction: column;
   justify-content: space-between;
   width: 28px;
@@ -364,64 +356,10 @@ td button::after {
   transition: all 0.3s ease;
 }
 
-/* Animación del toggle abierto */
 .menu-toggle.open .bar:nth-child(1) {
   transform: rotate(45deg) translate(5px, 5px);
 }
-
-.menu-toggle.open .bar:nth-child(2) {
-  opacity: 0;
-}
-
+.menu-toggle.open .bar:nth-child(2) { opacity: 0; }
 .menu-toggle.open .bar:nth-child(3) {
   transform: rotate(-45deg) translate(5px, -5px);
-}
-
-/* ===== NAV RESPONSIVE ===== */
-@media (max-width: 768px) {
-  .header-container {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .top-nav {
-    display: none;
-    width: 100%;
-    flex-direction: column;
-    gap: 10px;
-    background: linear-gradient(135deg, #1E3C72, #2A5298);
-    border-radius: 8px;
-    padding: 10px 0;
-    transition: max-height 0.3s ease, opacity 0.3s ease;
-    overflow: hidden;
-  }
-
-  .top-nav.show {
-    display: flex;
-  }
-
-  .top-nav ul {
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-    padding: 0 15px;
-  }
-
-  .top-nav a {
-    width: 100%;
-    padding: 8px 12px;
-    text-align: left;
-    color: #fff;
-    font-weight: bold;
-    border-radius: 6px;
-  }
-
-  .top-nav a:hover {
-    background: rgba(255,255,255,0.2);
-  }
-
-  .menu-toggle {
-    display: flex;
-  }
 }
