@@ -78,33 +78,37 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   
     const diasDisponiblesNAP = nap.dias && Array.isArray(nap.dias) ? nap.dias.map(d => d.toLowerCase()) : DAYS;
-
-    // === Generar fechas distribuidas aleatoriamente dentro del mes ===
+  
+    // === Generar fechas próximas (desde mañana en adelante) ===
     const hoy = new Date();
     const fechasOpciones = [];
-    const diasMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).getDate();
-
-    while (fechasOpciones.length < 3) {
-      const diaAleatorio = Math.floor(Math.random() * diasMes) + 1;
-      const fecha = new Date(hoy.getFullYear(), hoy.getMonth(), diaAleatorio);
+    let intento = 0;
+    const MAX_INTENTOS = 50;
+  
+    while (fechasOpciones.length < 3 && intento < MAX_INTENTOS) {
+      intento++;
+    
+      // Elegir un día aleatorio desde hoy hasta 30 días adelante
+      const diasAdelante = Math.floor(Math.random() * 30) + 1; // +1 para que sea desde mañana
+      const fecha = new Date();
+      fecha.setDate(hoy.getDate() + diasAdelante);
+    
       const diaNombre = DAYS[fecha.getDay()];
-
+    
       if (!diasDisponiblesNAP.includes(diaNombre)) continue;
-
+    
       const fechaISO = fecha.toISOString().slice(0,10);
       const conflicto = turnos.some(turno =>
         (turno.clienteId === cliente.numeroCliente) ||
         (turno.fecha === fechaISO && turno.hora === horaStr && turno.nap === nap.numero)
       );
-
+    
       if (!conflicto && !fechasOpciones.some(f => f.fechaISO === fechaISO)) {
         fechasOpciones.push({fecha, fechaISO, diaNombre});
       }
-
-      if (fechasOpciones.length < 3 && fechasOpciones.length + fechasOpciones.filter(f => f.fecha.getMonth() === hoy.getMonth()).length >= diasMes) break;
     }
-
-    if (!fechasOpciones.length) return alert("No hay fechas disponibles para este NAP");
+  
+    if (!fechasOpciones.length) return alert("No hay fechas próximas disponibles para este NAP");
   
     fechasOpciones.forEach(opcion => {
       const card = document.createElement("div");
@@ -160,6 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
       turnosContainer.appendChild(card);
     });
   }
+
 
 
   function renderHistorialTurnos() {
