@@ -234,6 +234,37 @@ button.turno-ocupado {
   width: 100%;
 }
 
+
+button.btnEliminarTurno,
+button.btnSeleccionarTurno {
+  background: #1E3C72;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 0;
+  width: 100%;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.2s;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+}
+
+button.btnEliminarTurno:hover,
+button.btnSeleccionarTurno:hover {
+  background: #153061;
+}
+
+button.btnEliminarTurno {
+  background: #e74c3c;
+}
+
+button.btnEliminarTurno:hover {
+  background: #c0392b;
+}
+
+
 /* ================================ */
 /* HISTORIAL */
 /* ================================ */
