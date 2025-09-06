@@ -105,6 +105,11 @@
     </div>
   </footer>
 
-  <script src="../js/clientesModule.js"></script>
+  <script type="module">
+  import { ClienteManager } from '../js/clientesModule.js';
+  document.addEventListener('DOMContentLoaded', () => {
+    new ClienteManager('formCliente', 'clientesTable');
+  });
+</script>
 </body>
 </html>

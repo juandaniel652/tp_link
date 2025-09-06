@@ -1,128 +1,141 @@
-document.addEventListener('DOMContentLoaded', () => {
-  /** =====================
-   *  CONSTANTES Y ESTADO
-   *  ===================== */
-  const form = document.getElementById('formCliente');
-  const tablaBody = document.querySelector('#clientesTable tbody');
+// archivo: clientesManager.js
+export class ClienteManager {
+  constructor(formId, tablaId) {
+    /** =====================
+     *  ELEMENTOS DOM
+     *  ===================== */
+    this.form = document.getElementById(formId);
+    this.tablaBody = document.querySelector(`#${tablaId} tbody`);
 
-  const inputNumeroCliente = document.getElementById('NumeroCliente');
-  const inputNombre = document.getElementById('clienteNombre');
-  const inputApellido = document.getElementById('clienteApellido');
-  const inputTelefono = document.getElementById('clienteTelefono');
-  const inputDomicilio = document.getElementById('clienteDomicilio');
-  const inputNumeroDomicilio = document.getElementById('clienteNumeroDomicilio');
+    this.inputNumeroCliente = this.form.querySelector('#NumeroCliente');
+    this.inputNombre = this.form.querySelector('#clienteNombre');
+    this.inputApellido = this.form.querySelector('#clienteApellido');
+    this.inputTelefono = this.form.querySelector('#clienteTelefono');
+    this.inputDomicilio = this.form.querySelector('#clienteDomicilio');
+    this.inputNumeroDomicilio = this.form.querySelector('#clienteNumeroDomicilio');
 
-  let clientes = JSON.parse(localStorage.getItem('clientes')) || [];
-  let indiceEdicion = null;
+    /** =====================
+     *  ESTADO
+     *  ===================== */
+    this.clientes = JSON.parse(localStorage.getItem('clientes')) || [];
+    this.indiceEdicion = null;
 
-  /** =====================
-   *  REGEX
-   *  ===================== */
-  const regexSoloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
-  const regexSoloNumeros = /^\d+$/;
-  const regexTelefono = /^11\d{8}$/;
+    /** =====================
+     *  REGEX
+     *  ===================== */
+    this.regexSoloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+    this.regexSoloNumeros = /^\d+$/;
+    this.regexTelefono = /^11\d{8}$/;
 
-  /** =====================
-   *  CONTADORES Y MENSAJES
-   *  ===================== */
-  const contadorTelefono = document.createElement('small');
-  contadorTelefono.style.display = "block";
-  contadorTelefono.style.marginTop = "4px";
-  contadorTelefono.style.color = "#555";
-  inputTelefono.insertAdjacentElement("afterend", contadorTelefono);
+    /** =====================
+     *  MENSAJES Y CONTADORES
+     *  ===================== */
+    this.contadorTelefono = document.createElement('small');
+    this.contadorTelefono.style.display = "block";
+    this.contadorTelefono.style.marginTop = "4px";
+    this.contadorTelefono.style.color = "#555";
+    this.inputTelefono.insertAdjacentElement("afterend", this.contadorTelefono);
 
-  const mensajeValidacion = document.createElement('small');
-  mensajeValidacion.style.display = "block";
-  mensajeValidacion.style.marginTop = "8px";
-  mensajeValidacion.style.color = "red";
-  form.insertAdjacentElement("beforeend", mensajeValidacion);
+    this.mensajeValidacion = document.createElement('small');
+    this.mensajeValidacion.style.display = "block";
+    this.mensajeValidacion.style.marginTop = "8px";
+    this.mensajeValidacion.style.color = "red";
+    this.form.insertAdjacentElement("beforeend", this.mensajeValidacion);
 
-  // Inicializar teléfono
-  inputTelefono.value = "11";
-  contadorTelefono.textContent = "0/8 dígitos";
-  contadorTelefono.style.color = "orange";
-
-  /** =====================
-   *  HELPERS DE LIMPIEZA
-   *  ===================== */
-  const limpiarLetras = (valor) => valor.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
-  const limpiarNumeros = (valor) => valor.replace(/\D/g, '');
-
-  function limpiarCamposFormulario() {
-    inputNumeroCliente.value = "";
-    inputNombre.value = "";
-    inputApellido.value = "";
-    inputDomicilio.value = "";
-    inputNumeroDomicilio.value = "";
-    inputTelefono.value = "11";
-    contadorTelefono.textContent = "0/8 dígitos";
-    contadorTelefono.style.color = "orange";
-    indiceEdicion = null;
-    form.querySelector("button[type='submit']").textContent = "Guardar Cliente";
-    mensajeValidacion.textContent = "";
+    this.inicializarTelefono();
+    this.agregarEventos();
+    this.renderizarClientes();
   }
 
   /** =====================
-   *  VALIDADORES DE INPUT
+   *  HELPERS
    *  ===================== */
-  function validarInputLetras(event) {
-    event.target.value = limpiarLetras(event.target.value);
+  limpiarLetras(valor) {
+    return valor.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
   }
 
-  function validarInputNumeros(event) {
-    event.target.value = limpiarNumeros(event.target.value);
+  limpiarNumeros(valor) {
+    return valor.replace(/\D/g, '');
   }
 
-  function validarTelefonoEnInput(event) {
-    let valor = limpiarNumeros(event.target.value);
+  limpiarCamposFormulario() {
+    this.inputNumeroCliente.value = "";
+    this.inputNombre.value = "";
+    this.inputApellido.value = "";
+    this.inputTelefono.value = "11";
+    this.inputDomicilio.value = "";
+    this.inputNumeroDomicilio.value = "";
+    this.contadorTelefono.textContent = "0/8 dígitos";
+    this.contadorTelefono.style.color = "orange";
+    this.indiceEdicion = null;
+    this.form.querySelector("button[type='submit']").textContent = "Guardar Cliente";
+    this.mensajeValidacion.textContent = "";
+  }
+
+  inicializarTelefono() {
+    this.inputTelefono.value = "11";
+    this.contadorTelefono.textContent = "0/8 dígitos";
+    this.contadorTelefono.style.color = "orange";
+  }
+
+  /** =====================
+   *  VALIDACIONES
+   *  ===================== */
+  validarInputLetras(event) {
+    event.target.value = this.limpiarLetras(event.target.value);
+  }
+
+  validarInputNumeros(event) {
+    event.target.value = this.limpiarNumeros(event.target.value);
+  }
+
+  validarTelefonoEnInput(event) {
+    let valor = this.limpiarNumeros(event.target.value);
     if (!valor.startsWith("11")) valor = "11" + valor;
     valor = valor.slice(0, 10);
     event.target.value = valor;
 
     const restantes = Math.max(0, valor.length - 2);
-    contadorTelefono.textContent = `${restantes}/8 dígitos`;
-    contadorTelefono.style.color = restantes < 8 ? "orange" : "green";
+    this.contadorTelefono.textContent = `${restantes}/8 dígitos`;
+    this.contadorTelefono.style.color = restantes < 8 ? "orange" : "green";
   }
 
-  /** =====================
-   *  VALIDACIÓN DE FORMULARIO
-   *  ===================== */
-  function validarCliente(cliente) {
-    mensajeValidacion.textContent = "";
+  validarCliente(cliente) {
+    this.mensajeValidacion.textContent = "";
 
     if (!cliente.numeroCliente || !cliente.nombre || !cliente.apellido ||
         !cliente.telefono || !cliente.domicilio || !cliente.numeroDomicilio) {
-      mensajeValidacion.textContent = 'Por favor, complete todos los campos.';
+      this.mensajeValidacion.textContent = 'Por favor, complete todos los campos.';
       return false;
     }
 
-    if (!regexSoloNumeros.test(cliente.numeroCliente)) {
-      mensajeValidacion.textContent = 'El número de cliente solo puede contener números.';
+    if (!this.regexSoloNumeros.test(cliente.numeroCliente)) {
+      this.mensajeValidacion.textContent = 'El número de cliente solo puede contener números.';
       return false;
     }
 
-    if (!regexSoloLetras.test(cliente.nombre)) {
-      mensajeValidacion.textContent = 'El nombre solo puede contener letras.';
+    if (!this.regexSoloLetras.test(cliente.nombre)) {
+      this.mensajeValidacion.textContent = 'El nombre solo puede contener letras.';
       return false;
     }
 
-    if (!regexSoloLetras.test(cliente.apellido)) {
-      mensajeValidacion.textContent = 'El apellido solo puede contener letras.';
+    if (!this.regexSoloLetras.test(cliente.apellido)) {
+      this.mensajeValidacion.textContent = 'El apellido solo puede contener letras.';
       return false;
     }
 
-    if (!regexTelefono.test(cliente.telefono)) {
-      mensajeValidacion.textContent = 'El teléfono debe comenzar con 11 y tener exactamente 10 dígitos.';
+    if (!this.regexTelefono.test(cliente.telefono)) {
+      this.mensajeValidacion.textContent = 'El teléfono debe comenzar con 11 y tener exactamente 10 dígitos.';
       return false;
     }
 
-    if (!regexSoloLetras.test(cliente.domicilio)) {
-      mensajeValidacion.textContent = 'La calle solo puede contener letras.';
+    if (!this.regexSoloLetras.test(cliente.domicilio)) {
+      this.mensajeValidacion.textContent = 'La calle solo puede contener letras.';
       return false;
     }
 
-    if (!regexSoloNumeros.test(cliente.numeroDomicilio)) {
-      mensajeValidacion.textContent = 'El número de domicilio solo puede contener números.';
+    if (!this.regexSoloNumeros.test(cliente.numeroDomicilio)) {
+      this.mensajeValidacion.textContent = 'El número de domicilio solo puede contener números.';
       return false;
     }
 
@@ -132,106 +145,124 @@ document.addEventListener('DOMContentLoaded', () => {
   /** =====================
    *  RENDERIZAR TABLA
    *  ===================== */
-  function renderizarClientes() {
-    tablaBody.innerHTML = '';
+  renderizarClientes() {
+    this.tablaBody.innerHTML = '';
 
-    if (clientes.length === 0) {
+    if (this.clientes.length === 0) {
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td colspan="6" class="no-data">No hay clientes registrados</td>`;
-      tablaBody.appendChild(tr);
+      const td = document.createElement('td');
+      td.colSpan = 6;
+      td.className = "no-data";
+      td.textContent = "No hay clientes registrados";
+      tr.appendChild(td);
+      this.tablaBody.appendChild(tr);
       return;
     }
 
-    clientes.forEach((cliente, index) => {
-      const fila = document.createElement('tr');
-      fila.innerHTML = `
-        <td data-label="Número">${cliente.numeroCliente}</td>
-        <td data-label="Nombre">${cliente.nombre}</td>
-        <td data-label="Apellido">${cliente.apellido}</td>
-        <td data-label="Teléfono">${cliente.telefono}</td>
-        <td data-label="Domicilio">${cliente.domicilio} ${cliente.numeroDomicilio}</td>
-        <td data-label="Acciones">
-          <button class="btn-action edit" data-index="${index}">✏️</button>
-          <button class="btn-action delete" data-index="${index}">🗑️</button>
-        </td>
-      `;
-      tablaBody.appendChild(fila);
+    this.clientes.forEach((cliente, index) => {
+      const tr = document.createElement('tr');
+
+      tr.appendChild(this.crearTd(cliente.numeroCliente, "Número"));
+      tr.appendChild(this.crearTd(cliente.nombre, "Nombre"));
+      tr.appendChild(this.crearTd(cliente.apellido, "Apellido"));
+      tr.appendChild(this.crearTd(cliente.telefono, "Teléfono"));
+      tr.appendChild(this.crearTd(`${cliente.domicilio} ${cliente.numeroDomicilio}`, "Domicilio"));
+
+      const tdAcciones = document.createElement('td');
+      tdAcciones.dataset.label = "Acciones";
+
+      const btnEditar = document.createElement('button');
+      btnEditar.className = "btn-action edit";
+      btnEditar.dataset.index = index;
+      btnEditar.textContent = "✏️";
+
+      const btnEliminar = document.createElement('button');
+      btnEliminar.className = "btn-action delete";
+      btnEliminar.dataset.index = index;
+      btnEliminar.textContent = "🗑️";
+
+      tdAcciones.appendChild(btnEditar);
+      tdAcciones.appendChild(btnEliminar);
+
+      tr.appendChild(tdAcciones);
+      this.tablaBody.appendChild(tr);
     });
   }
 
+  crearTd(contenido, label) {
+    const td = document.createElement('td');
+    td.dataset.label = label;
+    td.textContent = contenido;
+    return td;
+  }
+
   /** =====================
-   *  DELEGACIÓN DE EVENTOS (EDICIÓN Y ELIMINACIÓN)
+   *  EVENTOS
    *  ===================== */
-  tablaBody.addEventListener("click", (e) => {
+  agregarEventos() {
+    this.inputNumeroCliente.addEventListener('input', (e) => this.validarInputNumeros(e));
+    this.inputNombre.addEventListener('input', (e) => this.validarInputLetras(e));
+    this.inputApellido.addEventListener('input', (e) => this.validarInputLetras(e));
+    this.inputDomicilio.addEventListener('input', (e) => this.validarInputLetras(e));
+    this.inputNumeroDomicilio.addEventListener('input', (e) => this.validarInputNumeros(e));
+    this.inputTelefono.addEventListener('input', (e) => this.validarTelefonoEnInput(e));
+
+    this.form.addEventListener('submit', (e) => this.guardarCliente(e));
+
+    this.tablaBody.addEventListener('click', (e) => this.handleTablaClick(e));
+  }
+
+  guardarCliente(e) {
+    e.preventDefault();
+    const cliente = {
+      numeroCliente: this.inputNumeroCliente.value.trim(),
+      nombre: this.inputNombre.value.trim(),
+      apellido: this.inputApellido.value.trim(),
+      telefono: this.inputTelefono.value.trim(),
+      domicilio: this.inputDomicilio.value.trim(),
+      numeroDomicilio: this.inputNumeroDomicilio.value.trim()
+    };
+
+    if (!this.validarCliente(cliente)) return;
+
+    if (this.indiceEdicion !== null) {
+      this.clientes[this.indiceEdicion] = cliente;
+      this.indiceEdicion = null;
+    } else {
+      this.clientes.push(cliente);
+    }
+
+    localStorage.setItem('clientes', JSON.stringify(this.clientes));
+    this.limpiarCamposFormulario();
+    this.renderizarClientes();
+  }
+
+  handleTablaClick(e) {
     const target = e.target;
     const index = target.dataset.index;
 
-    // Editar cliente
+    if (!index) return;
+
     if (target.classList.contains("edit")) {
-      const c = clientes[index];
-      inputNumeroCliente.value = c.numeroCliente;
-      inputNombre.value = c.nombre;
-      inputApellido.value = c.apellido;
-      inputTelefono.value = c.telefono;
-      inputDomicilio.value = c.domicilio;
-      inputNumeroDomicilio.value = c.numeroDomicilio;
-      form.querySelector("button[type='submit']").textContent = "Guardar Cambios";
-      indiceEdicion = index;
-      form.scrollIntoView({ behavior: "smooth" });
+      const cliente = this.clientes[index];
+      this.inputNumeroCliente.value = cliente.numeroCliente;
+      this.inputNombre.value = cliente.nombre;
+      this.inputApellido.value = cliente.apellido;
+      this.inputTelefono.value = cliente.telefono;
+      this.inputDomicilio.value = cliente.domicilio;
+      this.inputNumeroDomicilio.value = cliente.numeroDomicilio;
+      this.form.querySelector("button[type='submit']").textContent = "Guardar Cambios";
+      this.indiceEdicion = index;
+      this.form.scrollIntoView({ behavior: "smooth" });
     }
 
-    // Eliminar cliente
     if (target.classList.contains("delete")) {
-      const cliente = clientes[index];
+      const cliente = this.clientes[index];
       if (confirm(`¿Seguro que quieres eliminar al cliente ${cliente.nombre} ${cliente.apellido}?`)) {
-        clientes.splice(index, 1);
-        localStorage.setItem("clientes", JSON.stringify(clientes));
-        renderizarClientes();
+        this.clientes.splice(index, 1);
+        localStorage.setItem("clientes", JSON.stringify(this.clientes));
+        this.renderizarClientes();
       }
     }
-  });
-
-  /** =====================
-   *  EVENTOS INPUTS
-   *  ===================== */
-  inputNumeroCliente.addEventListener('input', validarInputNumeros);
-  inputNombre.addEventListener('input', validarInputLetras);
-  inputApellido.addEventListener('input', validarInputLetras);
-  inputDomicilio.addEventListener('input', validarInputLetras);
-  inputNumeroDomicilio.addEventListener('input', validarInputNumeros);
-  inputTelefono.addEventListener('input', validarTelefonoEnInput);
-
-  /** =====================
-   *  EVENTO SUBMIT
-   *  ===================== */
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const cliente = {
-      numeroCliente: inputNumeroCliente.value.trim(),
-      nombre: inputNombre.value.trim(),
-      apellido: inputApellido.value.trim(),
-      telefono: inputTelefono.value.trim(),
-      domicilio: inputDomicilio.value.trim(),
-      numeroDomicilio: inputNumeroDomicilio.value.trim()
-    };
-
-    if (!validarCliente(cliente)) return;
-
-    if (indiceEdicion !== null) {
-      clientes[indiceEdicion] = cliente;
-      indiceEdicion = null;
-    } else {
-      clientes.push(cliente);
-    }
-
-    localStorage.setItem('clientes', JSON.stringify(clientes));
-    limpiarCamposFormulario();
-    renderizarClientes();
-  });
-
-  /** =====================
-   *  RENDER INICIAL
-   *  ===================== */
-  renderizarClientes();
-});
+  }
+}
