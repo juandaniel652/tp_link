@@ -1,25 +1,62 @@
 /* ================================ */
-/* TIPOGRAFÍA Y BASE */
+/* FUENTES                          */
 /* ================================ */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Inter:wght@500;700&display=swap');
+@font-face {
+  font-family: 'RobotoMonoBold'; 
+  src: url('../fuentes/RobotoMono/RobotoMono-Bold.ttf') format('truetype'); 
+  font-weight: normal; 
+  font-style: normal;  
+}
+
+@font-face {
+  font-family: 'AncizarSanzBold'; 
+  src: url('../fuentes/AncizarSans/AncizarSans-Bold.ttf') format('truetype'); 
+  font-weight: normal; 
+  font-style: normal;  
+}
+
+/* ================================ */
+/* BASE                             */
+/* ================================ */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
 
 body {
-  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   background-color: #f7f9fc;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'AncizarSanzBold', sans-serif;
   color: #333;
 }
 
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  padding-top: 15px;
+}
 
-/* === HEADER DASHBOARD === */
+/* ================================ */
+/* HEADER DASHBOARD                 */
+/* ================================ */
 .site-header {
   background: linear-gradient(135deg, #1E3C72, #2A5298);
-  padding: 16px 32px;
+  padding: 15px 25px;
   color: #fff;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   position: sticky;
   top: 0;
   z-index: 1000;
+  font-family: 'RobotoMonoBold', monospace;
 }
 
 .site-header .header-container {
@@ -37,9 +74,9 @@ body {
 
 .site-header .site-title {
   font-size: 26px;
-  font-weight: bold;
   margin: 0;
   color: #fff;
+  font-family: 'RobotoMonoBold', monospace;
 }
 
 .site-header .site-nav ul {
@@ -57,6 +94,7 @@ body {
   padding: 6px 12px;
   border-radius: 8px;
   transition: background 0.3s, color 0.3s;
+  font-family: 'RobotoMonoBold', monospace;
 }
 
 .site-header .site-nav a:hover {
@@ -68,7 +106,6 @@ body {
   color: #1E3C72;
 }
 
-
 /* BOTÓN TOGGLE SOLO MÓVIL */
 .nav-toggle {
   display: none;
@@ -79,32 +116,8 @@ body {
   cursor: pointer;
 }
 
-/* RESPONSIVE HEADER */
-@media (max-width: 768px) {
-  .nav-toggle {
-    display: block;
-  }
-
-  .site-header .site-nav {
-    display: none;
-    width: 100%;
-  }
-
-  .site-header .site-nav.open {
-    display: block;
-  }
-
-  .site-header .site-nav ul {
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 10px;
-  }
-}
-
-
-
 /* ================================ */
-/* LAYOUT */
+/* LAYOUT                           */
 /* ================================ */
 .layout {
   display: grid;
@@ -114,65 +127,73 @@ body {
 }
 
 /* ================================ */
-/* SIDEBAR (FORM) */
+/* SIDEBAR (FORM)                   */
 /* ================================ */
 .sidebar {
   background: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.sidebar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
 }
 .sidebar h2 {
-  font-size: 18px;
+  font-size: 20px;
   margin-bottom: 16px;
   color: #1E3C72;
   font-weight: 600;
-  border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 6px;
+  border-bottom: 2px solid #1E3C72;
+  padding-bottom: 8px;
+  text-align: center;
 }
 
 .form-turno label {
   display: block;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
   margin-top: 12px;
-  color: #555;
+  color: #1E3C72;
 }
 .form-turno select {
   width: 100%;
   margin-top: 6px;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 2px solid #ccc;
   background: #fafafa;
-  font-size: 14px;
+  font-size: 15px;
   outline: none;
-  transition: border-color 0.2s;
+  transition: all 0.3s ease;
 }
 .form-turno select:focus {
   border-color: #1E3C72;
+  box-shadow: 0 0 8px rgba(30,60,114,0.3);
 }
 .btn-primary {
   margin-top: 20px;
   width: 100%;
   padding: 12px;
   border: none;
-  border-radius: 8px;
-  background: #1E3C72;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #1E3C72, #2A5298);
   color: #fff;
-  font-weight: 600;
+  font-weight: bold;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 .btn-primary:hover {
-  background: #153061;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.25);
 }
 
 /* ================================ */
-/* CONTENT */
+/* CONTENT                          */
 /* ================================ */
 .content h2 {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
   margin: 16px 0 12px;
   color: #1E3C72;
@@ -187,22 +208,23 @@ body {
 /* CARD TURNOS */
 .card-turno {
   background: #fff;
-  border-radius: 10px;
-  padding: 16px;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
-  transition: transform 0.15s;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 .card-turno:hover {
   transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
 }
 .card-turno h3 {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   margin-bottom: 8px;
   color: #1E3C72;
 }
 .card-turno p {
-  font-size: 13px;
+  font-size: 14px;
   margin: 4px 0;
   color: #444;
 }
@@ -210,63 +232,67 @@ body {
 /* Botones dentro de cards */
 button.turno-disponible {
   margin-top: 8px;
-  padding: 8px;
+  padding: 10px;
   border: none;
-  border-radius: 6px;
-  background: #1E3C72;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #1E3C72, #2A5298);
   color: #fff;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
   width: 100%;
-  transition: background 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 button.turno-disponible:hover {
-  background: #153061;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.25);
 }
 button.turno-ocupado {
   margin-top: 8px;
-  padding: 8px;
+  padding: 10px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   background: #e0e0e0;
   color: #888;
   cursor: not-allowed;
   width: 100%;
 }
 
-
+/* Botones generales */
 button.btnEliminarTurno,
 button.btnSeleccionarTurno {
-  background: #1E3C72;
-  color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 10px 0;
+  border-radius: 10px;
+  padding: 12px;
   width: 100%;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: bold;
   cursor: pointer;
   margin-top: 10px;
-  transition: background 0.2s;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.12);
 }
 
-button.btnEliminarTurno:hover,
+button.btnSeleccionarTurno {
+  background: linear-gradient(135deg, #1E3C72, #2A5298);
+  color: #fff;
+}
 button.btnSeleccionarTurno:hover {
-  background: #153061;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 14px rgba(0,0,0,0.2);
 }
 
 button.btnEliminarTurno {
   background: #e74c3c;
+  color: #fff;
 }
-
 button.btnEliminarTurno:hover {
   background: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 14px rgba(0,0,0,0.2);
 }
 
-
 /* ================================ */
-/* HISTORIAL */
+/* HISTORIAL                        */
 /* ================================ */
 .historial-turnos {
   margin-top: 20px;
@@ -277,148 +303,101 @@ button.btnEliminarTurno:hover {
   border-left: 4px solid #4a90e2;
 }
 
-
 /* ================================ */
-/* RESPONSIVE GENERAL */
+/* FOOTER CORPORATIVO               */
 /* ================================ */
-
-/* Para tablets y pantallas medianas */
-@media (max-width: 1024px) {
-  .layout {
-    grid-template-columns: 220px 1fr;
-    padding: 16px;
-    gap: 16px;
-  }
-
-  .sidebar {
-    padding: 16px;
-  }
-
-  .site-header .site-title {
-    font-size: 22px;
-    text-align: center;
-  }
-}
-
-/* Para móviles (smartphones) */
-@media (max-width: 768px) {
-  /* Layout se vuelve una sola columna */
-  .layout {
-    grid-template-columns: 1fr;
-    padding: 12px;
-    gap: 12px;
-  }
-
-  /* Sidebar ocupa todo el ancho */
-  .sidebar {
-    width: 100%;
-  }
-
-  /* Grilla de turnos ocupa todo el ancho y se ajusta automáticamente */
-  .grilla-turnos {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  /* Header ya lo tenías responsive, solo ajustamos tamaños */
-  .site-header .site-title {
-    font-size: 20px;
-  }
-}
-
-/* Para móviles muy pequeños */
-@media (max-width: 480px) {
-  .header, .site-header .header-container {
-    padding: 12px 16px;
-  }
-
-  .site-header .site-title {
-    font-size: 18px;
-  }
-
-  .site-header .site-nav ul {
-    gap: 8px;
-  }
-
-  .form-turno label {
-    font-size: 13px;
-  }
-
-  .form-turno select, .btn-primary {
-    font-size: 13px;
-    padding: 10px;
-  }
-
-  .card-turno h3 {
-    font-size: 14px;
-  }
-
-  .card-turno p {
-    font-size: 12px;
-  }
-
-  button.turno-disponible, button.turno-ocupado {
-    font-size: 12px;
-    padding: 6px;
-  }
-}
-
-
-/* Ajustes para tablets */
-@media (max-width: 1024px) {
-  .grilla-turnos {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 14px;
-  }
-}
-
-/* Ajustes para móviles */
-@media (max-width: 768px) {
-  .grilla-turnos {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 12px;
-  }
-}
-
-/* Ajustes para móviles muy pequeños */
-@media (max-width: 480px) {
-  .grilla-turnos {
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
-}
-
-
-/* ================================ 
-   FOOTER CORPORATIVO 
-================================ */
 .footer {
-  background: #1E3C72;       /* Azul corporativo */
-  color: #ffffff;             /* Texto blanco */
-  padding: 20px 0;
+  background: #1E3C72;
+  color: #ffffff;
+  padding: 15px 0;
   text-align: center;
   font-size: 14px;
   font-family: 'RobotoMonoBold', monospace;
-  margin-top: auto;           /* Siempre abajo */
+  margin-top: auto;
   box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
 }
-
 .footer a {
   color: #ffffff;
   text-decoration: none;
   font-weight: bold;
   transition: color 0.2s, text-decoration 0.2s;
 }
-
 .footer a:hover {
-  color: #FFD700;             /* Amarillo hover */
+  color: #FFD700;
   text-decoration: underline;
 }
 
-/* Responsive Footer */
-@media (max-width: 768px) {
-  .footer {
-    font-size: 13px;
-    padding: 15px 10px;
+/* ================================ */
+/* RESPONSIVE                       */
+/* ================================ */
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 220px 1fr;
+    padding: 16px;
+    gap: 16px;
   }
+  .sidebar { padding: 18px; }
+  .site-header .site-title { font-size: 22px; text-align: center; }
+  .grilla-turnos {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+  }
+}
+
+/* Celulares */
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+    padding: 12px;
+    gap: 12px;
+  }
+  .sidebar { width: 100%; }
+  .grilla-turnos {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  .site-header .header-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .site-header .site-title { font-size: 20px; }
+  .site-header .site-nav {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .site-header .site-nav.active { display: flex; }
+  .nav-toggle { display: block; }
+}
+
+/* Celulares chicos */
+@media (max-width: 480px) {
+  .site-header, .site-header .header-container {
+    padding: 12px 16px;
+  }
+  .site-header .site-title { font-size: 18px; }
+  .sidebar { padding: 15px; }
+  .sidebar h2 { font-size: 18px; }
+  .form-turno label { font-size: 14px; }
+  .form-turno select, .btn-primary { font-size: 14px; padding: 10px; }
+  .card-turno h3 { font-size: 14px; }
+  .card-turno p { font-size: 12px; }
+  button.turno-disponible, button.turno-ocupado {
+    font-size: 13px; padding: 8px;
+  }
+  .grilla-turnos {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .footer { font-size: 13px; padding: 12px 8px; }
+}
+
+/* Mejor interacción táctil */
+input, button, select { min-height: 44px; }
+button, .btn-primary, .btnSeleccionarTurno, .btnEliminarTurno {
+  touch-action: manipulation;
 }
