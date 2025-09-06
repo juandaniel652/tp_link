@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>Técnicos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Estilos -->
   <link rel="stylesheet" href="../css/general.css">
   <link rel="stylesheet" href="../css/menu.css">
   <link rel="stylesheet" href="../css/formularios_tablas.css">
@@ -17,7 +20,10 @@
       </a>
       <h1 class="site-title">Técnicos</h1>
 
-      <nav class="site-nav">
+      <!-- Botón hamburguesa -->
+      <button class="menu-toggle" aria-label="Abrir menú">&#9776;</button>
+
+      <nav class="site-nav" aria-label="Menú principal">
         <ul>
           <li><a href="../index.html">Menú</a></li>
           <li><a href="../html/cliente.html">Clientes</a></li>
@@ -99,6 +105,23 @@
     </div>
   </footer>
 
+  <!-- Script módulo técnicos -->
   <script src="../js/tecnicosModule.js"></script>
+
+  <!-- Script menú hamburguesa -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const menuToggle = document.querySelector('.menu-toggle');
+      const nav = document.querySelector('.site-nav');
+
+      menuToggle.addEventListener('click', () => {
+        if (nav.style.display === 'flex') {
+          nav.style.display = 'none';
+        } else {
+          nav.style.display = 'flex';
+        }
+      });
+    });
+  </script>
 </body>
 </html>

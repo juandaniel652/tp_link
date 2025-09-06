@@ -10,25 +10,6 @@ body {
   color: #333;
 }
 
-/* ================================ */
-/* HEADER */
-/* ================================ */
-.header {
-  display: flex;
-  align-items: center;
-  padding: 16px 32px;
-  background: #1E3C72;
-  color: #fff;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-.header .logo {
-  height: 40px;
-  margin-right: 16px;
-}
-.header h1 {
-  font-size: 22px;
-  font-weight: 600;
-}
 
 /* === HEADER DASHBOARD === */
 .site-header {
@@ -87,18 +68,39 @@ body {
   color: #1E3C72;
 }
 
+
+/* BOTÓN TOGGLE SOLO MÓVIL */
+.nav-toggle {
+  display: none;
+  font-size: 26px;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}
+
 /* RESPONSIVE HEADER */
 @media (max-width: 768px) {
-  .site-header .header-container {
-    flex-direction: column;
-    align-items: center;
+  .nav-toggle {
+    display: block;
   }
+
+  .site-header .site-nav {
+    display: none;
+    width: 100%;
+  }
+
+  .site-header .site-nav.open {
+    display: block;
+  }
+
   .site-header .site-nav ul {
     flex-direction: column;
     gap: 10px;
     margin-top: 10px;
   }
 }
+
 
 
 /* ================================ */
