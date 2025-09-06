@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   /** =====================
-   *  Constantes y Estado
+   *  CONSTANTES Y ESTADO
    *  ===================== */
   const form = document.getElementById('formCliente');
   const tablaBody = document.querySelector('#clientesTable tbody');
@@ -16,35 +16,14 @@ document.addEventListener('DOMContentLoaded', () => {
   let indiceEdicion = null;
 
   /** =====================
-   *  Regex
+   *  REGEX
    *  ===================== */
   const regexSoloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
   const regexSoloNumeros = /^\d+$/;
   const regexTelefono = /^11\d{8}$/;
 
   /** =====================
-   *  Helpers de limpieza
-   *  ===================== */
-  const limpiarLetras = (valor) => valor.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
-  const limpiarNumeros = (valor) => valor.replace(/\D/g, '');
-
-  function limpiarCamposFormulario() {
-    inputNumeroCliente.value = "";
-    inputNombre.value = "";
-    inputApellido.value = "";
-    inputDomicilio.value = "";
-    inputNumeroDomicilio.value = "";
-
-    inputTelefono.value = "11";
-    contadorTelefono.textContent = "0/8 dígitos";
-    contadorTelefono.style.color = "orange";
-
-    indiceEdicion = null;
-    form.querySelector("button[type='submit']").textContent = "Guardar Cliente";
-  }
-
-  /** =====================
-   *  Contadores y mensajes visuales
+   *  CONTADORES Y MENSAJES
    *  ===================== */
   const contadorTelefono = document.createElement('small');
   contadorTelefono.style.display = "block";
@@ -58,8 +37,33 @@ document.addEventListener('DOMContentLoaded', () => {
   mensajeValidacion.style.color = "red";
   form.insertAdjacentElement("beforeend", mensajeValidacion);
 
+  // Inicializar teléfono
+  inputTelefono.value = "11";
+  contadorTelefono.textContent = "0/8 dígitos";
+  contadorTelefono.style.color = "orange";
+
   /** =====================
-   *  Validadores Input
+   *  HELPERS DE LIMPIEZA
+   *  ===================== */
+  const limpiarLetras = (valor) => valor.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
+  const limpiarNumeros = (valor) => valor.replace(/\D/g, '');
+
+  function limpiarCamposFormulario() {
+    inputNumeroCliente.value = "";
+    inputNombre.value = "";
+    inputApellido.value = "";
+    inputDomicilio.value = "";
+    inputNumeroDomicilio.value = "";
+    inputTelefono.value = "11";
+    contadorTelefono.textContent = "0/8 dígitos";
+    contadorTelefono.style.color = "orange";
+    indiceEdicion = null;
+    form.querySelector("button[type='submit']").textContent = "Guardar Cliente";
+    mensajeValidacion.textContent = "";
+  }
+
+  /** =====================
+   *  VALIDADORES DE INPUT
    *  ===================== */
   function validarInputLetras(event) {
     event.target.value = limpiarLetras(event.target.value);
@@ -71,10 +75,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function validarTelefonoEnInput(event) {
     let valor = limpiarNumeros(event.target.value);
-
     if (!valor.startsWith("11")) valor = "11" + valor;
     valor = valor.slice(0, 10);
-
     event.target.value = valor;
 
     const restantes = Math.max(0, valor.length - 2);
@@ -83,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /** =====================
-   *  Validación en Submit
+   *  VALIDACIÓN DE FORMULARIO
    *  ===================== */
   function validarCliente(cliente) {
     mensajeValidacion.textContent = "";
@@ -128,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /** =====================
-   *  Render en Tabla
+   *  RENDERIZAR TABLA
    *  ===================== */
   function renderizarClientes() {
     tablaBody.innerHTML = '';
@@ -142,52 +144,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
     clientes.forEach((cliente, index) => {
       const fila = document.createElement('tr');
-      fila.innerHTML =  `
+      fila.innerHTML = `
         <td data-label="Número">${cliente.numeroCliente}</td>
         <td data-label="Nombre">${cliente.nombre}</td>
         <td data-label="Apellido">${cliente.apellido}</td>
         <td data-label="Teléfono">${cliente.telefono}</td>
         <td data-label="Domicilio">${cliente.domicilio} ${cliente.numeroDomicilio}</td>
         <td data-label="Acciones">
-          <button class="btn-action edit">✏️</button>
-          <button class="btn-action delete">🗑️</button>
+          <button class="btn-action edit" data-index="${index}">✏️</button>
+          <button class="btn-action delete" data-index="${index}">🗑️</button>
         </td>
       `;
-
       tablaBody.appendChild(fila);
-    });
-
-    // Eventos de edición y eliminación
-    tablaBody.querySelectorAll(".btn-action.edit").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        indiceEdicion = e.currentTarget.dataset.index;
-        const c = clientes[indiceEdicion];
-        inputNumeroCliente.value = c.numeroCliente;
-        inputNombre.value = c.nombre;
-        inputApellido.value = c.apellido;
-        inputTelefono.value = c.telefono;
-        inputDomicilio.value = c.domicilio;
-        inputNumeroDomicilio.value = c.numeroDomicilio;
-        form.querySelector("button[type='submit']").textContent = "Guardar Cambios";
-        form.scrollIntoView({ behavior: "smooth" });
-      });
-    });
-
-    tablaBody.querySelectorAll(".btn-action.delete").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        const index = e.currentTarget.dataset.index;
-        const cliente = clientes[index];
-        if (confirm(`¿Seguro que quieres eliminar al cliente ${cliente.nombre} ${cliente.apellido}?`)) {
-          clientes.splice(index, 1);
-          localStorage.setItem("clientes", JSON.stringify(clientes));
-          renderizarClientes();
-        }
-      });
     });
   }
 
   /** =====================
-   *  Eventos
+   *  DELEGACIÓN DE EVENTOS (EDICIÓN Y ELIMINACIÓN)
+   *  ===================== */
+  tablaBody.addEventListener("click", (e) => {
+    const target = e.target;
+    const index = target.dataset.index;
+
+    // Editar cliente
+    if (target.classList.contains("edit")) {
+      const c = clientes[index];
+      inputNumeroCliente.value = c.numeroCliente;
+      inputNombre.value = c.nombre;
+      inputApellido.value = c.apellido;
+      inputTelefono.value = c.telefono;
+      inputDomicilio.value = c.domicilio;
+      inputNumeroDomicilio.value = c.numeroDomicilio;
+      form.querySelector("button[type='submit']").textContent = "Guardar Cambios";
+      indiceEdicion = index;
+      form.scrollIntoView({ behavior: "smooth" });
+    }
+
+    // Eliminar cliente
+    if (target.classList.contains("delete")) {
+      const cliente = clientes[index];
+      if (confirm(`¿Seguro que quieres eliminar al cliente ${cliente.nombre} ${cliente.apellido}?`)) {
+        clientes.splice(index, 1);
+        localStorage.setItem("clientes", JSON.stringify(clientes));
+        renderizarClientes();
+      }
+    }
+  });
+
+  /** =====================
+   *  EVENTOS INPUTS
    *  ===================== */
   inputNumeroCliente.addEventListener('input', validarInputNumeros);
   inputNombre.addEventListener('input', validarInputLetras);
@@ -196,12 +201,9 @@ document.addEventListener('DOMContentLoaded', () => {
   inputNumeroDomicilio.addEventListener('input', validarInputNumeros);
   inputTelefono.addEventListener('input', validarTelefonoEnInput);
 
-  // Inicializar teléfono
-  inputTelefono.value = "11";
-  contadorTelefono.textContent = "0/8 dígitos";
-  contadorTelefono.style.color = "orange";
-
-  // Submit
+  /** =====================
+   *  EVENTO SUBMIT
+   *  ===================== */
   form.addEventListener('submit', (e) => {
     e.preventDefault();
 
@@ -224,13 +226,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     localStorage.setItem('clientes', JSON.stringify(clientes));
-
     limpiarCamposFormulario();
     renderizarClientes();
   });
 
   /** =====================
-   *  Render Inicial
+   *  RENDER INICIAL
    *  ===================== */
   renderizarClientes();
 });
