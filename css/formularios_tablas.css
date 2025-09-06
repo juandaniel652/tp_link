@@ -287,19 +287,39 @@ main {
 }
 
 .btn-action {
+  background: none;
   border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
   cursor: pointer;
-  font-size: 0.9em;
-  font-weight: bold;
-  transition: background 0.2s, transform 0.1s;
+  padding: 6px;
+  margin: 0 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: #4caf50;
 }
 
-.btn-action.edit {
-  background: #4caf50;
+.btn-action i {
+  font-size: 18px;
+  line-height: 1;
   color: #fff;
 }
+
+@media (max-width: 480px) {
+  .btn-action {
+    width: 28px;
+    height: 28px;
+    padding: 4px;
+    border-radius: 4px;
+  }
+
+  .btn-action i {
+    font-size: 16px;
+  }
+}
+
 
 .btn-action.edit:hover {
   background: #43a047;
