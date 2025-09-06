@@ -346,34 +346,6 @@ button.btnEliminarTurno:hover {
   }
 }
 
-/* Celulares */
-@media (max-width: 768px) {
-  .layout {
-    grid-template-columns: 1fr;
-    padding: 12px;
-    gap: 12px;
-  }
-  .sidebar { width: 100%; }
-  .grilla-turnos {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 12px;
-  }
-  .site-header .header-container {
-    flex-direction: column;
-    align-items: center;
-  }
-  .site-header .site-title { font-size: 20px; }
-  .site-header .site-nav {
-    display: none;
-    flex-direction: column;
-    width: 100%;
-    gap: 10px;
-    margin-top: 10px;
-  }
-  .site-header .site-nav.active { display: flex; }
-  .nav-toggle { display: block; }
-}
-
 /* Celulares chicos */
 @media (max-width: 480px) {
   .site-header, .site-header .header-container {
@@ -400,4 +372,56 @@ button.btnEliminarTurno:hover {
 input, button, select { min-height: 44px; }
 button, .btn-primary, .btnSeleccionarTurno, .btnEliminarTurno {
   touch-action: manipulation;
+}
+
+/* ================================
+   NAV RESPONSIVE (Toggle)
+================================ */
+@media (max-width: 768px) {
+  .site-header .site-nav {
+    display: none;
+    flex-direction: column;
+    background: var(--color-azul-header, #1E3C72);
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 200px;
+    padding: 1rem;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 999;
+  }
+
+  .site-header .site-nav.open {
+    display: flex;
+  }
+
+  .site-header .site-nav ul {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .nav-toggle {
+    display: block;
+  }
+}
+
+@media (min-width: 769px) {
+  .nav-toggle {
+    display: none;
+  }
+
+  .site-header .site-nav {
+    display: flex;
+    position: static;
+    flex-direction: row;
+    background: none;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .site-header .site-nav ul {
+    flex-direction: row;
+    gap: 20px;
+  }
 }
