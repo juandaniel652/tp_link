@@ -21,6 +21,7 @@ Que falta:
 
 FALTA:
 
-1. MOstrar variadas fechas y horarios segun el nap
+1. MOstrar variadas fechas y horarios segun el nap (Hecho)
 2.  Que en agenda muestre los turnos individuales (no los muestra)
 3. Diseño homogéneo y correlacionado entre sí (Mismo hilo conductor)
+4. Añadir opcion manual en turnos

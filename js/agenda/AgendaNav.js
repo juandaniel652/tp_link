@@ -21,11 +21,13 @@ export class AgendaNav {
     const select = crearSelectBase();
     select.id = 'selectTecnico';
 
-    select.appendChild(new Option('Seleccionar Técnico', ''));
+    select.appendChild(new Option('Agenda Unificada', ''));
 
     this.agenda.tecnicoService.getAll().forEach(t => {
-      select.appendChild(new Option(t.nombre, t.nombre));
-    });
+      const nombreCompleto = `${t.nombre} ${t.apellido}`;
+      select.appendChild(new Option(nombreCompleto, nombreCompleto));
+    }); //Mientras no haya un Base de datos, se valida al técncio por el nombre completo (Lo podemos usar de doble validación con el ID posteriormente
+    //impelmentada la Base)
 
     // Seleccionar automáticamente el técnico filtrado si existe
     if (this.agenda.tecnicoFiltro) {

@@ -54,20 +54,29 @@ export class Agenda {
     const clientes = this.clienteService.getAll();
     clientesSelect.innerHTML = '<option value="">Seleccionar Cliente</option>';
 
-    clientes.forEach(c => {
+    let clientesFiltrados = clientes;
+
+    if (tecnico) {
+      // Filtrar clientes que tengan turno con el técnico seleccionado
+      const clientesConTurno = this.turnos
+        .filter(t => Array.isArray(t.tecnicos) && t.tecnicos.includes(tecnico))
+        .map(t => t.cliente);
+
+      clientesFiltrados = clientes.filter(c => {
+        const nombreCompleto = `${c.nombre} ${c.apellido}`;
+        return clientesConTurno.includes(nombreCompleto);
+      });
+    }
+
+    // Agregar opciones al select
+    clientesFiltrados.forEach(c => {
       const nombreCompleto = `${c.nombre} ${c.apellido}`;
       const option = new Option(nombreCompleto, nombreCompleto);
-
-      if (tecnico) {
-        const tieneTurno = this.turnos.some(
-          t => t.cliente === nombreCompleto && t.tecnico === tecnico
-        );
-        option.style.color = tieneTurno ? '#1E90FF' : '#bbb';
-        option.style.fontWeight = tieneTurno ? 'bold' : 'normal';
-      }
       clientesSelect.appendChild(option);
     });
   }
+
+
 
   asignarTurno(fStr, hStr) {
     if (!this.tecnicoFiltro) {
