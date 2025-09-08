@@ -181,6 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     turnos.forEach(t => {
+      console.log(t)
       const card = document.createElement("div");
       card.className = "card-turno";
       card.innerHTML = `
@@ -189,7 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <p><strong>NAP:</strong> NAP ${t.nap}</p>
         <p><strong>T:</strong> ${t.t}</p>
         <p><strong>Rango:</strong> ${t.rango}</p>
-        <p><strong>Técnicos:</strong> ${t.tecnicos.join(", ")}</p>
+        <p><strong>Técnicos:</strong> ${t.tecnicos.length ? t.tecnicos.join(", ") : "Sin técnico asignado"}</p>
         <button class="btnEliminarTurno" data-id="${t.id}">❌ Eliminar</button>
       `;
       historial.appendChild(card);
