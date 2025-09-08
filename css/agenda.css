@@ -249,6 +249,19 @@ td button {
   transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
 }
 
+/*==============================
+  ======== OPTIONS DE SELECTS AJUTADOS AL FONDO ========
+  ============================== */
+
+#selectSemana option,
+#selectTecnico option,
+#selectRango option {
+  background-color: #fff;  /* siempre fondo blanco */
+  color: #000;             /* siempre texto negro */
+  font-weight: bold;
+}
+
+
 #selectSemana:hover, #selectTecnico:hover, #selectRango:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
