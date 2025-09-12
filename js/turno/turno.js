@@ -80,33 +80,34 @@ document.addEventListener("DOMContentLoaded", () => {
     const diasDisponiblesNAP = nap.dias && Array.isArray(nap.dias) ? nap.dias.map(d => d.toLowerCase()) : DAYS;
   
     // === Generar fechas próximas (desde mañana en adelante) ===
+    // === Generar fechas próximas correlativas (desde mañana en adelante, sin domingos) ===
     const hoy = new Date();
     const fechasOpciones = [];
-    let intento = 0;
-    const MAX_INTENTOS = 50;
-  
-    while (fechasOpciones.length < 3 && intento < MAX_INTENTOS) {
-      intento++;
-    
-      // Elegir un día aleatorio desde hoy hasta 30 días adelante
-      const diasAdelante = Math.floor(Math.random() * 30) + 1; // +1 para que sea desde mañana
-      const fecha = new Date();
-      fecha.setDate(hoy.getDate() + diasAdelante);
-    
+    let fecha = new Date(hoy);
+      
+    while (fechasOpciones.length < 3) {
+      fecha.setDate(fecha.getDate() + 1); // avanzar un día
       const diaNombre = DAYS[fecha.getDay()];
     
+      // saltar domingos
+      if (diaNombre === "domingo") continue;
+    
+      // verificar si el NAP atiende ese día
       if (!diasDisponiblesNAP.includes(diaNombre)) continue;
     
       const fechaISO = fecha.toISOString().slice(0,10);
+    
+      // evitar conflicto con otros turnos
       const conflicto = turnos.some(turno =>
         (turno.clienteId === cliente.numeroCliente) ||
         (turno.fecha === fechaISO && turno.hora === horaStr && turno.nap === nap.numero)
       );
     
-      if (!conflicto && !fechasOpciones.some(f => f.fechaISO === fechaISO)) {
-        fechasOpciones.push({fecha, fechaISO, diaNombre});
+      if (!conflicto) {
+        fechasOpciones.push({ fecha: new Date(fecha), fechaISO, diaNombre });
       }
     }
+
   
     if (!fechasOpciones.length) return alert("No hay fechas próximas disponibles para este NAP");
   
@@ -180,20 +181,14 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // 🔹 Ordenar por fecha y hora correlativamente
-    const turnosOrdenados = [...turnos].sort((a, b) => {
-      const fechaA = new Date(`${a.fecha}T${a.hora}`);
-      const fechaB = new Date(`${b.fecha}T${b.hora}`);
-      return fechaA - fechaB; // menor a mayor
-    });
-
-    turnosOrdenados.forEach(t => {
+    turnos.forEach(t => {
+      console.log(t)
       const card = document.createElement("div");
       card.className = "card-turno";
       card.innerHTML = `
         <h3>${t.fechaStr || t.fecha}</h3>
         <p><strong>Cliente:</strong> ${t.clienteId} - ${t.cliente}</p>
-        <p><strong>NAP:</strong> ${t.nap}</p>
+        <p><strong>NAP:</strong> NAP ${t.nap}</p>
         <p><strong>T:</strong> ${t.t}</p>
         <p><strong>Rango:</strong> ${t.rango}</p>
         <p><strong>Técnicos:</strong> ${t.tecnicos.length ? t.tecnicos.join(", ") : "Sin técnico asignado"}</p>
