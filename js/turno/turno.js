@@ -55,6 +55,28 @@ document.addEventListener("DOMContentLoaded", () => {
   renderSelectGen(selectT, T_VALUES, "Seleccionar T");
   renderSelectGen(selectRango, RANGOS, "Seleccionar Rango");
 
+
+    // === Función para formatear rango horario según T ===
+  function formatearRango(horaBase, tNum) {
+    const [h, m] = horaBase.split(":").map(Number);
+  
+    // Hora de inicio
+    const inicio = new Date();
+    inicio.setHours(h, m);
+  
+    // Hora de fin según cantidad de bloques T
+    const fin = new Date(inicio);
+    fin.setMinutes(inicio.getMinutes() + tNum * 15);
+  
+    const pad = (n) => n.toString().padStart(2,"0");
+    const inicioStr = `${pad(inicio.getHours())}:${pad(inicio.getMinutes())}`;
+    const finStr = `${pad(fin.getHours())}:${pad(fin.getMinutes())}`;
+  
+    const duracion = tNum * 15;
+    return `${inicioStr} - ${finStr} (${duracion} Minutos)`;
+  }
+
+
   // === FUNCIONES ===
   function renderGrillaTurnos(clienteId, napNumero, tSeleccionado, rangoSeleccionado) {
     turnosContainer.innerHTML = "";
@@ -84,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const hoy = new Date();
     const fechasOpciones = [];
     let fecha = new Date(hoy);
-      
+
     while (fechasOpciones.length < 3) {
       fecha.setDate(fecha.getDate() + 1); // avanzar un día
       const diaNombre = DAYS[fecha.getDay()];
@@ -120,6 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <p><strong>NAP:</strong> NAP ${nap.numero}</p>
         <p><strong>T:</strong> ${tNum}</p>
         <p><strong>Rango:</strong> ${rangoSeleccionado}</p>
+        <p><strong>Horario:</strong> ${formatearRango(horaStr, tNum)}</p>
         <p><strong>Técnicos disponibles:</strong> ${tecnicosDisp.map(t => t.nombre + ' ' + (t.apellido||'')).join(", ")}</p>
         <button class="btnSeleccionarTurno">Seleccionar</button>
       `;
@@ -191,6 +214,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <p><strong>NAP:</strong> NAP ${t.nap}</p>
         <p><strong>T:</strong> ${t.t}</p>
         <p><strong>Rango:</strong> ${t.rango}</p>
+        <p><strong>Horario:</strong> ${formatearRango(t.hora, t.t)}</p>
         <p><strong>Técnicos:</strong> ${t.tecnicos.length ? t.tecnicos.join(", ") : "Sin técnico asignado"}</p>
         <button class="btnEliminarTurno" data-id="${t.id}">❌ Eliminar</button>
       `;
