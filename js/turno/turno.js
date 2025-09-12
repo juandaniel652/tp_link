@@ -59,19 +59,19 @@ document.addEventListener("DOMContentLoaded", () => {
     // === Función para formatear rango horario según T ===
   function formatearRango(horaBase, tNum) {
     const [h, m] = horaBase.split(":").map(Number);
-  
+
     // Hora de inicio
     const inicio = new Date();
     inicio.setHours(h, m);
-  
+
     // Hora de fin según cantidad de bloques T
     const fin = new Date(inicio);
     fin.setMinutes(inicio.getMinutes() + tNum * 15);
-  
+
     const pad = (n) => n.toString().padStart(2,"0");
     const inicioStr = `${pad(inicio.getHours())}:${pad(inicio.getMinutes())}`;
     const finStr = `${pad(fin.getHours())}:${pad(fin.getMinutes())}`;
-  
+
     const duracion = tNum * 15;
     return `${inicioStr} - ${finStr} (${duracion} Minutos)`;
   }
@@ -192,44 +192,46 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   function renderHistorialTurnos() {
-    let historial = document.getElementById("historialTurnos");
-    if (!historial) {
-      historial = document.createElement("div");
-      historial.id = "historialTurnos";
-      turnosContainer.appendChild(historial);
-    }
-    historial.innerHTML = "<h2>Historial de Turnos</h2>";
-    if (!turnos.length) {
-      historial.innerHTML += `<p style="text-align:center;color:#555;">No hay turnos registrados.</p>`;
-      return;
-    }
-
-    turnos.forEach(t => {
-      console.log(t)
-      const card = document.createElement("div");
-      card.className = "card-turno";
-      card.innerHTML = `
-        <h3>${t.fechaStr || t.fecha}</h3>
-        <p><strong>Cliente:</strong> ${t.clienteId} - ${t.cliente}</p>
-        <p><strong>NAP:</strong> NAP ${t.nap}</p>
-        <p><strong>T:</strong> ${t.t}</p>
-        <p><strong>Rango:</strong> ${t.rango}</p>
-        <p><strong>Horario:</strong> ${formatearRango(t.hora, t.t)}</p>
-        <p><strong>Técnicos:</strong> ${t.tecnicos.length ? t.tecnicos.join(", ") : "Sin técnico asignado"}</p>
-        <button class="btnEliminarTurno" data-id="${t.id}">❌ Eliminar</button>
-      `;
-      historial.appendChild(card);
-    });
-
-    document.querySelectorAll(".btnEliminarTurno").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        const id = e.target.dataset.id;
-        turnos = turnos.filter(t => String(t.id) !== String(id));
-        localStorage.setItem("turnos", JSON.stringify(turnos));
-        renderHistorialTurnos();
+      let historial = document.getElementById("historialTurnos");
+      if (!historial) {
+        historial = document.createElement("div");
+        historial.id = "historialTurnos";
+        turnosContainer.appendChild(historial);
+      }
+      historial.innerHTML = "<h2>Historial de Turnos</h2>";
+      if (!turnos.length) {
+        historial.innerHTML += `<p style="text-align:center;color:#555;">No hay turnos registrados.</p>`;
+        return;
+      }
+    
+      // === Ordenar turnos por fecha de manera ascendente (más cercana primero) ===
+      const turnosOrdenados = [...turnos].sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+    
+      turnosOrdenados.forEach(t => {
+        const card = document.createElement("div");
+        card.className = "card-turno";
+        card.innerHTML = `
+          <h3>${t.fechaStr || t.fecha}</h3>
+          <p><strong>Cliente:</strong> ${t.clienteId} - ${t.cliente}</p>
+          <p><strong>NAP:</strong> ${t.nap}</p>
+          <p><strong>T:</strong> ${t.t}</p>
+          <p><strong>Rango:</strong> ${t.rango}</p>
+          <p><strong>Horario:</strong> ${formatearRango(t.hora, t.t)}</p>
+          <p><strong>Técnicos:</strong> ${t.tecnicos.length ? t.tecnicos.join(", ") : "Sin técnico asignado"}</p>
+          <button class="btnEliminarTurno" data-id="${t.id}">❌ Eliminar</button>
+        `;
+        historial.appendChild(card);
       });
-    });
-  }
+    
+      document.querySelectorAll(".btnEliminarTurno").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const id = e.target.dataset.id;
+          turnos = turnos.filter(t => String(t.id) !== String(id));
+          localStorage.setItem("turnos", JSON.stringify(turnos));
+          renderHistorialTurnos();
+        });
+      });
+    }
 
   btnMostrarTurnos.addEventListener("click", () => {
     const clienteId = selectCliente.value;
