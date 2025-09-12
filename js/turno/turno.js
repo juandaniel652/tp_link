@@ -180,14 +180,20 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    turnos.forEach(t => {
-      console.log(t)
+    // 🔹 Ordenar por fecha y hora correlativamente
+    const turnosOrdenados = [...turnos].sort((a, b) => {
+      const fechaA = new Date(`${a.fecha}T${a.hora}`);
+      const fechaB = new Date(`${b.fecha}T${b.hora}`);
+      return fechaA - fechaB; // menor a mayor
+    });
+
+    turnosOrdenados.forEach(t => {
       const card = document.createElement("div");
       card.className = "card-turno";
       card.innerHTML = `
         <h3>${t.fechaStr || t.fecha}</h3>
         <p><strong>Cliente:</strong> ${t.clienteId} - ${t.cliente}</p>
-        <p><strong>NAP:</strong> NAP ${t.nap}</p>
+        <p><strong>NAP:</strong> ${t.nap}</p>
         <p><strong>T:</strong> ${t.t}</p>
         <p><strong>Rango:</strong> ${t.rango}</p>
         <p><strong>Técnicos:</strong> ${t.tecnicos.length ? t.tecnicos.join(", ") : "Sin técnico asignado"}</p>
