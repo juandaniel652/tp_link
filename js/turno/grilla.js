@@ -60,7 +60,7 @@ export function renderGrillaTurnos({ clienteId, napNumero, tSeleccionado, rangoS
     card.innerHTML = `
       <h3>${NOMBRES_DIAS[opcion.diaNombre]} ${opcion.fecha.toLocaleDateString("es-ES",{day:"numeric", month:"long"})}</h3>
       <p><strong>Cliente:</strong> ${cliente.numeroCliente} - ${cliente.nombre} ${cliente.apellido}</p>
-      <p><strong>NAP:</strong> NAP ${nap.numero}</p>
+      <p><strong>NAP:</strong> ${nap.numero}</p>
       <p><strong>T:</strong> ${tNum}</p>
       <p><strong>Rango:</strong> ${rangoSeleccionado}</p>
       <p><strong>Horario:</strong> ${formatearRango(horaStr, tNum)}</p>
