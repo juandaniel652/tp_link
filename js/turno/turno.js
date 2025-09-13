@@ -93,7 +93,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const tNum = Number(tSeleccionado);
     const horaBase = rangoSeleccionado === "AM" ? 9 : 14;
     const minutos = (tNum - 1) * 15;
-    const horaStr = `${horaBase.toString().padStart(2,"0")}:${minutos.toString().padStart(2,"0")}`;
+    const horaStr = `${horaBase.toString().padStart(2,"0")}:00`;
+
   
     if (turnos.some(turno => turno.clienteId === cliente.numeroCliente)) {
       return alert("Este cliente ya tiene un turno asignado.");
@@ -188,8 +189,6 @@ document.addEventListener("DOMContentLoaded", () => {
       turnosContainer.appendChild(card);
     });
   }
-
-
 
   function renderHistorialTurnos() {
       let historial = document.getElementById("historialTurnos");
