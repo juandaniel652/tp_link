@@ -157,7 +157,8 @@ main {
   margin-top: 12px;
   color: #1E3C72;
 }
-.form-turno select {
+.form-turno select,
+.form-turno-select {
   width: 100%;
   margin-top: 6px;
   padding: 12px 14px;
@@ -168,7 +169,8 @@ main {
   outline: none;
   transition: all 0.3s ease;
 }
-.form-turno select:focus {
+.form-turno select:focus,
+.form-turno-select:focus {
   border-color: #1E3C72;
   box-shadow: 0 0 8px rgba(30,60,114,0.3);
 }

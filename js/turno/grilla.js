@@ -117,6 +117,7 @@ export function renderGrillaTurnos({ clienteId, napNumero, tSeleccionado, rangoS
 
       if (editor.style.display === "block") {
         const select = document.createElement("select");
+        select.className = "form-turno-select";
         generarOpcionesHorarios(rangoSeleccionado, tNum).forEach(opt => {
           const option = document.createElement("option");
           option.value = opt;
@@ -126,6 +127,7 @@ export function renderGrillaTurnos({ clienteId, napNumero, tSeleccionado, rangoS
 
         const btnAceptar = document.createElement("button");
         btnAceptar.textContent = "Aceptar horario manual";
+        btnAceptar.className = "btn-primary"; // 👈 aplica el estilo del CSS
         btnAceptar.addEventListener("click", () => {
           const horarioSeleccionado = select.value;
           const tecnicoElegido = tecnicosDisp[0]; // misma lógica de asignación balanceada si prefieres
