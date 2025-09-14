@@ -259,7 +259,8 @@ button.turno-ocupado {
 
 /* Botones generales */
 button.btnEliminarTurno,
-button.btnSeleccionarTurno {
+button.btnSeleccionarTurno,
+button.btnEditarTurno {
   border: none;
   border-radius: 10px;
   padding: 12px;
@@ -272,11 +273,13 @@ button.btnSeleccionarTurno {
   box-shadow: 0 6px 12px rgba(0,0,0,0.12);
 }
 
-button.btnSeleccionarTurno {
+button.btnSeleccionarTurno,
+button.btnEditarTurno {
   background: linear-gradient(135deg, #1E3C72, #2A5298);
   color: #fff;
 }
-button.btnSeleccionarTurno:hover {
+button.btnSeleccionarTurno:hover,
+button.btnEditarTurno:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 14px rgba(0,0,0,0.2);
 }

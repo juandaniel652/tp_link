@@ -1,3 +1,9 @@
+// turnoService.js
+function parseFechaISOToLocal(fechaISO) {
+  const [y, m, d] = fechaISO.split("-").map(Number);
+  return new Date(y, m - 1, d); // fecha en zona local a medianoche
+}
+
 export class TurnoService {
   constructor(key = 'turnos') {
     this.key = key;
@@ -5,8 +11,9 @@ export class TurnoService {
 
   getAll() {
     const data = localStorage.getItem(this.key);
-    if (!data) return [];  // 🔹 importante, retorna array vacío si no hay nada
-    console.log(data);
-    return JSON.parse(data);
+    if (!data) return [];
+    const arr = JSON.parse(data);
+    // agrego fechaObj para evitar que el resto del código haga new Date("YYYY-MM-DD") incómodo
+    return arr.map(t => ({ ...t, fechaObj: t.fecha ? parseFechaISOToLocal(t.fecha) : null }));
   }
 }
