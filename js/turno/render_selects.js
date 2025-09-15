@@ -20,12 +20,12 @@ export function renderSelectNaps(selectNap, puntosAcceso) {
   });
 }
 
-export function renderSelectGen(selectEl, items, placeholder) {
+export function renderSelectGen(selectEl, items, placeholder, selectedValue) {
   selectEl.innerHTML = `<option value="">${placeholder}</option>`;
   items.forEach(i => {
     const option = document.createElement("option");
     option.value = i;
-    option.textContent = i;
+    option.textContent = selectedValue + i;
     selectEl.appendChild(option);
   });
 }
