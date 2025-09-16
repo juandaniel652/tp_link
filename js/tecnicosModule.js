@@ -178,18 +178,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     _formatearTelefono(input) {
-      let value = input.value.replace(/\D/g, "");
+      let value = input.value.replace(/\D/g, ""); // limpiar no numéricos
+        
       // Forzar que empiece con 11
       if (!value.startsWith("11")) {
-      value = "11" + value.slice(0, 8);
+        value = "11" + value;
       }
+    
+      // Limitar a 10 dígitos
+      value = value.slice(0, 10);
+    
+      // Dar formato "11 1234-5678"
       if (value.length > 2 && value.length <= 6) {
-      value = value.replace(/^(\d{2})(\d{0,4})$/, "$1 $2");
+        value = value.replace(/^(\d{2})(\d{0,4})$/, "$1 $2");
       } else if (value.length > 6) {
-      value = value.replace(/^(\d{2})(\d{4})(\d{0,4}).*$/, "$1 $2-$3");
+        value = value.replace(/^(\d{2})(\d{4})(\d{0,4})$/, "$1 $2-$3");
       }
+    
       input.value = value;
     }
+
 
     _validarCampoIndividual(campo, valor) {
       const errorMsg = Tecnico.validarCampo(

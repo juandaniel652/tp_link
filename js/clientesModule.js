@@ -20,12 +20,14 @@ export class ClienteManager {
     this.clientes = JSON.parse(localStorage.getItem('clientes')) || [];
     this.indiceEdicion = null;
 
-    /** =====================
+        /** =====================
      *  REGEX
      *  ===================== */
+    // Quitamos la validación rígida de 10 dígitos
     this.regexSoloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
     this.regexSoloNumeros = /^\d+$/;
-    this.regexTelefono = /^11\d{8}$/;
+    // Solo que empiece con 11 y tenga al menos 10 dígitos
+    this.regexTelefono = /^11\d{0,8}$/;
 
     /** =====================
      *  MENSAJES Y CONTADORES
@@ -91,14 +93,18 @@ export class ClienteManager {
 
   validarTelefonoEnInput(event) {
     let valor = this.limpiarNumeros(event.target.value);
+
+    // Siempre debe empezar con "11"
     if (!valor.startsWith("11")) valor = "11" + valor;
-    valor = valor.slice(0, 10);
+
+    // No limitar en 10, que pueda escribir pero siempre limpiar
     event.target.value = valor;
 
     const restantes = Math.max(0, valor.length - 2);
     this.contadorTelefono.textContent = `${restantes}/8 dígitos`;
     this.contadorTelefono.style.color = restantes < 8 ? "orange" : "green";
   }
+
 
   validarCliente(cliente) {
     this.mensajeValidacion.textContent = "";
@@ -124,8 +130,8 @@ export class ClienteManager {
       return false;
     }
 
-    if (!this.regexTelefono.test(cliente.telefono)) {
-      this.mensajeValidacion.textContent = 'El teléfono debe comenzar con 11 y tener exactamente 10 dígitos.';
+    if (cliente.telefono.length < 10 || !cliente.telefono.startsWith("11")) {
+      this.mensajeValidacion.textContent = 'El teléfono debe comenzar con 11 y tener al menos 10 dígitos.';
       return false;
     }
 
