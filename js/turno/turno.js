@@ -3,6 +3,7 @@ import { getData } from "./storage.js";
 import { renderSelectClientes, renderSelectNaps, renderSelectGen } from "./render_selects.js";
 import { renderHistorialTurnos } from "./historial.js";
 import { renderGrillaTurnos } from "./grilla.js";
+import { clienteYaTieneTurno, hayConflicto, filtrarClientesDisponibles } from "./validaciones.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const clientes = getData("clientes");
@@ -17,7 +18,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const turnosContainer = document.getElementById("turnosContainer");
   const btnMostrarTurnos = document.getElementById("btnMostrarTurnos");
 
-  renderSelectClientes(selectCliente, clientes);
+  // Solo clientes que aún no tienen turno
+  const clientesDisponibles = filtrarClientesDisponibles(clientes, turnos);
+  renderSelectClientes(selectCliente, clientesDisponibles);
+
   renderSelectNaps(selectNap, puntosAcceso);
   renderSelectGen(selectT, T_VALUES, "Seleccionar T", "T");
   renderSelectGen(selectRango, RANGOS, "Seleccionar Rango", "");
@@ -31,9 +35,21 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!clienteId || !napNumero || !tSeleccionado || !rangoSeleccionado)
       return alert("Debe seleccionar Cliente, NAP, T y Rango");
 
+    // Verificar si el cliente ya tiene turno
+    if (clienteYaTieneTurno(clienteId, turnos)) {
+      return alert("Este cliente ya tiene un turno asignado.");
+    }
+
     renderGrillaTurnos({
-      clienteId, napNumero, tSeleccionado, rangoSeleccionado,
-      clientes, puntosAcceso, tecnicos, turnos, turnosContainer
+      clienteId,
+      napNumero,
+      tSeleccionado,
+      rangoSeleccionado,
+      clientes,
+      puntosAcceso,
+      tecnicos,
+      turnos,
+      turnosContainer
     });
   });
 
