@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   renderSelectClientes(selectCliente, clientes);
   renderSelectNaps(selectNap, puntosAcceso);
-  renderSelectGen(selectT, T_VALUES, "Seleccionar T", "T ");
+  renderSelectGen(selectT, T_VALUES, "Seleccionar T", "T");
   renderSelectGen(selectRango, RANGOS, "Seleccionar Rango", "");
 
   btnMostrarTurnos.addEventListener("click", () => {
