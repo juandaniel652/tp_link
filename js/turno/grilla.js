@@ -34,20 +34,21 @@ function obtenerTecnicosDisponibles(nap, tecnicos) {
 }
 
 function generarFechasDisponibles({ nap, cliente, rangoSeleccionado, tNum, turnos }) {
-  const diasDisponiblesNAP = nap.dias && Array.isArray(nap.dias)
-    ? nap.dias.map(d => d.toLowerCase())
-    : DAYS;
-
   const hoy = new Date();
   const fechasOpciones = [];
   let iterFecha = new Date(hoy);
 
+  const horariosNap = Array.isArray(nap.horarios) ? nap.horarios : [];
+
   while (fechasOpciones.length < 3) {
     iterFecha.setDate(iterFecha.getDate() + 1);
+
     const fechaLocal = new Date(iterFecha.getFullYear(), iterFecha.getMonth(), iterFecha.getDate());
     const diaNombre = DAYS[fechaLocal.getDay()];
 
-    if (diaNombre === "domingo" || !diasDisponiblesNAP.includes(diaNombre)) continue;
+    // 👇 Sólo aceptamos si ese día+ rango está en nap.horarios
+    const permitido = horariosNap.some(h => h.dia === diaNombre && h.rango === rangoSeleccionado);
+    if (!permitido) continue;
 
     const fechaISO = `${fechaLocal.getFullYear()}-${String(fechaLocal.getMonth() + 1).padStart(2, "0")}-${String(fechaLocal.getDate()).padStart(2, "0")}`;
 
@@ -65,6 +66,7 @@ function generarFechasDisponibles({ nap, cliente, rangoSeleccionado, tNum, turno
   }
   return fechasOpciones;
 }
+
 
 /* ========================= */
 /* AUXILIARES DE UI          */
@@ -178,12 +180,28 @@ export function renderGrillaTurnos({ clienteId, napNumero, tSeleccionado, rangoS
   if (!tecnicosDisp.length) return alert("No hay técnicos que cubran este NAP");
 
   const tNum = Number(tSeleccionado);
+
+  // 🔥 Nuevo: validar rangoSeleccionado contra horarios del NAP
+  const horariosNap = Array.isArray(nap.horarios) ? nap.horarios : [];
+  const rangosPermitidos = horariosNap.map(h => `${h.dia}|${h.rango}`);
+
+  if (!rangosPermitidos.some(r => r.endsWith(`|${rangoSeleccionado}`))) {
+    return alert(`El NAP ${nap.numero} no tiene configurado el rango ${rangoSeleccionado}`);
+  }
+
+  // 🔥 Pasamos nap.horarios a generarFechasDisponibles para limitar fechas
   const fechasOpciones = generarFechasDisponibles({ nap, cliente, rangoSeleccionado, tNum, turnos });
 
   if (!fechasOpciones.length) return alert("No hay fechas próximas disponibles para este NAP");
 
   fechasOpciones.forEach(opcion => {
-    const card = crearCardTurno({ opcion, cliente, nap, tNum, rangoSeleccionado, tecnicosDisp, turnos, turnosContainer });
+    // Verificar que opcion.diaNombre + rangoSeleccionado esté en nap.horarios
+    const clave = `${opcion.diaNombre}|${rangoSeleccionado}`;
+    if (!rangosPermitidos.includes(clave)) return; // 👈 se descarta si no coincide
+
+    const card = crearCardTurno({ 
+      opcion, cliente, nap, tNum, rangoSeleccionado, tecnicosDisp, turnos, turnosContainer 
+    });
     turnosContainer.appendChild(card);
   });
 }
