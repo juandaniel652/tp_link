@@ -3,7 +3,7 @@ import { getData } from "./storage.js";
 import { renderSelectClientes, renderSelectNaps, renderSelectGen } from "./render_selects.js";
 import { renderHistorialTurnos } from "./historial.js";
 import { renderGrillaTurnos } from "./grilla.js";
-import { clienteYaTieneTurno, hayConflicto, filtrarClientesDisponibles } from "./validaciones.js";
+import { clienteYaTieneTurno, filtrarClientesDisponibles } from "./validaciones.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const clientes = getData("clientes");
@@ -18,13 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const turnosContainer = document.getElementById("turnosContainer");
   const btnMostrarTurnos = document.getElementById("btnMostrarTurnos");
 
-  // Solo clientes que aún no tienen turno
-  const clientesDisponibles = filtrarClientesDisponibles(clientes, turnos);
-  renderSelectClientes(selectCliente, clientesDisponibles);
-
-  renderSelectNaps(selectNap, puntosAcceso);
-  renderSelectGen(selectT, T_VALUES, "Seleccionar T", "T");
-  renderSelectGen(selectRango, RANGOS, "Seleccionar Rango", "");
+  // Render inicial
+  refrescarSelects();
 
   btnMostrarTurnos.addEventListener("click", () => {
     const clienteId = selectCliente.value;
@@ -54,4 +49,28 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   renderHistorialTurnos(turnos, turnosContainer);
+
+  // 👉 Escuchamos el evento que dispara grilla.js
+  document.addEventListener("turnoGuardado", () => {
+    turnos = getData("turnos"); // refrescamos turnos
+    refrescarSelects();         // refrescamos selects
+    renderHistorialTurnos(turnos, turnosContainer); // refrescamos historial
+  });
+
+  // ========================
+  // Helpers
+  // ========================
+  function refrescarSelects() {
+    const clientesDisponibles = filtrarClientesDisponibles(clientes, turnos);
+    renderSelectClientes(selectCliente, clientesDisponibles);
+    renderSelectNaps(selectNap, puntosAcceso);
+    renderSelectGen(selectT, T_VALUES, "Seleccionar T", "T");
+    renderSelectGen(selectRango, RANGOS, "Seleccionar Rango", "");
+
+    // Resetear selects después de guardar
+    selectCliente.value = "";
+    selectNap.value = "";
+    selectT.value = "";
+    selectRango.value = "";
+  }
 });
