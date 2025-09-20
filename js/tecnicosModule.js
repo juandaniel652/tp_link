@@ -16,39 +16,29 @@ document.addEventListener("DOMContentLoaded", () => {
    *  Modelo de Técnico
    *  ===================== */
   class Tecnico {
-    constructor({ nombre, apellido, telefono, duracionTurnoMinutos, puntosAcceso = [] }) {
+    constructor({ nombre, apellido, telefono, duracionTurnoMinutos, horarios = [] }) {
       this.nombre = nombre.trim();
       this.apellido = apellido.trim();
       this.telefono = telefono.trim();
       this.duracionTurnoMinutos = duracionTurnoMinutos.trim();
-      this.puntosAcceso = Array.isArray(puntosAcceso) ? puntosAcceso : [];
+      this.horarios = Array.isArray(horarios) ? horarios : [];
     }
 
     static validarCampo(campo, valor) {
       const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
-      const telRegex = /^([0-9]{2})\s([0-9]{4})-([0-9]{4})$/; // formato argentino
+      const telRegex = /^([0-9]{2})\s([0-9]{4})-([0-9]{4})$/;
       const duracion = Number(valor);
 
       switch (campo) {
         case "nombre":
         case "apellido":
-          return valor && soloLetras.test(valor)
-            ? ""
-            : "Solo se permiten letras (sin números).";
+          return valor && soloLetras.test(valor) ? "" : "Solo se permiten letras (sin números).";
         case "telefono":
-          return telRegex.test(valor)
-            ? ""
-            : "Formato válido: 11 1234-5678";
+          return telRegex.test(valor) ? "" : "Formato válido: 11 1234-5678";
         case "duracionTurnoMinutos":
-          if (isNaN(duracion) || duracion <= 0) {
-            return "Debe ser un número mayor que 0.";
-          }
-          if (duracion > 90) {
-            return "Máximo permitido es 90 minutos.";
-          }
-          if (duracion % 5 !== 0) {
-            return "Debe ser múltiplo de 5.";
-          }
+          if (isNaN(duracion) || duracion <= 0) return "Debe ser un número mayor que 0.";
+          if (duracion > 90) return "Máximo permitido es 90 minutos.";
+          if (duracion % 5 !== 0) return "Debe ser múltiplo de 5.";
           return "";
         default:
           return "";
@@ -102,10 +92,9 @@ document.addEventListener("DOMContentLoaded", () => {
    *  UI / Interfaz
    *  ===================== */
   class UIHandler {
-    constructor(formSelector, tableContainerSelector, chipsContainerSelector, manager) {
+    constructor(formSelector, tableContainerSelector, manager) {
       this.formulario = document.querySelector(formSelector);
       this.contenedor = document.querySelector(tableContainerSelector);
-      this.chipsContainer = document.querySelector(chipsContainerSelector);
       this.manager = manager;
       this.indiceEdicion = null;
 
@@ -116,10 +105,12 @@ document.addEventListener("DOMContentLoaded", () => {
         duracion: document.getElementById("duracionTurno"),
       };
 
-      this.errors = {}; // referencias a spans de error
+      this.horariosContainer = document.getElementById("diasHorarioGrid"); // <--- id correcto
+      this.errors = {};
 
       this._crearMensajesError();
       this._registrarEventos();
+      this._renderHorariosDisponibles();
     }
 
     _crearMensajesError() {
@@ -136,24 +127,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     _registrarEventos() {
-      // Validación inline mientras escribe
       Object.entries(this.inputs).forEach(([key, input]) => {
         input.addEventListener("input", () => {
-          if (key === "telefono") {
-            this._formatearTelefono(input);
-          }
+          if (key === "telefono") this._formatearTelefono(input);
           this._validarCampoIndividual(key, input.value);
         });
 
-        // Restricción directa en el input
         input.addEventListener("beforeinput", (e) => {
-          if (!this._esEntradaValida(key, e.data)) {
-            e.preventDefault();
-          }
+          if (!this._esEntradaValida(key, e.data)) e.preventDefault();
         });
       });
 
-      // Validación en el submit
       this.formulario.addEventListener("submit", (e) => {
         e.preventDefault();
         this._guardarTecnico();
@@ -179,94 +163,57 @@ document.addEventListener("DOMContentLoaded", () => {
 
     _formatearTelefono(input) {
       let value = input.value.replace(/\D/g, "");
-      // Forzar que empiece con 11
-      if (!value.startsWith("11")) {
-      value = "11" + value.slice(0, 8);
-      }
-      if (value.length > 2 && value.length <= 6) {
-      value = value.replace(/^(\d{2})(\d{0,4})$/, "$1 $2");
-      } else if (value.length > 6) {
-      value = value.replace(/^(\d{2})(\d{4})(\d{0,4}).*$/, "$1 $2-$3");
-      }
+      if (!value.startsWith("11")) value = "11" + value.slice(0, 8);
+      if (value.length > 2 && value.length <= 6) value = value.replace(/^(\d{2})(\d{0,4})$/, "$1 $2");
+      else if (value.length > 6) value = value.replace(/^(\d{2})(\d{4})(\d{0,4}).*$/, "$1 $2-$3");
       input.value = value;
     }
 
     _validarCampoIndividual(campo, valor) {
-      const errorMsg = Tecnico.validarCampo(
-        campo === "duracion" ? "duracionTurnoMinutos" : campo,
-        valor
-      );
+      const errorMsg = Tecnico.validarCampo(campo === "duracion" ? "duracionTurnoMinutos" : campo, valor);
       this.errors[campo].textContent = errorMsg;
       return !errorMsg;
     }
 
-    _mostrarModalError(mensaje) {
-      const modal = document.createElement("div");
-      modal.className = "modal-error";
-      modal.style.position = "fixed";
-      modal.style.top = "0";
-      modal.style.left = "0";
-      modal.style.width = "100%";
-      modal.style.height = "100%";
-      modal.style.backgroundColor = "rgba(0,0,0,0.5)";
-      modal.style.display = "flex";
-      modal.style.alignItems = "center";
-      modal.style.justifyContent = "center";
-      modal.style.zIndex = "1000";
-
-      const box = document.createElement("div");
-      box.style.background = "#fff";
-      box.style.padding = "20px";
-      box.style.borderRadius = "8px";
-      box.style.boxShadow = "0 4px 10px rgba(0,0,0,0.3)";
-      box.style.maxWidth = "400px";
-      box.style.textAlign = "center";
-      box.innerHTML = `
-        <h3 style="margin:0 0 10px;color:#c0392b">Error en el formulario</h3>
-        <p style="margin:0 0 20px">${mensaje}</p>
-        <button id="cerrarModal">Aceptar</button>
-      `;
-
-      modal.appendChild(box);
-      document.body.appendChild(modal);
-
-      modal.querySelector("#cerrarModal").addEventListener("click", () => {
-        document.body.removeChild(modal);
-      });
-    }
-
-    cargarPuntosAcceso() {
-      const puntos = StorageService.get("puntosAcceso");
-      this.chipsContainer.innerHTML = "";
-
-      puntos.forEach((puntoObj) => {
-        const label = document.createElement("label");
-        label.classList.add("chip");
-
-        const input = document.createElement("input");
-        input.type = "checkbox";
-        input.value = String(puntoObj.numero);
-
-        const span = document.createElement("span");
-        span.textContent = `NAP ${puntoObj.numero}`;
-
-        label.appendChild(input);
-        label.appendChild(span);
-        this.chipsContainer.appendChild(label);
-      });
-    }
-
     limpiarFormulario() {
-      this.inputs.nombre.value = "";
-      this.inputs.apellido.value = "";
-      this.inputs.telefono.value = "";
-      this.inputs.duracion.value = "";
-      Object.values(this.errors).forEach((span) => (span.textContent = ""));
-      [...this.chipsContainer.querySelectorAll("input[type='checkbox']")].forEach(
-        (chk) => (chk.checked = false)
-      );
+      Object.values(this.inputs).forEach(input => (input.value = ""));
+      Object.values(this.errors).forEach(span => (span.textContent = ""));
       this.indiceEdicion = null;
       this.formulario.querySelector("button[type='submit']").textContent = "Guardar Técnico";
+
+      // Desactivar todos los botones AM/PM
+      document.querySelectorAll(".range-btn.active").forEach(btn => btn.classList.remove("active"));
+    }
+
+    /** Render de botones AM/PM por día */
+    _renderHorariosDisponibles() {
+      const dias = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+      const rangos = ["AM","PM"];
+      this.horariosContainer.innerHTML = "";
+
+      dias.forEach(dia => {
+        const row = document.createElement("div");
+        row.className = "dia-row";
+
+        const label = document.createElement("div");
+        label.className = "dia-name";
+        label.textContent = dia;
+        row.appendChild(label);
+
+        rangos.forEach(rango => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "range-btn";
+          btn.dataset.dia = dia;
+          btn.dataset.rango = rango;
+          btn.textContent = rango;
+
+          btn.addEventListener("click", () => btn.classList.toggle("active"));
+          row.appendChild(btn);
+        });
+
+        this.horariosContainer.appendChild(row);
+      });
     }
 
     renderTabla() {
@@ -275,27 +222,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (tecnicos.length === 0) {
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td colspan="6" class="no-data">No hay registros</td>`;
+        tr.innerHTML = `<td colspan="5" class="no-data">No hay registros</td>`;
         this.contenedor.appendChild(tr);
         return;
       }
 
       tecnicos.forEach((r, index) => {
-        const tr = document.createElement("tr");
-        const naps = Array.isArray(r.puntosAcceso) ? r.puntosAcceso.join(", ") : "";
+        const horariosStr = r.horarios ? r.horarios.map(h => `${h.dia} ${h.rango}`).join(", ") : "";
 
+        const tr = document.createElement("tr");
         tr.innerHTML = `
           <td data-label="Nombre">${r.nombre}</td>
           <td data-label="Apellido">${r.apellido}</td>
           <td data-label="Teléfono">${r.telefono}</td>
           <td data-label="Duración turno">${r.duracionTurnoMinutos}</td>
-          <td data-label="Puntos de acceso">${naps}</td>
+          <td data-label="Horarios">${horariosStr}</td>
           <td data-label="Acciones" class="actions">
             <button class="btn-action edit">✏️</button>
             <button class="btn-action delete">🗑️</button>
           </td>
         `;
-
         tr.querySelector(".edit").addEventListener("click", () => this._editarTecnico(index));
         tr.querySelector(".delete").addEventListener("click", () => this._eliminarTecnico(index));
 
@@ -304,14 +250,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     _recopilarDatosFormulario() {
+      const horarios = [...document.querySelectorAll(".range-btn.active")].map(btn => ({
+        dia: btn.dataset.dia,
+        rango: btn.dataset.rango
+      }));
+
       return new Tecnico({
         nombre: this.inputs.nombre.value,
         apellido: this.inputs.apellido.value,
         telefono: this.inputs.telefono.value,
         duracionTurnoMinutos: this.inputs.duracion.value,
-        puntosAcceso: [...this.chipsContainer.querySelectorAll("input[type='checkbox']:checked")].map(
-          (chk) => chk.value
-        ),
+        horarios
       });
     }
 
@@ -327,7 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (!valido) {
-        this._mostrarModalError("Revisa los campos: " + errores.join(", "));
+        alert("Revisa los campos: " + errores.join(", "));
         return;
       }
 
@@ -352,9 +301,11 @@ document.addEventListener("DOMContentLoaded", () => {
       this.inputs.telefono.value = registro.telefono;
       this.inputs.duracion.value = registro.duracionTurnoMinutos;
 
-      [...this.chipsContainer.querySelectorAll("input[type='checkbox']")].forEach(
-        (chk) => (chk.checked = registro.puntosAcceso.includes(chk.value))
-      );
+      // Activar los botones AM/PM según los horarios guardados
+      document.querySelectorAll(".range-btn").forEach(btn => {
+        const existe = registro.horarios.some(h => h.dia === btn.dataset.dia && h.rango === btn.dataset.rango);
+        btn.classList.toggle("active", existe);
+      });
 
       this.formulario.querySelector("button[type='submit']").textContent = "Guardar Cambios";
       this.formulario.scrollIntoView({ behavior: "smooth" });
@@ -375,9 +326,8 @@ document.addEventListener("DOMContentLoaded", () => {
   class App {
     static init() {
       const manager = new TecnicoManager();
-      const ui = new UIHandler("#formGeneral", "#generalContainer", "#puntosAcceso", manager);
+      const ui = new UIHandler("#formGeneral", "#generalContainer", manager);
 
-      ui.cargarPuntosAcceso();
       ui.limpiarFormulario();
       ui.renderTabla();
     }
