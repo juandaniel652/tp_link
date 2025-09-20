@@ -13,6 +13,7 @@ export class ClienteManager {
     this.inputTelefono = this.form.querySelector('#clienteTelefono');
     this.inputDomicilio = this.form.querySelector('#clienteDomicilio');
     this.inputNumeroDomicilio = this.form.querySelector('#clienteNumeroDomicilio');
+    this.inputEmail = this.form.querySelector('#clienteEmail'); // NUEVO
 
     /** =====================
      *  ESTADO
@@ -26,6 +27,7 @@ export class ClienteManager {
     this.regexSoloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
     this.regexSoloNumeros = /^\d+$/;
     this.regexTelefono = /^11\d{8}$/;
+    this.regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // NUEVO
 
     /** =====================
      *  MENSAJES Y CONTADORES
@@ -65,6 +67,7 @@ export class ClienteManager {
     this.inputTelefono.value = "11";
     this.inputDomicilio.value = "";
     this.inputNumeroDomicilio.value = "";
+    this.inputEmail.value = ""; // NUEVO
     this.contadorTelefono.textContent = "0/8 dígitos";
     this.contadorTelefono.style.color = "orange";
     this.indiceEdicion = null;
@@ -104,7 +107,7 @@ export class ClienteManager {
     this.mensajeValidacion.textContent = "";
 
     if (!cliente.numeroCliente || !cliente.nombre || !cliente.apellido ||
-        !cliente.telefono || !cliente.domicilio || !cliente.numeroDomicilio) {
+        !cliente.telefono || !cliente.domicilio || !cliente.numeroDomicilio || !cliente.email) {
       this.mensajeValidacion.textContent = 'Por favor, complete todos los campos.';
       return false;
     }
@@ -139,6 +142,11 @@ export class ClienteManager {
       return false;
     }
 
+    if (!this.regexEmail.test(cliente.email)) {
+      this.mensajeValidacion.textContent = 'El email no es válido.';
+      return false;
+    }
+
     return true;
   }
 
@@ -151,7 +159,7 @@ export class ClienteManager {
     if (this.clientes.length === 0) {
       const tr = document.createElement('tr');
       const td = document.createElement('td');
-      td.colSpan = 6;
+      td.colSpan = 7; // Aumenta una columna para email
       td.className = "no-data";
       td.textContent = "No hay clientes registrados";
       tr.appendChild(td);
@@ -167,6 +175,7 @@ export class ClienteManager {
       tr.appendChild(this.crearTd(cliente.apellido, "Apellido"));
       tr.appendChild(this.crearTd(cliente.telefono, "Teléfono"));
       tr.appendChild(this.crearTd(`${cliente.domicilio} ${cliente.numeroDomicilio}`, "Domicilio"));
+      tr.appendChild(this.crearTd(cliente.email, "Email")); // NUEVO
 
       const tdAcciones = document.createElement('td');
       tdAcciones.dataset.label = "Acciones";
@@ -220,7 +229,8 @@ export class ClienteManager {
       apellido: this.inputApellido.value.trim(),
       telefono: this.inputTelefono.value.trim(),
       domicilio: this.inputDomicilio.value.trim(),
-      numeroDomicilio: this.inputNumeroDomicilio.value.trim()
+      numeroDomicilio: this.inputNumeroDomicilio.value.trim(),
+      email: this.inputEmail.value.trim() // NUEVO
     };
 
     if (!this.validarCliente(cliente)) return;
@@ -251,6 +261,7 @@ export class ClienteManager {
       this.inputTelefono.value = cliente.telefono;
       this.inputDomicilio.value = cliente.domicilio;
       this.inputNumeroDomicilio.value = cliente.numeroDomicilio;
+      this.inputEmail.value = cliente.email; // NUEVO
       this.form.querySelector("button[type='submit']").textContent = "Guardar Cambios";
       this.indiceEdicion = index;
       this.form.scrollIntoView({ behavior: "smooth" });
