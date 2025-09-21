@@ -1,5 +1,6 @@
-// Render de selects (clientes, NAP, T, Rango)
-// Permite observar las opciones disponibles en los selects del formulario
+// Render de selects (clientes, técnicos, T, Rango)
+
+// Clientes
 export function renderSelectClientes(selectCliente, clientes) {
   selectCliente.innerHTML = `<option value="">Seleccionar Cliente</option>`;
   clientes.forEach(c => {
@@ -10,22 +11,24 @@ export function renderSelectClientes(selectCliente, clientes) {
   });
 }
 
-export function renderSelectNaps(selectNap, puntosAcceso) {
-  selectNap.innerHTML = `<option value="">Seleccionar NAP</option>`;
-  puntosAcceso.forEach(p => {
+// Técnicos (reemplaza al de NAPs)
+export function renderSelectTecnicos(selectTecnico, tecnicos) {
+  selectTecnico.innerHTML = `<option value="">Seleccionar Técnico</option>`;
+  tecnicos.forEach(t => {
     const option = document.createElement("option");
-    option.value = String(p.numero);
-    option.textContent = `NAP ${p.numero}`;
-    selectNap.appendChild(option);
+    option.value = String(t.id); // 👈 identificador único del técnico
+    option.textContent = `${t.nombre} ${t.apellido || ""}`.trim();
+    selectTecnico.appendChild(option);
   });
 }
 
-export function renderSelectGen(selectEl, items, placeholder, selectedValue) {
+// Genérico
+export function renderSelectGen(selectEl, items, placeholder, prefix = "") {
   selectEl.innerHTML = `<option value="">${placeholder}</option>`;
   items.forEach(i => {
     const option = document.createElement("option");
     option.value = i;
-    option.textContent = selectedValue + i;
+    option.textContent = prefix + i;
     selectEl.appendChild(option);
   });
 }
