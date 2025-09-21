@@ -1,0 +1,7 @@
+Versión 1.0
+
+- Técnicos tienen su propio horario
+- Clientes recibe datos y luego se permite editar
+- Turnos con misma lógica sin NAPS, solo con los datos de Técnicos
+- Muestra en Agenda
+- Base de datos 
