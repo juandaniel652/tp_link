@@ -26,11 +26,10 @@ export function renderHistorialTurnos(turnos, turnosContainer) {
     card.innerHTML = `
       <h3>${t.fechaStr || t.fecha}</h3>
       <p><strong>Cliente:</strong> ${t.clienteId} - ${t.cliente}</p>
-      <p><strong>NAP:</strong> ${t.nap}</p>
+      <p><strong>Técnico:</strong> ${t.tecnico || (t.tecnicos && t.tecnicos.join(", "))}</p>
       <p><strong>T:</strong> ${t.t}</p>
       <p><strong>Rango:</strong> ${t.rango}</p>
       <p><strong>Horario:</strong> ${formatearRango(t.hora, t.t)}</p>
-      <p><strong>Técnicos:</strong> ${t.tecnicos.length ? t.tecnicos.join(", ") : "Sin técnico asignado"}</p>
       <button class="btnEliminarTurno" data-id="${t.id}">❌ Eliminar</button>
     `;
     historial.appendChild(card);
