@@ -27,18 +27,12 @@
       width: 80px;
       font-weight: bold;
     }
-    .range-btn {
-      padding: 4px 10px;
-      border: 1px solid #888;
-      border-radius: 4px;
-      cursor: pointer;
-      background-color: #f0f0f0;
-      transition: background 0.2s;
+    .dia-check {
+      margin-right: 8px;
     }
-    .range-btn.active {
-      background-color: #3498db;
-      color: #fff;
-      border-color: #2980b9;
+    input[type="time"]:disabled {
+      background-color: #e0e0e0;
+      cursor: not-allowed;
     }
   </style>
 </head>
@@ -100,8 +94,10 @@
           </div>
 
           <div class="form-group">
-            <label>Horarios disponibles</label>
-            <div id="diasHorarioGrid"></div>
+            <label>Días y Horarios disponibles</label>
+            <div id="diasHorarioGrid">
+              <!-- JS insertará dinámicamente las filas -->
+            </div>
           </div>
         </fieldset>
 

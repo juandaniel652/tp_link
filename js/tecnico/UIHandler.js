@@ -1,4 +1,4 @@
-import Tecnico from "./Tecnico.js";
+import Tecnico from "./Tecnico.js"; 
 
 export default class UIHandler {
   constructor(formSelector, tableContainerSelector, manager) {
@@ -47,6 +47,13 @@ export default class UIHandler {
       });
     });
 
+    // Normalizar duración a múltiplos de 15
+    this.inputs.duracion.addEventListener("blur", () => {
+      let minutos = parseInt(this.inputs.duracion.value, 10) || 0;
+      minutos = Math.round(minutos / 15) * 15;
+      this.inputs.duracion.value = minutos;
+    });
+
     this.formulario.addEventListener("submit", (e) => {
       e.preventDefault();
       this._guardarTecnico();
@@ -73,51 +80,104 @@ export default class UIHandler {
   _formatearTelefono(input) {
     let value = input.value.replace(/\D/g, "");
     if (!value.startsWith("11")) value = "11" + value.slice(0, 8);
-    if (value.length > 2 && value.length <= 6) value = value.replace(/^(\d{2})(\d{0,4})$/, "$1 $2");
-    else if (value.length > 6) value = value.replace(/^(\d{2})(\d{4})(\d{0,4}).*$/, "$1 $2-$3");
+    if (value.length > 2 && value.length <= 6)
+      value = value.replace(/^(\d{2})(\d{0,4})$/, "$1 $2");
+    else if (value.length > 6)
+      value = value.replace(/^(\d{2})(\d{4})(\d{0,4}).*$/, "$1 $2-$3");
     input.value = value;
   }
 
   _validarCampoIndividual(campo, valor) {
-    const errorMsg = Tecnico.validarCampo(campo === "duracion" ? "duracionTurnoMinutos" : campo, valor);
+    const errorMsg = Tecnico.validarCampo(
+      campo === "duracion" ? "duracionTurnoMinutos" : campo,
+      valor
+    );
     this.errors[campo].textContent = errorMsg;
     return !errorMsg;
   }
 
   limpiarFormulario() {
-    Object.values(this.inputs).forEach(input => (input.value = ""));
-    Object.values(this.errors).forEach(span => (span.textContent = ""));
+    Object.values(this.inputs).forEach((input) => (input.value = ""));
+    Object.values(this.errors).forEach((span) => (span.textContent = ""));
     this.indiceEdicion = null;
-    this.formulario.querySelector("button[type='submit']").textContent = "Guardar Técnico";
+    this.formulario.querySelector("button[type='submit']").textContent =
+      "Guardar Técnico";
 
-    document.querySelectorAll(".range-btn.active").forEach(btn => btn.classList.remove("active"));
+    this.horariosContainer.querySelectorAll("input[type=checkbox]").forEach(
+      (chk) => (chk.checked = false)
+    );
+    this.horariosContainer.querySelectorAll("input[type=time]").forEach(
+      (t) => (t.value = "")
+    );
   }
 
   _renderHorariosDisponibles() {
-    const dias = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
-    const rangos = ["AM","PM"];
+    const dias = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
     this.horariosContainer.innerHTML = "";
 
-    dias.forEach(dia => {
+    dias.forEach((dia) => {
       const row = document.createElement("div");
       row.className = "dia-row";
 
-      const label = document.createElement("div");
-      label.className = "dia-name";
+      // Checkbox del día
+      const chk = document.createElement("input");
+      chk.type = "checkbox";
+      chk.dataset.dia = dia;
+
+      const label = document.createElement("label");
       label.textContent = dia;
-      row.appendChild(label);
+      label.style.width = "80px";
+      label.style.fontWeight = "bold";
 
-      rangos.forEach(rango => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "range-btn";
-        btn.dataset.dia = dia;
-        btn.dataset.rango = rango;
-        btn.textContent = rango;
+      // Horario de inicio
+      const inicio = document.createElement("input");
+      inicio.type = "time";
+      inicio.min = "09:00";
+      inicio.max = "18:00";
+      inicio.step = "900"; // intervalos de 15 min
+      inicio.value = "09:00";
+      inicio.dataset.tipo = "inicio";
+      inicio.disabled = true;
 
-        btn.addEventListener("click", () => btn.classList.toggle("active"));
-        row.appendChild(btn);
+      // Horario de fin
+      const fin = document.createElement("input");
+      fin.type = "time";
+      fin.min = "09:00";
+      fin.max = "18:00";
+      fin.step = "900"; // intervalos de 15 min
+      fin.value = "18:00";
+      fin.dataset.tipo = "fin";
+      fin.disabled = true;
+
+      // Normalizar inicio y fin al cambiar (siempre saltos de 15 min)
+      ;[inicio, fin].forEach((input) => {
+        input.addEventListener("change", () => {
+          let [h, m] = input.value.split(":").map(Number);
+
+          // Redondear minutos a múltiplos de 15
+          m = Math.round(m / 15) * 15;
+          if (m === 60) {
+            h += 1;
+            m = 0;
+          }
+
+          // Limitar dentro de rango laboral
+          if (h < 9) { h = 9; m = 0; }
+          if (h > 18) { h = 18; m = 0; }
+
+          input.value = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+        });
       });
+
+      // Habilitar/deshabilitar horas según selección del día
+      chk.addEventListener("change", () => {
+        inicio.disabled = fin.disabled = !chk.checked;
+      });
+
+      row.appendChild(chk);
+      row.appendChild(label);
+      row.appendChild(inicio);
+      row.appendChild(fin);
 
       this.horariosContainer.appendChild(row);
     });
@@ -135,7 +195,11 @@ export default class UIHandler {
     }
 
     tecnicos.forEach((r, index) => {
-      const horariosStr = r.horarios ? r.horarios.map(h => `${h.dia} ${h.rango}`).join(", ") : "";
+      const horariosStr = r.horarios
+        ? r.horarios
+            .map((h) => `${h.dia}: ${h.inicio} - ${h.fin}`)
+            .join("<br>")
+        : "";
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
@@ -149,25 +213,40 @@ export default class UIHandler {
           <button class="btn-action delete">🗑️</button>
         </td>
       `;
-      tr.querySelector(".edit").addEventListener("click", () => this._editarTecnico(index));
-      tr.querySelector(".delete").addEventListener("click", () => this._eliminarTecnico(index));
+      tr.querySelector(".edit").addEventListener("click", () =>
+        this._editarTecnico(index)
+      );
+      tr.querySelector(".delete").addEventListener("click", () =>
+        this._eliminarTecnico(index)
+      );
 
       this.contenedor.appendChild(tr);
     });
   }
 
   _recopilarDatosFormulario() {
-    const horarios = [...document.querySelectorAll(".range-btn.active")].map(btn => ({
-      dia: btn.dataset.dia,
-      rango: btn.dataset.rango
-    }));
+    const horarios = [...this.horariosContainer.querySelectorAll(".dia-row")]
+      .filter((row) => row.querySelector("input[type=checkbox]").checked)
+      .map((row) => {
+        const dia = row.querySelector("input[type=checkbox]").dataset.dia;
+        const inicio = row.querySelector("input[data-tipo=inicio]").value;
+        const fin = row.querySelector("input[data-tipo=fin]").value;
+
+        // Validación: inicio < fin
+        if (inicio >= fin) {
+          alert(`En ${dia}, la hora de inicio debe ser menor que la de fin`);
+          throw new Error("Horario inválido");
+        }
+
+        return { dia, inicio, fin };
+      });
 
     return new Tecnico({
       nombre: this.inputs.nombre.value,
       apellido: this.inputs.apellido.value,
       telefono: this.inputs.telefono.value,
       duracionTurnoMinutos: this.inputs.duracion.value,
-      horarios
+      horarios,
     });
   }
 
@@ -187,16 +266,20 @@ export default class UIHandler {
       return;
     }
 
-    const tecnico = this._recopilarDatosFormulario();
+    try {
+      const tecnico = this._recopilarDatosFormulario();
 
-    if (this.indiceEdicion !== null) {
-      this.manager.actualizar(this.indiceEdicion, tecnico);
-    } else {
-      this.manager.agregar(tecnico);
+      if (this.indiceEdicion !== null) {
+        this.manager.actualizar(this.indiceEdicion, tecnico);
+      } else {
+        this.manager.agregar(tecnico);
+      }
+
+      this.limpiarFormulario();
+      this.renderTabla();
+    } catch (e) {
+      console.warn("Error al guardar técnico:", e.message);
     }
-
-    this.limpiarFormulario();
-    this.renderTabla();
   }
 
   _editarTecnico(index) {
@@ -208,18 +291,36 @@ export default class UIHandler {
     this.inputs.telefono.value = registro.telefono;
     this.inputs.duracion.value = registro.duracionTurnoMinutos;
 
-    document.querySelectorAll(".range-btn").forEach(btn => {
-      const existe = registro.horarios.some(h => h.dia === btn.dataset.dia && h.rango === btn.dataset.rango);
-      btn.classList.toggle("active", existe);
-    });
+    this.horariosContainer
+      .querySelectorAll(".dia-row")
+      .forEach((row) => {
+        const chk = row.querySelector("input[type=checkbox]");
+        const dia = chk.dataset.dia;
+        const horario = registro.horarios.find((h) => h.dia === dia);
 
-    this.formulario.querySelector("button[type='submit']").textContent = "Guardar Cambios";
+        if (horario) {
+          chk.checked = true;
+          row.querySelector("input[data-tipo=inicio]").disabled = false;
+          row.querySelector("input[data-tipo=fin]").disabled = false;
+          row.querySelector("input[data-tipo=inicio]").value = horario.inicio;
+          row.querySelector("input[data-tipo=fin]").value = horario.fin;
+        } else {
+          chk.checked = false;
+          row.querySelector("input[data-tipo=inicio]").disabled = true;
+          row.querySelector("input[data-tipo=fin]").disabled = true;
+        }
+      });
+
+    this.formulario.querySelector("button[type='submit']").textContent =
+      "Guardar Cambios";
     this.formulario.scrollIntoView({ behavior: "smooth" });
   }
 
   _eliminarTecnico(index) {
     const tecnico = this.manager.obtenerTodos()[index];
-    if (confirm(`¿Seguro que quieres eliminar a ${tecnico.nombre} ${tecnico.apellido}?`)) {
+    if (
+      confirm(`¿Seguro que quieres eliminar a ${tecnico.nombre} ${tecnico.apellido}?`)
+    ) {
       this.manager.eliminar(index);
       this.renderTabla();
     }
