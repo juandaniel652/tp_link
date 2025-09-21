@@ -1,0 +1,89 @@
+/* ================================
+   HORARIOS / SELECCIÓN DE DÍAS
+================================ */
+
+/* Contenedor general de días */
+#diasHorarioGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+/* Fila por día */
+.dia-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #f9f9f9;
+  border: 2px solid #ccc;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+/* Hover sobre fila */
+.dia-row:hover {
+  background: #e8f0ff;
+  border-color: #1E3C72;
+}
+
+/* Checkbox del día */
+.dia-row input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #1E3C72;
+}
+
+/* Label del día */
+.dia-row label {
+  width: 100px;
+  font-weight: 600;
+  color: #1E3C72;
+  cursor: pointer;
+}
+
+/* Inputs de hora */
+.dia-row input[type="time"] {
+  width: 120px;
+  padding: 6px 10px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.dia-row input[type="time"]:focus {
+  border-color: #1E3C72;
+  box-shadow: 0 0 6px rgba(30,60,114,0.3);
+}
+
+/* Inputs deshabilitados */
+.dia-row input[type="time"]:disabled {
+  background: #e0e0e0;
+  cursor: not-allowed;
+}
+
+/* Fila activa (checkbox marcado) */
+.dia-row input[type="checkbox"]:checked ~ input[type="time"] {
+  background: #fff;
+  border-color: #1E3C72;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .dia-row {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 8px 10px;
+  }
+
+  .dia-row label {
+    margin-bottom: 6px;
+  }
+
+  .dia-row input[type="time"] {
+    width: 100%;
+  }
+}
