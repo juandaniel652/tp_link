@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Renderizar selects
   renderSelectClientes(selectCliente, clientes);
   renderSelectTecnicos(selectTecnico, tecnicos); // 👈 nuevo
-  renderSelectGen(selectT, T_VALUES, "Seleccionar T", "T ");
+  renderSelectGen(selectT, T_VALUES, "Seleccionar T", "T");
   renderSelectGen(selectRango, RANGOS, "Seleccionar Rango", "");
 
   // Evento principal
