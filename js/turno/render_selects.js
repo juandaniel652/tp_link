@@ -11,14 +11,15 @@ export function renderSelectClientes(selectCliente, clientes) {
   });
 }
 
-// Técnicos (reemplaza al de NAPs)
-export function renderSelectTecnicos(selectTecnico, tecnicos) {
-  selectTecnico.innerHTML = `<option value="">Seleccionar Técnico</option>`;
-  tecnicos.forEach(t => {
+// render_selects.js
+export function renderSelectTecnicos(select, tecnicos) {
+  select.innerHTML = "<option value=''>Seleccionar Técnico</option>";
+
+  tecnicos.forEach((tecnico, index) => {
     const option = document.createElement("option");
-    option.value = String(t.id); // 👈 identificador único del técnico
-    option.textContent = `${t.nombre} ${t.apellido || ""}`.trim();
-    selectTecnico.appendChild(option);
+    option.value = index; // 👈 o usa tecnico.telefono si es único
+    option.textContent = `${tecnico.nombre} ${tecnico.apellido}`;
+    select.appendChild(option);
   });
 }
 

@@ -1,0 +1,7 @@
+1. Revisar si funcionan bien las validaciones de horarios con el mismo técnico
+2. No muestra agenda personal, solo unificada
+3. Muestra dias que no le corresponden a técnicos
+4. No funciona el mostrar clientes sin tunos, muestra los clientes que ya tienen turno
+
+
+10. Lo bueno es que al mismo técnico no se sobreescriben los horarios

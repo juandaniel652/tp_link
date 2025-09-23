@@ -3,10 +3,19 @@ export default class Tecnico {
     this.nombre = nombre.trim();
     this.apellido = apellido.trim();
     this.telefono = telefono.trim();
-    this.duracionTurnoMinutos = duracionTurnoMinutos.trim();
-    this.horarios = Array.isArray(horarios) ? horarios : [];
+    this.duracionTurnoMinutos = parseInt(duracionTurnoMinutos, 10);
+
+    // Normalizar días a minúscula
+    this.horarios = Array.isArray(horarios) ? horarios.map(h => ({
+      dia: h.dia.toLowerCase(), // 🔹 normalizamos aquí
+      inicio: h.inicio,
+      fin: h.fin
+    })) : [];
   }
 
+  // ======================
+  // VALIDACIONES
+  // ======================
   static validarCampo(campo, valor) {
     const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
     const telRegex = /^([0-9]{2})\s([0-9]{4})-([0-9]{4})$/;
@@ -35,5 +44,41 @@ export default class Tecnico {
       !this.validarCampo("telefono", tecnico.telefono) &&
       !this.validarCampo("duracionTurnoMinutos", tecnico.duracionTurnoMinutos)
     );
+  }
+
+  // ======================
+  // LÓGICA DE HORARIOS
+  // ======================
+
+  // Genera los bloques de horarios para cada día configurado
+  generarBloques() {
+    const bloquesPorDia = {};
+
+    this.horarios.forEach(({ dia, inicio, fin }) => {
+      const bloques = [];
+      let [h, m] = inicio.split(":").map(Number);
+      const [hFin, mFin] = fin.split(":").map(Number);
+
+      while (h < hFin || (h === hFin && m < mFin)) {
+        const horaStr = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+        bloques.push(horaStr);
+
+        m += this.duracionTurnoMinutos;
+        if (m >= 60) {
+          h += Math.floor(m / 60);
+          m = m % 60;
+        }
+      }
+
+      bloquesPorDia[dia] = bloques;
+    });
+
+    return bloquesPorDia;
+  }
+
+  // Devuelve solo los días disponibles (ya normalizados en minúscula)
+  getDiasDisponibles() {
+    console.log("👉 Horarios del técnico:", this.horarios);
+    return this.horarios.map(h => h.dia);
   }
 }
