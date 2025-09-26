@@ -47,6 +47,25 @@ export class Agenda {
     this.cargarClientesPorTecnico(this.tecnicoFiltro);
   }
 
+  // 👇 Nuevo: refrescar solo el cuerpo de la tabla (cuando cambio de técnico)
+  refrescarCuerpo() {
+    this.turnos = this.turnoService.getAll();
+
+    const table = this.container.querySelector('table');
+    if (!table) return;
+
+    // eliminar tbody anterior
+    const oldTbody = table.querySelector('tbody');
+    if (oldTbody) {
+      oldTbody.remove();
+    }
+
+    // insertar tbody nuevo
+    table.appendChild(this.ui.crearCuerpo());
+
+    this.cargarClientesPorTecnico(this.tecnicoFiltro);
+  }
+
   cargarClientesPorTecnico(tecnico) {
     const clientesSelect = document.getElementById('selectCliente');
     if (!clientesSelect) return;
@@ -59,7 +78,7 @@ export class Agenda {
     if (tecnico) {
       // Filtrar clientes que tengan turno con el técnico seleccionado
       const clientesConTurno = this.turnos
-        .filter(t => Array.isArray(t.tecnicos) && t.tecnicos.includes(tecnico))
+        .filter(t => t.tecnico === tecnico)   // 👈 corregido: usamos string técnico
         .map(t => t.cliente);
 
       clientesFiltrados = clientes.filter(c => {
@@ -75,8 +94,6 @@ export class Agenda {
       clientesSelect.appendChild(option);
     });
   }
-
-
 
   asignarTurno(fStr, hStr) {
     if (!this.tecnicoFiltro) {

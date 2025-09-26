@@ -90,7 +90,7 @@ export class AgendaUI {
 
     // Tooltip
     btn.addEventListener('mouseenter', () => {
-      const tecnicoStr = Array.isArray(turno.tecnicos) ? turno.tecnicos.join(", ") : "";
+      const tecnicoStr = turno.tecnico || ""; // 🔹 ahora string, no array
       const contenido = `
         <strong>Cliente:</strong> ${turno.cliente}<br>
         <strong>Técnico:</strong> ${tecnicoStr}<br>
@@ -162,7 +162,7 @@ export class AgendaUI {
           divBloques.classList.add('bloques-container');
 
           const turnosBloque = (turnosIndex[fStr]?.[hStr] || []).filter(turno =>
-            !filtroTec || (Array.isArray(turno.tecnicos) && turno.tecnicos.some(t => t.startsWith(filtroTec)))
+            !filtroTec || (turno.tecnico && turno.tecnico.startsWith(filtroTec)) // 🔹 string
           );
 
           turnosBloque.forEach(turno => {
