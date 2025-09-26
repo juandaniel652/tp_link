@@ -112,23 +112,38 @@ export default class UIHandler {
   }
 
   _renderHorariosDisponibles() {
-    const dias = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+    const dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
     this.horariosContainer.innerHTML = "";
-
+    
+    // Checkbox "Seleccionar todos los días"
+    const chkTodos = document.createElement("input");
+    chkTodos.type = "checkbox";
+    chkTodos.id = "chkTodosDias";
+    
+    const labelTodos = document.createElement("label");
+    labelTodos.textContent = "Todos los días";
+    labelTodos.style.fontWeight = "bold";
+    labelTodos.style.marginBottom = "5px";
+    labelTodos.style.display = "block";
+    
+    this.horariosContainer.appendChild(chkTodos);
+    this.horariosContainer.appendChild(labelTodos);
+    
+    // Crear filas por cada día
     dias.forEach((dia) => {
       const row = document.createElement("div");
       row.className = "dia-row";
-
+    
       // Checkbox del día
       const chk = document.createElement("input");
       chk.type = "checkbox";
       chk.dataset.dia = dia;
-
+    
       const label = document.createElement("label");
       label.textContent = dia;
       label.style.width = "80px";
       label.style.fontWeight = "bold";
-
+    
       // Horario de inicio
       const inicio = document.createElement("input");
       inicio.type = "time";
@@ -138,7 +153,7 @@ export default class UIHandler {
       inicio.value = "09:00";
       inicio.dataset.tipo = "inicio";
       inicio.disabled = true;
-
+    
       // Horario de fin
       const fin = document.createElement("input");
       fin.type = "time";
@@ -148,40 +163,58 @@ export default class UIHandler {
       fin.value = "18:00";
       fin.dataset.tipo = "fin";
       fin.disabled = true;
-
-      // Normalizar inicio y fin al cambiar (siempre saltos de 15 min)
-      ;[inicio, fin].forEach((input) => {
+    
+      // Normalizar inicio y fin al cambiar (múltiplos de 15)
+      [inicio, fin].forEach((input) => {
         input.addEventListener("change", () => {
           let [h, m] = input.value.split(":").map(Number);
-
-          // Redondear minutos a múltiplos de 15
+        
           m = Math.round(m / 15) * 15;
           if (m === 60) {
             h += 1;
             m = 0;
           }
-
-          // Limitar dentro de rango laboral
+        
           if (h < 9) { h = 9; m = 0; }
           if (h > 18) { h = 18; m = 0; }
-
+        
           input.value = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
         });
       });
-
+    
       // Habilitar/deshabilitar horas según selección del día
       chk.addEventListener("change", () => {
         inicio.disabled = fin.disabled = !chk.checked;
       });
-
+    
       row.appendChild(chk);
       row.appendChild(label);
       row.appendChild(inicio);
       row.appendChild(fin);
-
+    
       this.horariosContainer.appendChild(row);
     });
+  
+    // Evento para marcar todos los días con horario 09:00 - 18:00
+    chkTodos.addEventListener("change", () => {
+      const rows = this.horariosContainer.querySelectorAll(".dia-row");
+      rows.forEach((row) => {
+        const chk = row.querySelector("input[type=checkbox]");
+        const inicio = row.querySelector("input[data-tipo=inicio]");
+        const fin = row.querySelector("input[data-tipo=fin]");
+      
+        chk.checked = chkTodos.checked;
+        inicio.disabled = !chkTodos.checked;
+        fin.disabled = !chkTodos.checked;
+      
+        if (chkTodos.checked) {
+          inicio.value = "09:00";
+          fin.value = "18:00";
+        }
+      });
+    });
   }
+
 
   renderTabla() {
     this.contenedor.innerHTML = "";
