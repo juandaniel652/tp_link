@@ -1,7 +1,9 @@
 1. Revisar si funcionan bien las validaciones de horarios con el mismo técnico 🆗
-2. No muestra agenda personal, solo unificada
-3. Muestra dias que no le corresponden a técnicos
+2. No muestra agenda personal, solo unificada 🆗
+3. Muestra dias que no le corresponden a técnicos 🆗
 4. No funciona el mostrar clientes sin tunos, muestra los clientes que ya tienen turno
+5. Al seleccionar "opción manual" muestra todo el horario disponible (inclusive de manera errónea asta las 19:00hs)
+Ni tampoco divide en AM o PM (Por ejemplo AM, de 09:00 - 13:00 y PM de 14:00 - 18:00) 🆗
 
-
-10. Lo bueno es que al mismo técnico no se sobreescriben los horarios
+6.Según los horarios de la agenda ocupados, no los muestra en opción manual ya que no se debem sobreescribir los turno del mismo tecnico
+7. En el select no debe permitir seleccionar cliente que ya tiene turno (y validación en botoón para doble verificacion)

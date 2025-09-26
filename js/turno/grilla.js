@@ -83,8 +83,13 @@ export function renderGrillaTurnos({
     card.className = "card-turno";
 
     // 🔹 Horarios disponibles para este técnico y día
-    const horariosDisponibles = obtenerHorariosDisponibles(turnos, opcion.fechaISO, tecnico, opcion.diaNombre);
-    console.log(`Horarios disponibles para ${opcion.fechaISO}:`, horariosDisponibles);
+    let horariosDisponibles = obtenerHorariosDisponibles(turnos, opcion.fechaISO, tecnico, opcion.diaNombre);
+    console.log(`Horarios disponibles para ${opcion.fechaISO} (todos):`, horariosDisponibles);
+
+    // Filtrar por AM / PM
+    horariosDisponibles = filtrarPorRango(horariosDisponibles, rangoSeleccionado);
+    console.log(`Horarios disponibles para ${opcion.fechaISO} (${rangoSeleccionado}):`, horariosDisponibles);
+
 
     const horaStr = horariosDisponibles.length ? horariosDisponibles[0] : "Sin horario";
 
@@ -181,4 +186,20 @@ export function renderGrillaTurnos({
 
     turnosContainer.appendChild(card);
   });
+}
+
+function filtrarPorRango(horarios, rango) {
+  if (rango === "AM") {
+    return horarios.filter(hora => {
+      const [h] = hora.split(":").map(Number);
+      return h >= 9 && h < 12; // 09:00 - 12:59
+    });
+  }
+  if (rango === "PM") {
+    return horarios.filter(hora => {
+      const [h] = hora.split(":").map(Number);
+      return h >= 14 && h < 17; // 14:00 - 17:59
+    });
+  }
+  return horarios;
 }
