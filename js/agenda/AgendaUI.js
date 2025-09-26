@@ -162,7 +162,7 @@ export class AgendaUI {
           divBloques.classList.add('bloques-container');
 
           const turnosBloque = (turnosIndex[fStr]?.[hStr] || []).filter(turno =>
-            !filtroTec || (turno.tecnico && turno.tecnico.startsWith(filtroTec)) // 🔹 string
+            !filtroTec || turno.tecnico === filtroTec
           );
 
           turnosBloque.forEach(turno => {

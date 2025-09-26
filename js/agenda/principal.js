@@ -47,7 +47,7 @@ export class Agenda {
     this.cargarClientesPorTecnico(this.tecnicoFiltro);
   }
 
-  // 👇 Nuevo: refrescar solo el cuerpo de la tabla (cuando cambio de técnico)
+  // 🔹 Refrescar solo el cuerpo de la tabla (cuando cambio de técnico)
   refrescarCuerpo() {
     this.turnos = this.turnoService.getAll();
 
@@ -76,20 +76,36 @@ export class Agenda {
     let clientesFiltrados = clientes;
 
     if (tecnico) {
-      // Filtrar clientes que tengan turno con el técnico seleccionado
+      // Normalizamos nombres de técnicos y clientes en turnos
       const clientesConTurno = this.turnos
-        .filter(t => t.tecnico === tecnico)   // 👈 corregido: usamos string técnico
-        .map(t => t.cliente);
+        .filter(t => {
+          // 🔹 el técnico en los turnos puede ser string o un objeto
+          if (typeof t.tecnico === "string") {
+            return t.tecnico.trim() === tecnico.trim();
+          } else if (t.tecnico?.nombre && t.tecnico?.apellido) {
+            const nombreCompletoTec = `${t.tecnico.nombre} ${t.tecnico.apellido}`.trim();
+            return nombreCompletoTec === tecnico.trim();
+          }
+          return false;
+        })
+        .map(t => {
+          if (typeof t.cliente === "string") {
+            return t.cliente.trim();
+          } else if (t.cliente?.nombre && t.cliente?.apellido) {
+            return `${t.cliente.nombre} ${t.cliente.apellido}`.trim();
+          }
+          return "";
+        });
 
       clientesFiltrados = clientes.filter(c => {
-        const nombreCompleto = `${c.nombre} ${c.apellido}`;
+        const nombreCompleto = `${c.nombre} ${c.apellido}`.trim();
         return clientesConTurno.includes(nombreCompleto);
       });
     }
 
     // Agregar opciones al select
     clientesFiltrados.forEach(c => {
-      const nombreCompleto = `${c.nombre} ${c.apellido}`;
+      const nombreCompleto = `${c.nombre} ${c.apellido}`.trim();
       const option = new Option(nombreCompleto, nombreCompleto);
       clientesSelect.appendChild(option);
     });

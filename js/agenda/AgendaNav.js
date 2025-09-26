@@ -24,7 +24,7 @@ export class AgendaNav {
     select.appendChild(new Option('Agenda Unificada', ''));
 
     this.agenda.tecnicoService.getAll().forEach(t => {
-      const nombreCompleto = `${t.nombre} ${t.apellido}`;
+      const nombreCompleto = `${t.nombre} ${t.apellido}`.trim();
       select.appendChild(new Option(nombreCompleto, nombreCompleto));
     });
 
@@ -36,11 +36,7 @@ export class AgendaNav {
     select.addEventListener('change', e => {
       this.agenda.tecnicoFiltro = e.target.value;
       this.agenda.cargarClientesPorTecnico(this.agenda.tecnicoFiltro);
-
-      // 👇 solo refrescamos cuerpo, no regeneramos todo
-      if (this.agenda.ui && typeof this.agenda.ui.refrescarCuerpo === 'function') {
-        this.agenda.ui.refrescarCuerpo();
-      }
+      this.agenda.refrescarCuerpo(); // 👈 único y correcto
     });
 
     return select;
@@ -53,6 +49,7 @@ export class AgendaNav {
 
     const renderSemanas = () => {
       select.innerHTML = '';
+
       // Opción para volver rápido a la semana actual
       const optActual = new Option('⏪ Semana Actual', 0);
       if (this.agenda.semanaSeleccionada === 0) optActual.selected = true;
