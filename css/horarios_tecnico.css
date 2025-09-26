@@ -6,69 +6,111 @@
 #diasHorarioGrid {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 10px;
+  gap: 14px;
+  margin-top: 14px;
 }
 
-/* Fila por día */
+/* Checkbox "Todos los días" */
+#chkTodosDias {
+  width: 18px;
+  height: 18px;
+  accent-color: #1E3C72;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+#chkTodosDias + label {
+  font-weight: 700;
+  color: #1E3C72;
+  cursor: pointer;
+  margin-bottom: 10px;
+  display: inline-block;
+  font-size: 15px;
+}
+
+/* Fila por día tipo tarjeta */
 .dia-row {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 12px;
-  padding: 10px 12px;
-  background: #f9f9f9;
-  border: 2px solid #ccc;
-  border-radius: 12px;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: 1.5px solid #d1d5db;
+  border-radius: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   transition: all 0.3s ease;
-}
-
-/* Hover sobre fila */
-.dia-row:hover {
-  background: #e8f0ff;
-  border-color: #1E3C72;
-}
-
-/* Checkbox del día */
-.dia-row input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
   cursor: pointer;
-  accent-color: #1E3C72;
 }
 
-/* Label del día */
+/* Hover sobre tarjeta */
+.dia-row:hover {
+  background: #f0f4ff;
+  border-color: #1E3C72;
+  box-shadow: 0 4px 10px rgba(30,60,114,0.1);
+}
+
+/* Checkbox del día oculto, estilo tipo botón */
+.dia-row input[type="checkbox"] {
+  display: none;
+}
+
+/* Label del día como botón */
 .dia-row label {
-  width: 100px;
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: 12px;
   font-weight: 600;
   color: #1E3C72;
+  background-color: #e5e7eb;
+  transition: all 0.3s ease;
   cursor: pointer;
+}
+
+/* Día seleccionado */
+.dia-row input[type="checkbox"]:checked + label {
+  background-color: #1E3C72;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(30,60,114,0.25);
+}
+
+/* Contenedor de horarios */
+.dia-row .horarios {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
 }
 
 /* Inputs de hora */
 .dia-row input[type="time"] {
-  width: 120px;
+  width: 110px;
   padding: 6px 10px;
-  border: 2px solid #ccc;
+  border: 1.5px solid #d1d5db;
   border-radius: 10px;
   font-size: 14px;
+  background-color: #f9f9f9;
   transition: all 0.3s ease;
 }
 
+/* Focus sobre hora */
 .dia-row input[type="time"]:focus {
   border-color: #1E3C72;
-  box-shadow: 0 0 6px rgba(30,60,114,0.3);
+  box-shadow: 0 0 6px rgba(30,60,114,0.25);
+  background-color: #fff;
 }
 
 /* Inputs deshabilitados */
 .dia-row input[type="time"]:disabled {
-  background: #e0e0e0;
+  background: #e5e7eb;
   cursor: not-allowed;
+  color: #6b7280;
 }
 
-/* Fila activa (checkbox marcado) */
-.dia-row input[type="checkbox"]:checked ~ input[type="time"] {
-  background: #fff;
-  border-color: #1E3C72;
+/* Separador visual entre hora inicio y fin */
+.dia-row .horarios span {
+  color: #6b7280;
+  font-weight: bold;
 }
 
 /* Responsivo */
@@ -76,39 +118,22 @@
   .dia-row {
     flex-direction: column;
     align-items: flex-start;
-    padding: 8px 10px;
+    padding: 10px 12px;
   }
 
   .dia-row label {
     margin-bottom: 6px;
+    width: 100%;
+    text-align: left;
+  }
+
+  .dia-row .horarios {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .dia-row input[type="time"] {
-    width: 100%;
+    width: 48%;
   }
-}
-
-
-/* Estilo para la grilla de horarios */
-#diasHorarioGrid {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 10px;
-}
-.dia-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.dia-name {
-  width: 80px;
-  font-weight: bold;
-}
-.dia-check {
-  margin-right: 8px;
-}
-input[type="time"]:disabled {
-  background-color: #e0e0e0;
-  cursor: not-allowed;
 }
