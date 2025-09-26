@@ -11,7 +11,7 @@ function generarOpcionesHorarios(tNum, bloques) {
 
 export function renderGrillaTurnos({
   clienteId,
-  tecnicoId,
+  tecnico,          // 👈 ahora viene directamente el objeto Técnico
   tSeleccionado,
   rangoSeleccionado,
   clientes,
@@ -22,7 +22,6 @@ export function renderGrillaTurnos({
   turnosContainer.innerHTML = "";
 
   const cliente = clientes.find(c => String(c.numeroCliente) === String(clienteId));
-  const tecnico = tecnicos.find(t => String(t.id) === String(tecnicoId));
 
   if (!cliente || !tecnico) return alert("Cliente o Técnico no encontrado");
 
@@ -53,7 +52,6 @@ export function renderGrillaTurnos({
     const fechaLocal = new Date(iterFecha.getFullYear(), iterFecha.getMonth(), iterFecha.getDate());
     const diaNombre = DAYS[fechaLocal.getDay()]; // ya está en minúscula
 
-    // Log por cada día iterado
     console.log(`Chequeando fecha ${fechaLocal.toDateString()} → ${diaNombre}`);
 
     if (!diasDisponibles.includes(diaNombre)) {
