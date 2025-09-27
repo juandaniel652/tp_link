@@ -73,7 +73,7 @@ export function renderGrillaTurnos({
 
     // 🔹 Horarios disponibles
     let horariosDisponibles = obtenerHorariosDisponibles(turnos, opcion.fechaISO, tecnico, opcion.diaNombre);
-    horariosDisponibles = filtrarPorRango(horariosDisponibles, rangoSeleccionado);
+    horariosDisponibles = filtrarPorRango(horariosDisponibles, rangoSeleccionado, tNum);
 
     const horaStr = horariosDisponibles.length ? horariosDisponibles[0] : "Sin horario";
 
@@ -84,7 +84,7 @@ export function renderGrillaTurnos({
       <p><strong>T:</strong> ${tNum}</p>
       <p><strong>Rango:</strong> ${rangoSeleccionado}</p>
       <p><strong>Horario General:</strong> ${rangoSeleccionado == "AM" ? "09:00 - 13:00" : "14:00 - 18:00"}</p>
-      <p><strong>Horario:</strong> ${horaStr !== "Sin horario" ? formatearRango(horaStr, tNum) : "Sin horario disponible"}</p>
+      <p><strong>Horario Sugerido:</strong> ${horaStr !== "Sin horario" ? formatearRango(horaStr, tNum) : "Sin horario disponible"}</p>
       <button class="btnSeleccionarTurno" ${horaStr === "Sin horario" ? "disabled" : ""}>Selección automática</button>
       <button class="btnEditarTurno">Selección Manual</button>
       <div class="editorHorario" style="display:none; margin-top:8px;"></div>
@@ -177,20 +177,24 @@ export function renderGrillaTurnos({
   });
 }
 
-function filtrarPorRango(horarios, rango) {
-  if (rango === "AM") {
-    return horarios.filter(hora => {
-      const [h] = hora.split(":").map(Number);
-      return h >= 9 && h < 12; // 09:00 - 12:59
-    });
-  }
-  if (rango === "PM") {
-    return horarios.filter(hora => {
-      const [h] = hora.split(":").map(Number);
-      return h >= 14 && h < 17; // 14:00 - 17:59
-    });
-  }
-  return horarios;
+function filtrarPorRango(horarios, rango, tNum = 1) {
+  const limites = {
+    AM: { inicio: 9 * 60, fin: 13 * 60 },   // 09:00 - 13:00
+    PM: { inicio: 14 * 60, fin: 18 * 60 },  // 14:00 - 18:00
+  };
+
+  if (!limites[rango]) return horarios;
+
+  return horarios.filter(hora => {
+    const [h, m] = hora.split(":").map(Number);
+    const inicio = h * 60 + m;
+
+    // Cada T = 15 minutos
+    const duracion = tNum * 15;
+    const fin = inicio + duracion;
+
+    return inicio >= limites[rango].inicio && fin <= limites[rango].fin;
+  });
 }
 
 
