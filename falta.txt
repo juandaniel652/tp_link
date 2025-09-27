@@ -12,4 +12,4 @@ En el select no debe permitir seleccionar cliente que ya tiene turno (y validaci
 guardar de nuevo el mismo turno en otro horario 🆗
 
 8. Al seleccionar "Eliminar" en historial se debe actualizar el render de los selects con ese horario nuevamente disponible en ese momento
-sin tener que resetear la ventana
+sin tener que resetear la ventana 🆗

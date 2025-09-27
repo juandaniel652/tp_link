@@ -35,11 +35,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // Guardar en localStorage
     saveData("turnos", turnos);
 
-    // Refrescar historial
-    renderHistorialTurnos(turnos, turnosContainer);
+    // Refrescar historial con callback para actualizar select de clientes
+    renderHistorialTurnos(turnos, turnosContainer, (turnosActualizados) => {
+      renderSelectClientes(selectCliente, clientes, turnosActualizados);
+    });
 
-    // Refrescar selects
-    renderSelectClientes(selectCliente, clientes, turnos);
+    // Refrescar selects técnicos y genéricos
     renderSelectTecnicos(selectTecnico, tecnicos);
     renderSelectGen(selectT, T_VALUES, "Seleccionar T", "T");
     renderSelectGen(selectRango, RANGOS, "Seleccionar Rango", "");
@@ -82,6 +83,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Mostrar historial inicial
-  renderHistorialTurnos(turnos, turnosContainer);
+  // Mostrar historial inicial con callback para actualizar select de clientes
+  renderHistorialTurnos(turnos, turnosContainer, (turnosActualizados) => {
+    renderSelectClientes(selectCliente, clientes, turnosActualizados);
+  });
 });
