@@ -1,7 +1,5 @@
 import { DAYS, NOMBRES_DIAS } from "./constantes.js";
 import { formatearRango } from "./formateo.js";
-import { saveData } from "./storage.js";
-import { renderHistorialTurnos } from "./historial.js";
 import { hayConflicto, obtenerHorariosDisponibles } from "./validaciones.js";
 
 // Genera opciones de horario según T y bloques
@@ -11,18 +9,18 @@ function generarOpcionesHorarios(tNum, bloques) {
 
 export function renderGrillaTurnos({
   clienteId,
-  tecnico,          // 👈 ahora viene directamente el objeto Técnico
+  tecnico,          // 👈 objeto Técnico
   tSeleccionado,
   rangoSeleccionado,
   clientes,
   tecnicos,
   turnos,
-  turnosContainer
+  turnosContainer,
+  guardarTurno      // 👈 función centralizada de principal.js
 }) {
   turnosContainer.innerHTML = "";
 
   const cliente = clientes.find(c => String(c.numeroCliente) === String(clienteId));
-
   if (!cliente || !tecnico) return alert("Cliente o Técnico no encontrado");
 
   const tNum = Number(tSeleccionado);
@@ -31,19 +29,12 @@ export function renderGrillaTurnos({
   // Validación de días disponibles
   // ======================
   let diasDisponibles = tecnico.getDiasDisponibles();
-  console.log("👉 Días disponibles del técnico:", diasDisponibles);
-  console.log("👉 Días en DAYS:", DAYS);
-
-  // Normalizar a minúsculas para comparación
   diasDisponibles = diasDisponibles.map(d => d.toLowerCase());
-  console.log("👉 Días disponibles normalizados:", diasDisponibles);
 
-  // Construimos fechasOpciones según los días del técnico
   const hoy = new Date();
   const fechasOpciones = [];
   let iterFecha = new Date(hoy);
 
-  // Evitar bucles infinitos: máximo 30 días de búsqueda
   let count = 0;
   const maxIter = 30;
 
@@ -52,14 +43,12 @@ export function renderGrillaTurnos({
     const fechaLocal = new Date(iterFecha.getFullYear(), iterFecha.getMonth(), iterFecha.getDate());
     const diaNombre = DAYS[fechaLocal.getDay()]; // ya está en minúscula
 
-    console.log(`Chequeando fecha ${fechaLocal.toDateString()} → ${diaNombre}`);
-
     if (!diasDisponibles.includes(diaNombre)) {
       count++;
       continue;
     }
 
-    const fechaISO = `${fechaLocal.getFullYear()}-${String(fechaLocal.getMonth() + 1).padStart(2,'0')}-${String(fechaLocal.getDate()).padStart(2,'0')}`;
+    const fechaISO = `${fechaLocal.getFullYear()}-${String(fechaLocal.getMonth() + 1).padStart(2,"0")}-${String(fechaLocal.getDate()).padStart(2,"0")}`;
 
     // Verificar si el cliente ya tiene turno ese día
     const conflictoCliente = turnos.some(turno =>
@@ -82,13 +71,9 @@ export function renderGrillaTurnos({
     const card = document.createElement("div");
     card.className = "card-turno";
 
-    // 🔹 Horarios disponibles para este técnico y día
+    // 🔹 Horarios disponibles
     let horariosDisponibles = obtenerHorariosDisponibles(turnos, opcion.fechaISO, tecnico, opcion.diaNombre);
-    console.log(`Horarios disponibles para ${opcion.fechaISO} (todos):`, horariosDisponibles);
-
-    // Filtrar por AM / PM
     horariosDisponibles = filtrarPorRango(horariosDisponibles, rangoSeleccionado);
-    console.log(`Horarios disponibles para ${opcion.fechaISO} (${rangoSeleccionado}):`, horariosDisponibles);
 
     const horaStr = horariosDisponibles.length ? horariosDisponibles[0] : "Sin horario";
 
@@ -105,7 +90,9 @@ export function renderGrillaTurnos({
       <div class="editorHorario" style="display:none; margin-top:8px;"></div>
     `;
 
+    // ======================
     // SELECCIÓN AUTOMÁTICA
+    // ======================
     card.querySelector(".btnSeleccionarTurno").addEventListener("click", () => {
       if (horaStr === "Sin horario") return alert("No hay horarios disponibles para este día");
 
@@ -124,13 +111,14 @@ export function renderGrillaTurnos({
         fechaStr: `${NOMBRES_DIAS[opcion.diaNombre]} ${opcion.fecha.toLocaleDateString("es-ES",{day:"numeric", month:"long"})}`,
         hora: horaStr
       };
-      turnos.push(nuevoTurno);
-      saveData("turnos", turnos);
-      renderHistorialTurnos(turnos, turnosContainer);
+
+      guardarTurno(nuevoTurno);  // 👈 usa la función central
       turnosContainer.innerHTML = "";
     });
 
-    // EDICIÓN MANUAL
+    // ======================
+    // SELECCIÓN MANUAL
+    // ======================
     card.querySelector(".btnEditarTurno").addEventListener("click", () => {
       const editor = card.querySelector(".editorHorario");
       editor.style.display = editor.style.display === "none" ? "block" : "none";
@@ -173,9 +161,8 @@ export function renderGrillaTurnos({
             fechaStr: `${NOMBRES_DIAS[opcion.diaNombre]} ${opcion.fecha.toLocaleDateString("es-ES",{day:"numeric", month:"long"})}`,
             hora: horarioSeleccionado
           };
-          turnos.push(nuevoTurno);
-          saveData("turnos", turnos);
-          renderHistorialTurnos(turnos, turnosContainer);
+
+          guardarTurno(nuevoTurno);  // 👈 usa la función central
           turnosContainer.innerHTML = "";
         });
 

@@ -38,8 +38,17 @@ document.addEventListener("DOMContentLoaded", () => {
     // Refrescar historial
     renderHistorialTurnos(turnos, turnosContainer);
 
-    // Refrescar select de clientes (para bloquear al recién usado)
+    // Refrescar selects
     renderSelectClientes(selectCliente, clientes, turnos);
+    renderSelectTecnicos(selectTecnico, tecnicos);
+    renderSelectGen(selectT, T_VALUES, "Seleccionar T", "T");
+    renderSelectGen(selectRango, RANGOS, "Seleccionar Rango", "");
+
+    // 🔄 Resetear selección (placeholder activo)
+    selectCliente.value = "";
+    selectTecnico.value = "";
+    selectT.value = "";
+    selectRango.value = "";
   }
 
   // Evento principal
