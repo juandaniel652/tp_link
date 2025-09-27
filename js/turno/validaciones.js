@@ -9,13 +9,15 @@ export function clienteYaTieneTurno(clienteId, turnos) {
 
 // Verifica si hay conflicto de horario para un técnico en una fecha
 export function hayConflicto(turnos, fechaISO, hora, tecnicoNombre) {
-  return turnos.some(
-    turno =>
-      turno.fecha === fechaISO &&
-      turno.hora === hora &&
-      turno.tecnico === tecnicoNombre // 👈 ahora guardamos un solo técnico como string
-  );
+  const horaNorm = hora.slice(0,5); // "HH:MM"
+  return turnos.some(turno => {
+    if (turno.fecha !== fechaISO || turno.tecnico !== tecnicoNombre) return false;
+    const bloques = expandirTurno(turno);
+    return bloques.includes(horaNorm);
+  });
 }
+
+
 
 // Devuelve lista de clientes que aún no tienen turno asignado
 export function filtrarClientesDisponibles(clientes, turnos) {
@@ -24,10 +26,30 @@ export function filtrarClientesDisponibles(clientes, turnos) {
 
 // Devuelve horarios disponibles para un técnico en una fecha
 export function obtenerHorariosDisponibles(turnos, fechaISO, tecnico, diaNombre) {
-  // tecnico: instancia de la clase Tecnico
   const bloquesPorDia = tecnico.generarBloques();
-  const bloquesDia = bloquesPorDia[diaNombre] || []; // bloques del día específico
+  const bloquesDia = bloquesPorDia[diaNombre] || [];
 
-  // Filtrar los bloques que ya tengan un turno asignado
-  return bloquesDia.filter(hora => !hayConflicto(turnos, fechaISO, hora, `${tecnico.nombre} ${tecnico.apellido}`));
+  return bloquesDia.filter(hora =>
+    !hayConflicto(turnos, fechaISO, hora, `${tecnico.nombre} ${tecnico.apellido}`)
+  );
+}
+
+// Mide los T ocupados en agenda, de esa manera no muestra turnos ocupados ya por el mismo técnico
+function expandirTurno(turno) {
+  const [h, m] = turno.hora.split(":").map(Number);
+  const bloques = [];
+  let hora = h;
+  let minuto = m;
+
+  for (let i = 0; i < turno.t; i++) {
+    const horaStr = `${String(hora).padStart(2,"0")}:${String(minuto).padStart(2,"0")}`;
+    bloques.push(horaStr);
+
+    minuto += turno.duracion || 15; // 👈 usar duración real del técnico si la guardás, si no fijo 15
+    if (minuto >= 60) {
+      hora += Math.floor(minuto / 60);
+      minuto = minuto % 60;
+    }
+  }
+  return bloques;
 }
