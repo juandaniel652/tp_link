@@ -6,5 +6,7 @@ Ni tampoco divide en AM o PM (Por ejemplo AM, de 09:00 - 13:00 y PM de 14:00 - 1
 5. No funciona el mostrar clientes sin tunos, muestra los clientes que ya tienen turno, 
 En el select no debe permitir seleccionar cliente que ya tiene turno (y validación en boton para doble verificacion) 🆗
 
-6.Según los horarios de la agenda ocupados, no los muestra en opción manual ya que no se deben sobreescribir los turno del mismo tecnico
- 
+6.Según los horarios de la agenda ocupados, no los muestra en opción manual ya que no se deben sobreescribir los turno del mismo tecnico 🆗
+
+7. Al guardar turno (evento de botón "Mostrar Turnos") debe refrescar, de esa manera los selects se actualicen y no permita 
+guardar de nuevo el mismo turno en otro horario

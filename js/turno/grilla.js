@@ -90,7 +90,6 @@ export function renderGrillaTurnos({
     horariosDisponibles = filtrarPorRango(horariosDisponibles, rangoSeleccionado);
     console.log(`Horarios disponibles para ${opcion.fechaISO} (${rangoSeleccionado}):`, horariosDisponibles);
 
-
     const horaStr = horariosDisponibles.length ? horariosDisponibles[0] : "Sin horario";
 
     card.innerHTML = `
@@ -99,6 +98,7 @@ export function renderGrillaTurnos({
       <p><strong>Técnico:</strong> ${tecnico.nombre} ${tecnico.apellido}</p>
       <p><strong>T:</strong> ${tNum}</p>
       <p><strong>Rango:</strong> ${rangoSeleccionado}</p>
+      <p><strong>Horario General:</strong> ${rangoSeleccionado == "AM" ? "09:00 - 13:00" : "14:00 - 18:00"}</p>
       <p><strong>Horario:</strong> ${horaStr !== "Sin horario" ? formatearRango(horaStr, tNum) : "Sin horario disponible"}</p>
       <button class="btnSeleccionarTurno" ${horaStr === "Sin horario" ? "disabled" : ""}>Selección automática</button>
       <button class="btnEditarTurno">Selección Manual</button>

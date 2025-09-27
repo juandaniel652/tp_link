@@ -29,6 +29,7 @@ export function renderHistorialTurnos(turnos, turnosContainer) {
       <p><strong>Técnico:</strong> ${t.tecnico || (t.tecnicos && t.tecnicos.join(", "))}</p>
       <p><strong>T:</strong> ${t.t}</p>
       <p><strong>Rango:</strong> ${t.rango}</p>
+      <p><strong>Horario General: </strong> ${t.rango == "AM" ? "09:00 - 13:00" : "14:00 - 18:00"}</p>
       <p><strong>Horario:</strong> ${formatearRango(t.hora, t.t)}</p>
       <button class="btnEliminarTurno" data-id="${t.id}">❌ Eliminar</button>
     `;
