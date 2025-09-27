@@ -9,4 +9,7 @@ En el select no debe permitir seleccionar cliente que ya tiene turno (y validaci
 6.Según los horarios de la agenda ocupados, no los muestra en opción manual ya que no se deben sobreescribir los turno del mismo tecnico 🆗
 
 7. Al guardar turno (evento de botón "Mostrar Turnos") debe refrescar, de esa manera los selects se actualicen y no permita 
-guardar de nuevo el mismo turno en otro horario
+guardar de nuevo el mismo turno en otro horario 🆗
+
+8. Al seleccionar "Eliminar" en historial se debe actualizar el render de los selects con ese horario nuevamente disponible en ese momento
+sin tener que resetear la ventana

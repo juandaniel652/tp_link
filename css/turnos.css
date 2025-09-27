@@ -430,3 +430,4 @@ button, .btn-primary, .btnSeleccionarTurno, .btnEliminarTurno {
     gap: 20px;
   }
 }
+.mensaje-turno { font-size: 0.9em; }

@@ -97,7 +97,8 @@ export function renderGrillaTurnos({
       if (horaStr === "Sin horario") return alert("No hay horarios disponibles para este día");
 
       if (hayConflicto(turnos, opcion.fechaISO, horaStr, `${tecnico.nombre} ${tecnico.apellido}`)) {
-        return alert("Ese horario ya está ocupado para este técnico.");
+        mostrarMensaje(card, "⚠️ Ese horario ya está ocupado para este técnico.");
+        return;
       }
 
       const nuevoTurno = {
@@ -147,7 +148,8 @@ export function renderGrillaTurnos({
           const horarioSeleccionado = select.value.split(" ")[0];
 
           if (hayConflicto(turnos, opcion.fechaISO, horarioSeleccionado, `${tecnico.nombre} ${tecnico.apellido}`)) {
-            return alert("Ese horario ya está ocupado para este técnico.");
+            mostrarMensaje(card, "⚠️ Ese horario ya está ocupado para este técnico.");
+            return;
           }
 
           const nuevoTurno = {
@@ -190,3 +192,19 @@ function filtrarPorRango(horarios, rango) {
   }
   return horarios;
 }
+
+
+// Función auxiliar para mostrar mensajes dentro de la card
+function mostrarMensaje(card, texto, tipo = "error") {
+  let mensaje = card.querySelector(".mensaje-turno");
+  if (!mensaje) {
+    mensaje = document.createElement("div");
+    mensaje.className = "mensaje-turno";
+    card.appendChild(mensaje);
+  }
+  mensaje.textContent = texto;
+  mensaje.style.color = tipo === "error" ? "red" : "green";
+  mensaje.style.fontWeight = "bold";
+  mensaje.style.marginTop = "6px";
+}
+
