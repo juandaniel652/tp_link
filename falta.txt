@@ -13,3 +13,7 @@ guardar de nuevo el mismo turno en otro horario 🆗
 
 8. Al seleccionar "Eliminar" en historial se debe actualizar el render de los selects con ese horario nuevamente disponible en ese momento
 sin tener que resetear la ventana 🆗
+
+
+9. Técnico debe tener guardado su mail y mostrarse en la tabla
+10. Que se vea la foto del técnico
