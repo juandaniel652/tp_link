@@ -1,3 +1,4 @@
+// UIHandler.js
 import Tecnico from "./Tecnico.js";
 
 export default class UIHandler {
@@ -23,7 +24,7 @@ export default class UIHandler {
     this._renderHorariosDisponibles();
   }
 
-  // ---------- VALIDACIONES ----------
+  // ================== VALIDACIONES ==================
   _crearMensajesError() {
     Object.keys(this.inputs).forEach((key) => {
       let span = document.createElement("span");
@@ -41,7 +42,7 @@ export default class UIHandler {
     Object.entries(this.inputs).forEach(([key, input]) => {
       input.addEventListener("input", () => {
         if (key === "telefono") this._formatearTelefono(input);
-        this._validarCampoIndividual(key, input.value);
+        if (key !== "imagen") this._validarCampoIndividual(key, input.value);
       });
 
       input.addEventListener("beforeinput", (e) => {
@@ -51,7 +52,7 @@ export default class UIHandler {
 
     this.inputs.duracion.addEventListener("blur", () => {
       let minutos = parseInt(this.inputs.duracion.value, 10) || 0;
-      minutos = Math.round(minutos / 15) * 15;
+      minutos = Math.max(15, Math.round(minutos / 15) * 15);
       this.inputs.duracion.value = minutos;
     });
 
@@ -97,7 +98,7 @@ export default class UIHandler {
     return !errorMsg;
   }
 
-  // ---------- FORMULARIO ----------
+  // ================== FORMULARIO ==================
   limpiarFormulario() {
     Object.values(this.inputs).forEach((input) => (input.value = ""));
     Object.values(this.errors).forEach((span) => (span.textContent = ""));
@@ -117,6 +118,7 @@ export default class UIHandler {
     const dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
     this.horariosContainer.innerHTML = "";
 
+    // Checkbox "Todos los días"
     const chkTodos = document.createElement("input");
     chkTodos.type = "checkbox";
     chkTodos.id = "chkTodosDias";
@@ -143,37 +145,8 @@ export default class UIHandler {
       label.style.width = "80px";
       label.style.fontWeight = "bold";
 
-      const inicio = document.createElement("input");
-      inicio.type = "time";
-      inicio.min = "09:00";
-      inicio.max = "18:00";
-      inicio.step = "900";
-      inicio.value = "09:00";
-      inicio.dataset.tipo = "inicio";
-      inicio.disabled = true;
-
-      const fin = document.createElement("input");
-      fin.type = "time";
-      fin.min = "09:00";
-      fin.max = "18:00";
-      fin.step = "900";
-      fin.value = "18:00";
-      fin.dataset.tipo = "fin";
-      fin.disabled = true;
-
-      [inicio, fin].forEach((input) => {
-        input.addEventListener("change", () => {
-          let [h, m] = input.value.split(":").map(Number);
-          m = Math.round(m / 15) * 15;
-          if (m === 60) {
-            h += 1;
-            m = 0;
-          }
-          if (h < 9) { h = 9; m = 0; }
-          if (h > 18) { h = 18; m = 0; }
-          input.value = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-        });
-      });
+      const inicio = this._crearInputHora("inicio", "09:00");
+      const fin = this._crearInputHora("fin", "18:00");
 
       chk.addEventListener("change", () => {
         inicio.disabled = fin.disabled = !chk.checked;
@@ -206,7 +179,32 @@ export default class UIHandler {
     });
   }
 
-  // ---------- TABLA ----------
+  _crearInputHora(tipo, valorDefault) {
+    const input = document.createElement("input");
+    input.type = "time";
+    input.min = "09:00";
+    input.max = "18:00";
+    input.step = "900";
+    input.value = valorDefault;
+    input.dataset.tipo = tipo;
+    input.disabled = true;
+
+    input.addEventListener("change", () => {
+      let [h, m] = input.value.split(":").map(Number);
+      m = Math.round(m / 15) * 15;
+      if (m === 60) {
+        h += 1;
+        m = 0;
+      }
+      if (h < 9) { h = 9; m = 0; }
+      if (h > 18) { h = 18; m = 0; }
+      input.value = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+    });
+
+    return input;
+  }
+
+  // ================== TABLA ==================
   renderTabla() {
     this.contenedor.innerHTML = "";
     const tecnicos = this.manager.obtenerTodos();
@@ -233,7 +231,7 @@ export default class UIHandler {
         <td data-label="Nombre">${r.nombre}</td>
         <td data-label="Apellido">${r.apellido}</td>
         <td data-label="Teléfono">${r.telefono}</td>
-        <td data-label="Duración turno">${r.duracionTurnoMinutos}</td>
+        <td data-label="Duración turno">${r.duracionTurnoMinutos} min</td>
         <td data-label="Horarios">${horariosStr}</td>
         <td data-label="Acciones" class="actions">
           <button class="btn-action edit">✏️</button>
@@ -251,7 +249,7 @@ export default class UIHandler {
     });
   }
 
-  // ---------- CRUD ----------
+  // ================== CRUD ==================
   async _recopilarDatosFormulario() {
     const horarios = [...this.horariosContainer.querySelectorAll(".dia-row")]
       .filter((row) => row.querySelector("input[type=checkbox]").checked)
@@ -261,7 +259,7 @@ export default class UIHandler {
         const fin = row.querySelector("input[data-tipo=fin]").value;
 
         if (inicio >= fin) {
-          alert(`En ${dia}, la hora de inicio debe ser menor que la de fin`);
+          this._mostrarErrorGlobal(`En ${dia}, la hora de inicio debe ser menor que la de fin`);
           throw new Error("Horario inválido");
         }
         return { dia, inicio, fin };
@@ -304,7 +302,7 @@ export default class UIHandler {
     });
 
     if (!valido) {
-      alert("Revisa los campos: " + errores.join(", "));
+      this._mostrarErrorGlobal("Revisa los campos: " + errores.join(", "));
       return;
     }
 
@@ -367,5 +365,10 @@ export default class UIHandler {
       localStorage.setItem("tecnicos", JSON.stringify(this.manager.obtenerTodos()));
       this.renderTabla();
     }
+  }
+
+  // ================== UTILIDADES ==================
+  _mostrarErrorGlobal(msg) {
+    alert(msg); // 🚀 aquí podrías reemplazar por un modal elegante si lo deseas
   }
 }
