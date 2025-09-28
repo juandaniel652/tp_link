@@ -1,17 +1,20 @@
 export default class Tecnico {
-  constructor({ nombre, apellido, telefono, duracionTurnoMinutos, horarios = [] }) {
+  constructor({ nombre, apellido, telefono, duracionTurnoMinutos, horarios = [], imagen = "" }) {
     this.nombre = nombre.trim();
     this.apellido = apellido.trim();
     this.telefono = telefono.trim();
     this.duracionTurnoMinutos = parseInt(duracionTurnoMinutos, 10);
+    this.imagen = imagen; // 🔹 Guardamos la imagen en base64 o vacío
 
-    // Normalizar días a minúscula
-    this.horarios = Array.isArray(horarios) ? horarios.map(h => ({
-      dia: h.dia.toLowerCase(), // 🔹 normalizamos aquí
-      inicio: h.inicio,
-      fin: h.fin
-    })) : [];
+    this.horarios = Array.isArray(horarios)
+      ? horarios.map(h => ({
+          dia: h.dia.toLowerCase(),
+          inicio: h.inicio,
+          fin: h.fin
+        }))
+      : [];
   }
+
 
   // ======================
   // VALIDACIONES

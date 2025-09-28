@@ -117,7 +117,6 @@ export default class UIHandler {
     const dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
     this.horariosContainer.innerHTML = "";
 
-    // Checkbox "Seleccionar todos los días"
     const chkTodos = document.createElement("input");
     chkTodos.type = "checkbox";
     chkTodos.id = "chkTodosDias";
@@ -214,7 +213,7 @@ export default class UIHandler {
 
     if (tecnicos.length === 0) {
       const tr = document.createElement("tr");
-      tr.innerHTML = `<td colspan="5" class="no-data">No hay registros</td>`;
+      tr.innerHTML = `<td colspan="7" class="no-data">No hay registros</td>`;
       this.contenedor.appendChild(tr);
       return;
     }
@@ -227,7 +226,9 @@ export default class UIHandler {
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td data-label="Imagen">
-          ${r.imagen ? `<img src="${r.imagen}" alt="Foto" style="width:40px; height:40px; object-fit:cover; border-radius:50%;">` : ""}
+          ${r.imagen 
+            ? `<img src="${r.imagen}" alt="Foto" style="width:50px;height:50px;border-radius:50%;">`
+            : "—"}
         </td>
         <td data-label="Nombre">${r.nombre}</td>
         <td data-label="Apellido">${r.apellido}</td>
@@ -251,7 +252,7 @@ export default class UIHandler {
   }
 
   // ---------- CRUD ----------
-  _recopilarDatosFormulario() {
+  async _recopilarDatosFormulario() {
     const horarios = [...this.horariosContainer.querySelectorAll(".dia-row")]
       .filter((row) => row.querySelector("input[type=checkbox]").checked)
       .map((row) => {
@@ -266,10 +267,10 @@ export default class UIHandler {
         return { dia, inicio, fin };
       });
 
-    let imagenURL = "";
+    let imagenBase64 = "";
     const file = this.inputs.imagen.files[0];
     if (file) {
-      imagenURL = URL.createObjectURL(file);
+      imagenBase64 = await this._convertirArchivoABase64(file);
     }
 
     return new Tecnico({
@@ -278,16 +279,25 @@ export default class UIHandler {
       telefono: this.inputs.telefono.value,
       duracionTurnoMinutos: this.inputs.duracion.value,
       horarios,
-      imagen: imagenURL,
+      imagen: imagenBase64,
     });
   }
 
-  _guardarTecnico() {
+  _convertirArchivoABase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target.result);
+      reader.onerror = (e) => reject(e);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async _guardarTecnico() {
     let valido = true;
     let errores = [];
 
     Object.entries(this.inputs).forEach(([key, input]) => {
-      if (!this._validarCampoIndividual(key, input.value)) {
+      if (key !== "imagen" && !this._validarCampoIndividual(key, input.value)) {
         valido = false;
         errores.push(key);
       }
@@ -299,7 +309,7 @@ export default class UIHandler {
     }
 
     try {
-      const tecnico = this._recopilarDatosFormulario();
+      const tecnico = await this._recopilarDatosFormulario();
 
       if (this.indiceEdicion !== null) {
         this.manager.actualizar(this.indiceEdicion, tecnico);
@@ -307,7 +317,6 @@ export default class UIHandler {
         this.manager.agregar(tecnico);
       }
 
-      // 🔹 Guardar en localStorage
       localStorage.setItem("tecnicos", JSON.stringify(this.manager.obtenerTodos()));
 
       this.limpiarFormulario();
@@ -355,10 +364,7 @@ export default class UIHandler {
       confirm(`¿Seguro que quieres eliminar a ${tecnico.nombre} ${tecnico.apellido}?`)
     ) {
       this.manager.eliminar(index);
-
-      // 🔹 Actualizar localStorage
       localStorage.setItem("tecnicos", JSON.stringify(this.manager.obtenerTodos()));
-
       this.renderTabla();
     }
   }
