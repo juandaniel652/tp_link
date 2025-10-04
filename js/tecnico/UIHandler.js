@@ -14,6 +14,7 @@ export default class UIHandler {
       telefono: document.getElementById("telefono"),
       duracion: document.getElementById("duracionTurno"),
       imagen: document.getElementById("imagen"),
+      email: document.getElementById("duracionEmail"), 
     };
 
     this.horariosContainer = document.getElementById("diasHorarioGrid");
@@ -42,7 +43,11 @@ export default class UIHandler {
     Object.entries(this.inputs).forEach(([key, input]) => {
       input.addEventListener("input", () => {
         if (key === "telefono") this._formatearTelefono(input);
-        if (key !== "imagen") this._validarCampoIndividual(key, input.value);
+        if (key !== "imagen" && !this._validarCampoIndividual(key, input.value)) {
+          valido = false;
+          errores.push(key);
+        }
+
       });
 
       input.addEventListener("beforeinput", (e) => {
@@ -278,6 +283,7 @@ export default class UIHandler {
       duracionTurnoMinutos: this.inputs.duracion.value,
       horarios,
       imagen: imagenBase64,
+      email: this.inputs.email.value,
     });
   }
 
@@ -332,6 +338,7 @@ export default class UIHandler {
     this.inputs.apellido.value = registro.apellido;
     this.inputs.telefono.value = registro.telefono;
     this.inputs.duracion.value = registro.duracionTurnoMinutos;
+    this.inputs.email.value = registro.email || "";
 
     this.horariosContainer.querySelectorAll(".dia-row").forEach((row) => {
       const chk = row.querySelector("input[type=checkbox]");

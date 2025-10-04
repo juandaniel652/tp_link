@@ -1,10 +1,11 @@
 export default class Tecnico {
-  constructor({ nombre, apellido, telefono, duracionTurnoMinutos, horarios = [], imagen = "" }) {
+  constructor({ nombre, apellido, telefono, duracionTurnoMinutos, horarios = [], imagen = "", email = "" }) {
     this.nombre = nombre.trim();
     this.apellido = apellido.trim();
     this.telefono = telefono.trim();
     this.duracionTurnoMinutos = parseInt(duracionTurnoMinutos, 10);
     this.imagen = imagen; // 🔹 Guardamos la imagen en base64 o vacío
+    this.email = email.trim(); // 🔹 Nuevo atributo
 
     this.horarios = Array.isArray(horarios)
       ? horarios.map(h => ({
@@ -15,7 +16,6 @@ export default class Tecnico {
       : [];
   }
 
-
   // ======================
   // VALIDACIONES
   // ======================
@@ -23,6 +23,7 @@ export default class Tecnico {
     const soloLetras = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
     const telRegex = /^([0-9]{2})\s([0-9]{4})-([0-9]{4})$/;
     const duracion = Number(valor);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Validación básica de email
 
     switch (campo) {
       case "nombre":
@@ -35,6 +36,8 @@ export default class Tecnico {
         if (duracion > 90) return "Máximo permitido es 90 minutos.";
         if (duracion % 5 !== 0) return "Debe ser múltiplo de 5.";
         return "";
+      case "email":
+        return emailRegex.test(valor) ? "" : "Email inválido";
       default:
         return "";
     }
@@ -45,7 +48,8 @@ export default class Tecnico {
       !this.validarCampo("nombre", tecnico.nombre) &&
       !this.validarCampo("apellido", tecnico.apellido) &&
       !this.validarCampo("telefono", tecnico.telefono) &&
-      !this.validarCampo("duracionTurnoMinutos", tecnico.duracionTurnoMinutos)
+      !this.validarCampo("duracionTurnoMinutos", tecnico.duracionTurnoMinutos) &&
+      !this.validarCampo("email", tecnico.email)
     );
   }
 
@@ -53,7 +57,6 @@ export default class Tecnico {
   // LÓGICA DE HORARIOS
   // ======================
 
-  // Genera los bloques de horarios para cada día configurado
   generarBloques() {
     const bloquesPorDia = {};
 
@@ -79,9 +82,7 @@ export default class Tecnico {
     return bloquesPorDia;
   }
 
-  // Devuelve solo los días disponibles (ya normalizados en minúscula)
   getDiasDisponibles() {
-    console.log("👉 Horarios del técnico:", this.horarios);
     return this.horarios.map(h => h.dia);
   }
 }
