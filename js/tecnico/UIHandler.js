@@ -225,7 +225,7 @@ export default class UIHandler {
       tr.innerHTML = `
         <td data-label="Imagen">
           ${r.imagen 
-            ? `<img src="${r.imagen}" alt="Foto" style="width:50px;height:50px;border-radius:50%;">`
+            ? `<img src="${r.imagen}" alt="Foto" class="foto-tecnico">`
             : "—"}
         </td>
         <td data-label="Nombre">${r.nombre}</td>

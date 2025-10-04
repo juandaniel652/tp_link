@@ -279,6 +279,36 @@ main {
   transition: background 0.2s ease-in-out;
 }
 
+/* Imagen encuadrada en su contenedor y celda*/ 
+
+/* Columna de la imagen */
+.table-general td[data-label="Imagen"] {
+  width: 100px;         /* ancho de la celda */
+  height: 100px;        /* alto de la celda */
+  padding: 0;           /* sin relleno extra */
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Imagen dentro de la celda */
+.table-general td[data-label="Imagen"] img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;    /* llena sin deformarse */
+  border-radius: 6px;   /* cuadrado con bordes suaves */
+  display: block;
+}
+
+.foto-tecnico {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px; /* cuadrado con bordes suaves */
+  display: block;
+}
+
+
+
 /* === BOTONES DE ACCIÓN === */
 .actions {
   display: flex;
