@@ -18,12 +18,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const selectRango = document.getElementById("selectRango");
   const turnosContainer = document.getElementById("turnosContainer");
   const btnMostrarTurnos = document.getElementById("btnMostrarTurnos");
+  const selectEstadoTicket = document.getElementById("selectEstadoTicket");
 
   // RENDER inicial (clientes pasan turnos para deshabilitar los que ya tienen)
   renderSelectClientes(selectCliente, clientes, turnos);
   renderSelectTecnicos(selectTecnico, tecnicos);
   renderSelectGen(selectT, T_VALUES, "Seleccionar T", "T");
   renderSelectGen(selectRango, RANGOS, "Seleccionar Rango", "");
+  renderSelectGen(selectEstadoTicket, ["Abierto", "Cerrado"], "Seleccionar Estado", "");
 
   // ==============================
   // FUNCION GUARDAR TURNO
@@ -44,12 +46,14 @@ document.addEventListener("DOMContentLoaded", () => {
     renderSelectTecnicos(selectTecnico, tecnicos);
     renderSelectGen(selectT, T_VALUES, "Seleccionar T", "T");
     renderSelectGen(selectRango, RANGOS, "Seleccionar Rango", "");
+    renderSelectGen(selectEstadoTicket, ["Abierto", "Cerrado"], "Seleccionar Estado", "");
 
     // 🔄 Resetear selección (placeholder activo)
     selectCliente.value = "";
     selectTecnico.value = "";
     selectT.value = "";
     selectRango.value = "";
+    selectEstadoTicket.value = "";
   }
 
   // Evento principal
@@ -59,8 +63,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const tSeleccionado = selectT.value;
     const rangoSeleccionado = selectRango.value;
 
-    if (!clienteId || !tecnicoIndex || !tSeleccionado || !rangoSeleccionado)
-      return alert("Debe seleccionar Cliente, Técnico, T y Rango");
+    if (!clienteId || !tecnicoIndex || !tSeleccionado || !rangoSeleccionado || !selectEstadoTicket)
+      return alert("Debe seleccionar Cliente, Técnico, T, Rango y Estado.");
 
     // DOBLE VERIFICACIÓN
     if (clienteYaTieneTurno(clienteId, turnos)) {
