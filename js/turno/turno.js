@@ -62,8 +62,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const tecnicoIndex = selectTecnico.value;
     const tSeleccionado = selectT.value;
     const rangoSeleccionado = selectRango.value;
+    const estadoTicket = selectEstadoTicket.value;
 
-    if (!clienteId || !tecnicoIndex || !tSeleccionado || !rangoSeleccionado || !selectEstadoTicket)
+    if (!clienteId || !tecnicoIndex || !tSeleccionado || !rangoSeleccionado || !estadoTicket)
       return alert("Debe seleccionar Cliente, Técnico, T, Rango y Estado.");
 
     // DOBLE VERIFICACIÓN
@@ -80,10 +81,10 @@ document.addEventListener("DOMContentLoaded", () => {
       tSeleccionado,
       rangoSeleccionado,
       clientes,
-      tecnicos,
       turnos,
       turnosContainer,
-      guardarTurno // 👈 pasamos la función para que grilla pueda guardar
+      guardarTurno, // 👈 pasamos la función para que grilla pueda guardar
+      estadoTicket  // 👈 pasamos el estado del ticket
     });
   });
 

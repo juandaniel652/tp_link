@@ -13,10 +13,10 @@ export function renderGrillaTurnos({
   tSeleccionado,
   rangoSeleccionado,
   clientes,
-  tecnicos,
   turnos,
   turnosContainer,
-  guardarTurno      // 👈 función centralizada de principal.js
+  guardarTurno,      // 👈 función centralizada de principal.js
+  estadoTicket
 }) {
   turnosContainer.innerHTML = "";
 
@@ -85,6 +85,7 @@ export function renderGrillaTurnos({
       <p><strong>Rango:</strong> ${rangoSeleccionado}</p>
       <p><strong>Horario General:</strong> ${rangoSeleccionado == "AM" ? "09:00 - 13:00" : "14:00 - 18:00"}</p>
       <p><strong>Horario Sugerido:</strong> ${horaStr !== "Sin horario" ? formatearRango(horaStr, tNum) : "Sin horario disponible"}</p>
+      <p><strong>Estado del Ticket:</strong> ${estadoTicket}</p>
       <button class="btnSeleccionarTurno" ${horaStr === "Sin horario" ? "disabled" : ""}>Selección automática</button>
       <button class="btnEditarTurno">Selección Manual</button>
       <div class="editorHorario" style="display:none; margin-top:8px;"></div>
