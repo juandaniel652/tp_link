@@ -111,7 +111,8 @@ export function renderGrillaTurnos({
         rango: rangoSeleccionado,
         fecha: opcion.fechaISO,
         fechaStr: `${NOMBRES_DIAS[opcion.diaNombre]} ${opcion.fecha.toLocaleDateString("es-ES",{day:"numeric", month:"long"})}`,
-        hora: horaStr
+        hora: horaStr,
+        estadoTicket: estadoTicket  // 👈 incluir estado del ticket
       };
 
       guardarTurno(nuevoTurno);  // 👈 usa la función central
@@ -162,7 +163,8 @@ export function renderGrillaTurnos({
             rango: rangoSeleccionado,
             fecha: opcion.fechaISO,
             fechaStr: `${NOMBRES_DIAS[opcion.diaNombre]} ${opcion.fecha.toLocaleDateString("es-ES",{day:"numeric", month:"long"})}`,
-            hora: horarioSeleccionado
+            hora: horarioSeleccionado,
+            estadoTicket: estadoTicket  // 👈 incluir estado del ticket
           };
 
           guardarTurno(nuevoTurno);  // 👈 usa la función central

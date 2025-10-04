@@ -1,6 +1,5 @@
 import { formatearRango } from "./formateo.js";
 import { saveData } from "./storage.js";
-import { renderSelectClientes } from "./render_selects.js"; // necesario para actualizar select
 
 export function renderHistorialTurnos(turnos, turnosContainer, actualizarSelectClientes) {
   // Obtener o crear contenedor de historial
@@ -35,6 +34,7 @@ export function renderHistorialTurnos(turnos, turnosContainer, actualizarSelectC
       <p><strong>Rango:</strong> ${t.rango}</p>
       <p><strong>Horario General:</strong> ${t.rango == "AM" ? "09:00 - 13:00" : "14:00 - 18:00"}</p>
       <p><strong>Horario:</strong> ${formatearRango(t.hora, t.t)}</p>
+      <p><strong>Estado del Ticket:</strong> ${t.estadoTicket || "N/A"}</p>
       <button class="btnEliminarTurno" data-id="${t.id}">❌ Eliminar</button>
     `;
     historial.appendChild(card);

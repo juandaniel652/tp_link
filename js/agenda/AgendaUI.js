@@ -96,7 +96,7 @@ export class AgendaUI {
         <strong>Técnico:</strong> ${tecnicoStr}<br>
         <strong>T:</strong> ${turno.t}<br>
         <strong>Rango:</strong> ${turno.rango}<br>
-        <strong>Estado:</strong> ${turno.estado}
+        <strong>Estado:</strong> ${turno.estadoTicket}
       `;
       this.mostrarTooltip(btn, contenido);
     });
