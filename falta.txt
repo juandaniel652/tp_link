@@ -18,4 +18,5 @@ sin tener que resetear la ventana 🆗
 9. Técnico debe tener guardado su mail y mostrarse en la tabla al tener opción editar 🆗
 10. Que se vea la foto del técnico 🆗
 11. Mejorar la imagen del técnico 🆗
-12. Al seleccionar editar técnico debe permitir ver todos los datos guardados y de allí editar (mail e imagen no figuran como guardados)
+12. Al seleccionar editar técnico debe permitir ver todos los datos guardados y de allí editar:
+mail ya hecho, falta imagen y horarios

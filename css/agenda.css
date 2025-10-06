@@ -156,7 +156,12 @@ td button {
 .btn-ocupado {
   background-color: var(--color-azul-btn);
   color: #fff;
+  padding: 1px 5px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
 }
+
 
 /* tarjetas dentro de celda */
 .turno-card {
