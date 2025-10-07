@@ -152,15 +152,39 @@ td button {
 .btn-libre:hover {
   background-color: var(--color-verde-hover);
 }
-
 .btn-ocupado {
-  background-color: var(--color-azul-btn);
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: 700; /* similar a <strong> */
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: not-allowed;
+  background-image: none;
+  border: 1px solid var(--color-azul-header);
+  background-color: var(--color-azul-header);
   color: #fff;
-  padding: 1px 5px;
+  padding: 1px 5px; /* igual a .btn-xs */
   font-size: 12px;
   line-height: 1.5;
   border-radius: 3px;
+  box-sizing: border-box;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: linear-gradient(135deg, var(--color-azul-header), var(--color-azul-header-alt));
+  border: 1px solid var(--color-azul-header);
 }
+
+.btn-ocupado:hover {
+  transform: scale(1.03);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.btn-ocupado:active,
+.btn-ocupado:focus {
+  outline: none;
+  box-shadow: none;
+}
+
 
 
 /* tarjetas dentro de celda */
