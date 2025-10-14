@@ -60,34 +60,64 @@ function obtenerClienteYValidar(clientes, clienteId, tecnico) {
   return cliente;
 }
 
+
+// ========================================
+// Validación de existencia de escritura de dias en la semana para evitar errores de tipeo
+// ========================================
+function normalizarTexto(texto) {
+  return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
 // ========================================
 // Pasa los horarios disponibles en la grilla
 // ========================================
 
 function obtenerFechasDisponibles(tecnico, turnos, clienteId) {
-  let diasDisponibles = tecnico.getDiasDisponibles().map(d => d.toLowerCase());
+  const diasDisponibles = tecnico.getDiasDisponibles().map(d => d.toLowerCase());
   const hoy = new Date();
   const fechasOpciones = [];
   let iterFecha = new Date(hoy);
   let contador = 0;
 
+
   while (fechasOpciones.length < 3 && contador < 30) {
     iterFecha.setDate(iterFecha.getDate() + 1);
     const fechaLocal = new Date(iterFecha.getFullYear(), iterFecha.getMonth(), iterFecha.getDate());
-    const diaNombre = DAYS[fechaLocal.getDay()];
+    
+    const diaNombre = fechaLocal
+    .toLocaleDateString('es-ES', { weekday: 'long' })
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita acentos
+    .toLowerCase();
 
-    if (!diasDisponibles.includes(diaNombre)) {
+    const diaIndice = fechaLocal.getDay();
+    const esDomingo = fechaLocal.getDay() === 0;
+    const estaDisponible = diasDisponibles.some(
+      d => normalizarTexto(d) === normalizarTexto(diaNombre)
+    );
+
+
+    if (esDomingo || !estaDisponible) {
       contador++;
       continue;
     }
 
     const fechaISO = `${fechaLocal.getFullYear()}-${String(fechaLocal.getMonth() + 1).padStart(2,"0")}-${String(fechaLocal.getDate()).padStart(2,"0")}`;
+
     const conflictoCliente = turnos.some(turno =>
-      String(turno.clienteId) === String(clienteId) && turno.fecha === fechaISO
+      String(turno.clienteId) === String(clienteId) &&
+      turno.fecha === fechaISO
     );
 
+    console.log({
+      fecha: fechaISO,
+      diaNombre,
+      conflictoCliente,
+      diasDisponibles,
+      tecnico: tecnico.nombre
+    });
+
     if (!conflictoCliente) {
-      fechasOpciones.push({ fecha: fechaLocal, fechaISO, diaNombre });
+      fechasOpciones.push({ fecha: fechaLocal, fechaISO, diaNombre, diaIndice});
     }
 
     contador++;
