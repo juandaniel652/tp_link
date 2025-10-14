@@ -20,10 +20,13 @@ export function renderGrillaTurnos({
 }) {
   turnosContainer.innerHTML = "";
 
+  // ======================
+  // Búsqueda de existencia de cliente y de técnico
+  // ======================
   const cliente = clientes.find(c => String(c.numeroCliente) === String(clienteId));
   if (!cliente || !tecnico) return alert("Cliente o Técnico no encontrado");
 
-  const tNum = Number(tSeleccionado);
+  const NumeroT = Number(tSeleccionado);
 
   // ======================
   // Validación de días disponibles
@@ -35,16 +38,16 @@ export function renderGrillaTurnos({
   const fechasOpciones = [];
   let iterFecha = new Date(hoy);
 
-  let count = 0;
-  const maxIter = 30;
+  let contador = 0;
+  const iteradorDias = 30;
 
-  while (fechasOpciones.length < 3 && count < maxIter) {
+  while (fechasOpciones.length < 3 && contador < iteradorDias) {
     iterFecha.setDate(iterFecha.getDate() + 1);
     const fechaLocal = new Date(iterFecha.getFullYear(), iterFecha.getMonth(), iterFecha.getDate());
     const diaNombre = DAYS[fechaLocal.getDay()]; // ya está en minúscula
 
     if (!diasDisponibles.includes(diaNombre)) {
-      count++;
+      contador++;
       continue;
     }
 
@@ -60,7 +63,7 @@ export function renderGrillaTurnos({
       fechasOpciones.push({ fecha: fechaLocal, fechaISO, diaNombre });
     }
 
-    count++;
+    contador++;
   }
 
   if (!fechasOpciones.length) {
@@ -73,7 +76,7 @@ export function renderGrillaTurnos({
 
     // 🔹 Horarios disponibles
     let horariosDisponibles = obtenerHorariosDisponibles(turnos, opcion.fechaISO, tecnico, opcion.diaNombre);
-    horariosDisponibles = filtrarPorRango(horariosDisponibles, rangoSeleccionado, tNum);
+    horariosDisponibles = filtrarPorRango(horariosDisponibles, rangoSeleccionado, NumeroT);
 
     const horaStr = horariosDisponibles.length ? horariosDisponibles[0] : "Sin horario";
 
@@ -81,10 +84,10 @@ export function renderGrillaTurnos({
       <h3>${NOMBRES_DIAS[opcion.diaNombre]} ${opcion.fecha.toLocaleDateString("es-ES",{day:"numeric", month:"long"})}</h3>
       <p><strong>Cliente:</strong> ${cliente.numeroCliente} - ${cliente.nombre} ${cliente.apellido}</p>
       <p><strong>Técnico:</strong> ${tecnico.nombre} ${tecnico.apellido}</p>
-      <p><strong>T:</strong> ${tNum}</p>
+      <p><strong>T:</strong> ${NumeroT}</p>
       <p><strong>Rango:</strong> ${rangoSeleccionado}</p>
       <p><strong>Horario General:</strong> ${rangoSeleccionado == "AM" ? "09:00 - 13:00" : "14:00 - 18:00"}</p>
-      <p><strong>Horario Sugerido:</strong> ${horaStr !== "Sin horario" ? formatearRango(horaStr, tNum) : "Sin horario disponible"}</p>
+      <p><strong>Horario Sugerido:</strong> ${horaStr !== "Sin horario" ? formatearRango(horaStr, NumeroT) : "Sin horario disponible"}</p>
       <p><strong>Estado del Ticket:</strong> ${estadoTicket}</p>
       <button class="btnSeleccionarTurno" ${horaStr === "Sin horario" ? "disabled" : ""}>Selección automática</button>
       <button class="btnEditarTurno">Selección Manual</button>
@@ -107,7 +110,7 @@ export function renderGrillaTurnos({
         clienteId: cliente.numeroCliente,
         cliente: `${cliente.nombre} ${cliente.apellido}`.trim(),
         tecnico: `${tecnico.nombre} ${tecnico.apellido}`,
-        t: tNum,
+        t: NumeroT,
         rango: rangoSeleccionado,
         fecha: opcion.fechaISO,
         fechaStr: `${NOMBRES_DIAS[opcion.diaNombre]} ${opcion.fecha.toLocaleDateString("es-ES",{day:"numeric", month:"long"})}`,
@@ -136,7 +139,7 @@ export function renderGrillaTurnos({
           return;
         }
 
-        generarOpcionesHorarios(tNum, horariosDisponibles).forEach(opt => {
+        generarOpcionesHorarios(NumeroT, horariosDisponibles).forEach(opt => {
           const option = document.createElement("option");
           option.value = opt;
           option.textContent = opt;
@@ -159,7 +162,7 @@ export function renderGrillaTurnos({
             clienteId: cliente.numeroCliente,
             cliente: `${cliente.nombre} ${cliente.apellido}`.trim(),
             tecnico: `${tecnico.nombre} ${tecnico.apellido}`,
-            t: tNum,
+            t: NumeroT,
             rango: rangoSeleccionado,
             fecha: opcion.fechaISO,
             fechaStr: `${NOMBRES_DIAS[opcion.diaNombre]} ${opcion.fecha.toLocaleDateString("es-ES",{day:"numeric", month:"long"})}`,
