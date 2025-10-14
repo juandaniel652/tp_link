@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const tecnicos = tecnicosData.map(t => new Tecnico(t));
   let turnos = getData("turnos") || [];
 
+  const selectTicket = document.getElementById("selectTicket");
   const selectCliente = document.getElementById("selectCliente");
   const selectTecnico = document.getElementById("selectTecnico");
   const selectT = document.getElementById("selectT");
@@ -21,11 +22,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const selectEstadoTicket = document.getElementById("selectEstadoTicket");
 
   // RENDER inicial (clientes pasan turnos para deshabilitar los que ya tienen)
+  renderSelectGen(selectTicket, [], "Seleccionar Ticket", "");
   renderSelectClientes(selectCliente, clientes, turnos);
   renderSelectTecnicos(selectTecnico, tecnicos);
   renderSelectGen(selectT, T_VALUES, "Seleccionar T", "T");
   renderSelectGen(selectRango, RANGOS, "Seleccionar Rango", "");
-  renderSelectGen(selectEstadoTicket, ["Abierto", "Cerrado"], "Seleccionar Estado", "");
+  renderSelectGen(selectEstadoTicket, ["Abierto"], "Seleccionar Estado", "");
 
   // ==============================
   // FUNCION GUARDAR TURNO
