@@ -83,7 +83,7 @@ function obtenerFechasDisponibles(tecnico, turnos, clienteId) {
   while (fechasOpciones.length < 3 && contador < 30) {
     iterFecha.setDate(iterFecha.getDate() + 1);
     const fechaLocal = new Date(iterFecha.getFullYear(), iterFecha.getMonth(), iterFecha.getDate());
-    
+
     const diaNombre = fechaLocal
     .toLocaleDateString('es-ES', { weekday: 'long' })
     .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita acentos
@@ -107,14 +107,6 @@ function obtenerFechasDisponibles(tecnico, turnos, clienteId) {
       String(turno.clienteId) === String(clienteId) &&
       turno.fecha === fechaISO
     );
-
-    console.log({
-      fecha: fechaISO,
-      diaNombre,
-      conflictoCliente,
-      diasDisponibles,
-      tecnico: tecnico.nombre
-    });
 
     if (!conflictoCliente) {
       fechasOpciones.push({ fecha: fechaLocal, fechaISO, diaNombre, diaIndice});

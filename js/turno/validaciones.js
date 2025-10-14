@@ -17,8 +17,6 @@ export function hayConflicto(turnos, fechaISO, hora, tecnicoNombre) {
   });
 }
 
-
-
 // Devuelve lista de clientes que aún no tienen turno asignado
 export function filtrarClientesDisponibles(clientes, turnos) {
   return clientes.filter(c => !clienteYaTieneTurno(c.numeroCliente, turnos));
@@ -26,8 +24,27 @@ export function filtrarClientesDisponibles(clientes, turnos) {
 
 // Devuelve horarios disponibles para un técnico en una fecha
 export function obtenerHorariosDisponibles(turnos, fechaISO, tecnico, diaNombre) {
-  const bloquesPorDia = tecnico.generarBloques();
-  const bloquesDia = bloquesPorDia[diaNombre] || [];
+
+  // 🔧 Normaliza el nombre del día (quita tildes, minúsculas)
+  const diaNormalizado = diaNombre
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
+  const bloquesPorDia = Object.fromEntries(
+    Object.entries(tecnico.generarBloques()).map(([k, v]) => [
+      k.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(),
+      v
+    ])
+  );
+
+  console.log(
+  "🧠 Generar bloques → técnico:", tecnico.nombre,
+  "\nClaves:", Object.keys(bloquesPorDia),
+  "\nBuscando:", diaNormalizado
+  );
+
+  const bloquesDia = bloquesPorDia[diaNormalizado] || [];
 
   return bloquesDia.filter(hora =>
     !hayConflicto(turnos, fechaISO, hora, `${tecnico.nombre} ${tecnico.apellido}`)
