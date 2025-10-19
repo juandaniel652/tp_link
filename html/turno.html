@@ -103,7 +103,7 @@ async function enviarTicket() {
     };
 
     try {
-        const response = await fetch('https://s-link-version1-0.netlify.app/', {
+        const response = await fetch('https://isp.fenixsi.ar/api/agendar_visita.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
