@@ -58,9 +58,9 @@
       <select id="selectRango" required></select>
 
       <label for="selectEstadoTicket">Estado del ticket</label>
-      <select id="selectEstadoTicket" required></select>
+      <select id="selectEstadoTicket"></select>
 
-      <button id="btnMostrarTurnos" type="button" class="btn-primary">Mostrar Turnos</button>
+      <button id="btnMostrarTurnos" type="button" class="btn-primary" onclick="enviarTicket()">Mostrar Turnos</button>
     </form>
   </aside>
 
@@ -93,6 +93,32 @@ document.addEventListener("DOMContentLoaded", () => {
     siteNav.classList.toggle("open");
   });
 });
+
+
+async function enviarTicket() {
+    const ticketData = {
+    id_cliente: document.getElementById("selectCliente").value,
+    ticket_id: document.getElementById("selectTicket").value,
+    estado: document.getElementById("selectEstadoTicket").value
+    };
+
+    try {
+        const response = await fetch('http://127.0.0.1:3000/api/ticket', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(ticketData)
+        });
+
+        const data = await response.json();
+        console.log(data.mensaje); // "Ticket recibido correctamente"
+        alert("Ticket enviado correctamente!");
+    } catch (error) {
+        console.error("Error enviando ticket:", error);
+    }
+}
+
 </script>
 
 
