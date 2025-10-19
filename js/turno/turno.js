@@ -45,6 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Refrescar selects técnicos y genéricos
+    renderSelectGen(selectTicket, [100], "Seleccionar Ticket", "");
     renderSelectTecnicos(selectTecnico, tecnicos);
     renderSelectGen(selectT, T_VALUES, "Seleccionar T", "T");
     renderSelectGen(selectRango, RANGOS, "Seleccionar Rango", "");
