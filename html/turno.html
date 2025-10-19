@@ -96,42 +96,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 async function enviarTicket() {
-  const datos = {
-    nombre: "Agenda",
-    mensaje: {
-      id_cliente: document.getElementById("selectCliente").value,
-      ticket_id: document.getElementById("selectTicket").value,
-      estado: document.getElementById("selectEstadoTicket").value
-    }
+  const ticketData = {
+    id_cliente: document.getElementById("selectCliente").value,
+    ticket_id: document.getElementById("selectTicket").value,
+    estado: document.getElementById("selectEstadoTicket").value
   };
 
   try {
-    const response = await fetch('/api/agendar_visita.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(datos)
+    const response = await fetch("/api/agendar_visita", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nombre: "Agenda",
+        mensaje: ticketData
+      })
     });
 
-    const text = await response.text();  // ⚠️ lee la respuesta cruda
-    console.log("Respuesta del servidor:", text);
-
-    let data;
-    try {
-      data = JSON.parse(text);  // intenta convertir a JSON
-    } catch {
-      console.warn("La respuesta no es JSON, mostrando texto...");
-      alert("Servidor respondió: " + text);
-      return;
-    }
-
-    console.log("Datos parseados:", data);
-    alert(data.mensaje || "Ticket enviado correctamente!");
-
+    const data = await response.json();
+    console.log(data.mensaje);
+    alert("Ticket enviado correctamente!");
   } catch (error) {
     console.error("Error enviando ticket:", error);
-    alert("Error al enviar el ticket: " + error.message);
   }
 }
+
 
 </script>
 
