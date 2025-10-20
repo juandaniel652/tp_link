@@ -281,7 +281,8 @@ export function renderGrillaTurnos({
       estadoTicket,
       guardarTurno,
       turnos,
-      turnosContainer
+      turnosContainer,
+      enviarTicket
     });
 
     turnosContainer.appendChild(card);
