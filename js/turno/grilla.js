@@ -322,7 +322,7 @@ export function renderGrillaTurnos({
 }) {
   turnosContainer.innerHTML = "";
 
-  const cliente = obtenerClienteYValidar(clients, clienteId, tecnico);
+  const cliente = obtenerClienteYValidar(clientes, clienteId, tecnico);
   if (!cliente) return;
 
   const NumeroT = Number(tSeleccionado);
