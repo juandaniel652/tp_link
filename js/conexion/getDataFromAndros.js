@@ -35,5 +35,5 @@ document.addEventListener("DOMContentLoaded", () => {
         selectTicket.appendChild(nuevaOpcion);
       }
     }
-  }, 500); // medio segundo para dar tiempo a que renderSelect... cargue las opciones
+  }, 250); // medio segundo para dar tiempo a que renderSelect... cargue las opciones
 });

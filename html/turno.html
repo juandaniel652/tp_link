@@ -80,8 +80,6 @@
   </div>
 </footer>
 
-<!-- Script de la app -->
-<script type="module" src="../js/turno/turno.js"></script>
 
 <!-- Script para el toggle -->
 <script>
@@ -93,9 +91,17 @@ document.addEventListener("DOMContentLoaded", () => {
     siteNav.classList.toggle("open");
   });
 });
+</script>
 
 
-async function enviarTicket() {
+<!-- Script de la app -->
+<script type="module" src="../js/turno/turno.js"></script>
+<script type="module" src="../js/conexion/getDataFromAndros.js"></script>
+
+
+
+<script>
+  async function enviarTicket() {
   const ticketData = {
     id_cliente: document.getElementById("selectCliente").value,
     ticket_id: document.getElementById("selectTicket").value,
@@ -132,12 +138,7 @@ async function enviarTicket() {
   console.error("❌ Error enviando ticket:", error);
 }
 }
-
-
 </script>
-
-
-<script type="module" src="../js/conexion/getDataFromAndros.js"></script>
 
 
 </body>
