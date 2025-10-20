@@ -99,10 +99,9 @@ document.addEventListener("DOMContentLoaded", () => {
 <script type="module" src="../js/conexion/getDataFromAndros.js"></script>
 
 
-
 <script>
-  async function enviarTicket() {
-  // Armar objeto con los datos del formulario
+async function enviarTicket() {
+  // 1️⃣ Armar objeto con los datos del formulario
   const data = {
     nombre: "Agenda",
     mensaje: {
@@ -116,33 +115,44 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  // 2️⃣ Validar que no haya campos vacíos
+  const mensaje = data.mensaje;
+  for (let key in mensaje) {
+    if (!mensaje[key]) {
+      alert(`⚠️ Por favor completa el campo: ${key}`);
+      return;
+    }
+  }
+
+  // 3️⃣ Hacer fetch al backend (proxy)
   try {
-    const response = await fetch("https://fenixsi-backend.onrender.com", {
+    const response = await fetch("https://fenixsi-backend.onrender.com/api/ticket", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
     });
 
-    // Leer respuesta como texto
+    // 4️⃣ Leer la respuesta
     const text = await response.text();
 
-    // Intentar parsear como JSON
+    // 5️⃣ Intentar parsear como JSON
     let json;
     try {
       json = JSON.parse(text);
-      console.log("✅ Respuesta JSON:", json);
+      console.log("✅ Respuesta JSON del servidor:", json);
+      alert(`✅ Ticket enviado correctamente: ${json.mensaje || 'Sin mensaje del servidor'}`);
     } catch {
-      console.warn("⚠️ La respuesta no es JSON, texto recibido:", text);
+      console.warn("⚠️ La respuesta no es JSON. Texto recibido:", text);
+      alert("✅ Ticket enviado correctamente (respuesta no JSON del servidor). Revisa la consola.");
     }
 
-    alert("✅ Ticket enviado correctamente al servidor remoto");
   } catch (error) {
     console.error("❌ Error al enviar el ticket:", error);
-    alert("Error al enviar el ticket. Revisa la consola.");
+    alert("❌ Error al enviar el ticket. Revisa la consola para más detalles.");
   }
 }
-
 </script>
+
 
 
 </body>
