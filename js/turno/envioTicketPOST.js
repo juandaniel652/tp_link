@@ -1,4 +1,4 @@
-async function enviarTicket() {
+export async function enviarTicket() {
   // 1️⃣ Armar objeto con los datos del formulario
   const data = {
     nombre: "Agenda",
