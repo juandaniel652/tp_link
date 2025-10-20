@@ -1,6 +1,7 @@
 import { DAYS, NOMBRES_DIAS } from "./constantes.js";
 import { formatearRango } from "./formateo.js";
 import { hayConflicto, obtenerHorariosDisponibles } from "./validaciones.js";
+import { enviarTicket } from "./envioTicketPOST.js";
 
 
 // ========================================
