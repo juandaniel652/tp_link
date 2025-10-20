@@ -1,28 +1,27 @@
-export async function enviarTicket() {
-  // 1️⃣ Armar objeto con los datos del formulario
+// ✅ envioTicketPOST.js (production-ready)
+export async function enviarTicket(turno) {
+  // turno viene desde la grilla, por ejemplo:
+  // { id_cliente, ticket_id, tecnico, tipo_turno, rango_horario, estado }
+
+  // 1️⃣ Validar que existan los campos necesarios
+  const camposRequeridos = ["id_cliente", "ticket_id", "tecnico", "tipo_turno", "rango_horario", "estado"];
+  const faltantes = camposRequeridos.filter(campo => !turno[campo]);
+
+  if (faltantes.length > 0) {
+    alert(`⚠️ Por favor completa los siguientes campos: ${faltantes.join(", ")}`);
+    return;
+  }
+
+  // 2️⃣ Armar el objeto a enviar
   const data = {
     nombre: "Agenda",
     mensaje: {
-      id_cliente: document.getElementById("selectCliente").value,
-      ticket_id: document.getElementById("selectTicket").value,
-      tecnico: document.getElementById("selectTecnico").value,
-      tipo_turno: document.getElementById("selectT").value,
-      rango_horario: document.getElementById("selectRango").value,
-      estado: document.getElementById("selectEstadoTicket").value,
+      ...turno,
       fecha_envio: new Date().toISOString()
     }
   };
 
-  // 2️⃣ Validar que no haya campos vacíos
-  const mensaje = data.mensaje;
-  for (let key in mensaje) {
-    if (!mensaje[key]) {
-      alert(`⚠️ Por favor completa el campo: ${key}`);
-      return;
-    }
-  }
-
-  // 3️⃣ Hacer fetch al backend (proxy)
+  // 3️⃣ Enviar al backend
   try {
     const response = await fetch("https://fenixsi-backend.onrender.com/api/ticket", {
       method: "POST",
@@ -30,15 +29,13 @@ export async function enviarTicket() {
       body: JSON.stringify(data)
     });
 
-    // 4️⃣ Leer la respuesta
     const text = await response.text();
 
-    // 5️⃣ Intentar parsear como JSON
-    let json;
+    // 4️⃣ Intentar parsear JSON
     try {
-      json = JSON.parse(text);
+      const json = JSON.parse(text);
       console.log("✅ Respuesta JSON del servidor:", json);
-      alert(`✅ Ticket enviado correctamente: ${json.mensaje || 'Sin mensaje del servidor'}`);
+      alert(`✅ Ticket enviado correctamente: ${json.mensaje || "Sin mensaje del servidor"}`);
     } catch {
       console.warn("⚠️ La respuesta no es JSON. Texto recibido:", text);
       alert("✅ Ticket enviado correctamente (respuesta no JSON del servidor). Revisa la consola.");

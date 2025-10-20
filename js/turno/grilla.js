@@ -51,8 +51,8 @@ function mostrarMensaje(card, texto, tipo = "error") {
 // ========================================
 // Validación de existencia de clientes y técnico
 // ========================================
-function obtenerClienteYValidar(clientes, clienteId, tecnico) {
-  const cliente = clientes.find(c => String(c.numeroCliente) === String(clienteId));
+function obtenerClienteYValidar(clientes, id_cliente, tecnico) {
+  const cliente = clientes.find(c => String(c.numeroCliente) === String(id_cliente));
   if (!cliente || !tecnico) {
     alert("Cliente o Técnico no encontrado");
     return null;
@@ -70,7 +70,7 @@ function normalizarTexto(texto) {
 // ========================================
 // Pasa los horarios disponibles en la grilla
 // ========================================
-function obtenerFechasDisponibles(tecnico, turnos, clienteId) {
+function obtenerFechasDisponibles(tecnico, turnos, id_cliente) {
   const diasDisponibles = tecnico.getDiasDisponibles().map(d => d.toLowerCase());
   const hoy = new Date();
   const fechasOpciones = [];
@@ -96,7 +96,7 @@ function obtenerFechasDisponibles(tecnico, turnos, clienteId) {
     const fechaISO = `${fechaLocal.getFullYear()}-${String(fechaLocal.getMonth() + 1).padStart(2,"0")}-${String(fechaLocal.getDate()).padStart(2,"0")}`;
 
     const conflictoCliente = turnos.some(turno =>
-      String(turno.clienteId) === String(clienteId) &&
+      String(turno.id_cliente) === String(id_cliente) &&
       turno.fecha === fechaISO
     );
 
@@ -164,7 +164,7 @@ function configurarSeleccionAutomatica(card, horaStr, opcion, cliente, tecnico, 
 
     const nuevoTurno = {
       id: Date.now(),
-      clienteId: cliente.numeroCliente,
+      id_cliente: cliente.numeroCliente,
       cliente: `${cliente.nombre} ${cliente.apellido}`.trim(),
       tecnico: `${tecnico.nombre} ${tecnico.apellido}`,
       t: NumeroT,
@@ -219,7 +219,7 @@ function configurarSeleccionManual(card, horariosDisponibles, NumeroT, opcion, c
 
         const nuevoTurno = {
           id: Date.now(),
-          clienteId: cliente.numeroCliente,
+          id_cliente: cliente.numeroCliente,
           cliente: `${cliente.nombre} ${cliente.apellido}`.trim(),
           tecnico: `${tecnico.nombre} ${tecnico.apellido}`,
           t: NumeroT,
@@ -245,7 +245,7 @@ function configurarSeleccionManual(card, horariosDisponibles, NumeroT, opcion, c
 // Render de grilla
 // ========================================
 export function renderGrillaTurnos({
-  clienteId,
+  id_cliente,
   tecnico,
   tSeleccionado,
   rangoSeleccionado,
@@ -258,7 +258,7 @@ export function renderGrillaTurnos({
 }) {
   turnosContainer.innerHTML = "";
 
-  const cliente = obtenerClienteYValidar(clientes, clienteId, tecnico);
+  const cliente = obtenerClienteYValidar(clientes, id_cliente, tecnico);
   if (!cliente) return;
 
   const NumeroT = Number(tSeleccionado);
