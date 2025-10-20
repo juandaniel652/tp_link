@@ -38,12 +38,6 @@ export function obtenerHorariosDisponibles(turnos, fechaISO, tecnico, diaNombre)
     ])
   );
 
-  console.log(
-  "🧠 Generar bloques → técnico:", tecnico.nombre,
-  "\nClaves:", Object.keys(bloquesPorDia),
-  "\nBuscando:", diaNormalizado
-  );
-
   const bloquesDia = bloquesPorDia[diaNormalizado] || [];
 
   return bloquesDia.filter(hora =>
