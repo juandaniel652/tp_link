@@ -102,42 +102,46 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <script>
   async function enviarTicket() {
-  const ticketData = {
-    id_cliente: document.getElementById("selectCliente").value,
-    ticket_id: document.getElementById("selectTicket").value,
-    estado: document.getElementById("selectEstadoTicket").value
+  // Armar objeto con los datos del formulario
+  const data = {
+    nombre: "Agenda",
+    mensaje: {
+      id_cliente: document.getElementById("selectCliente").value,
+      ticket_id: document.getElementById("selectTicket").value,
+      tecnico: document.getElementById("selectTecnico").value,
+      tipo_turno: document.getElementById("selectT").value,
+      rango_horario: document.getElementById("selectRango").value,
+      estado: document.getElementById("selectEstadoTicket").value,
+      fecha_envio: new Date().toISOString()
+    }
   };
 
   try {
-  const response = await fetch('/api/agendar_visita.php', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      nombre: "Agenda",
-      mensaje: {
-        id_cliente: document.getElementById("selectCliente").value,
-        ticket_id: document.getElementById("selectTicket").value,
-        estado: document.getElementById("selectEstadoTicket").value
-      }
-    })
-  });
+    const response = await fetch("https://isp.fenixsi.ar/api/agendar_visita.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
 
-  const text = await response.text(); // leemos texto crudo
-  let data;
+    // Leer respuesta como texto
+    const text = await response.text();
 
-  try {
-    data = JSON.parse(text); // intentamos parsear JSON
-  } catch {
-    console.warn("⚠️ La respuesta no es JSON. Respuesta completa:", text);
-    data = { mensaje: text }; // fallback: lo tratamos como texto
+    // Intentar parsear como JSON
+    let json;
+    try {
+      json = JSON.parse(text);
+      console.log("✅ Respuesta JSON:", json);
+    } catch {
+      console.warn("⚠️ La respuesta no es JSON, texto recibido:", text);
+    }
+
+    alert("✅ Ticket enviado correctamente al servidor remoto");
+  } catch (error) {
+    console.error("❌ Error al enviar el ticket:", error);
+    alert("Error al enviar el ticket. Revisa la consola.");
   }
+}
 
-  console.log("✅ Respuesta del servidor:", data.mensaje);
-  alert("Ticket enviado correctamente!");
-} catch (error) {
-  console.error("❌ Error enviando ticket:", error);
-}
-}
 </script>
 
 
