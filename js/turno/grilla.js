@@ -164,7 +164,7 @@ function configurarSeleccionAutomatica(card, horaStr, opcion, cliente, tecnico, 
 
     const nuevoTurno = {
       id: Date.now(),
-      id_cliente: cliente.numeroCliente,
+      clienteId: cliente.numeroCliente,
       cliente: `${cliente.nombre} ${cliente.apellido}`.trim(),
       tecnico: `${tecnico.nombre} ${tecnico.apellido}`,
       t: NumeroT,
