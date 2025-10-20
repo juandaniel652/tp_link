@@ -4,6 +4,7 @@ import { renderSelectClientes, renderSelectTecnicos, renderSelectGen } from "./r
 import { renderHistorialTurnos } from "./historial.js";
 import { renderGrillaTurnos } from "./grilla.js";
 import { clienteYaTieneTurno } from "./validaciones.js"; // 👈 IMPORT
+import { enviarTicket } from "./envioTicketPOST.js";
 import Tecnico from "../tecnico/Tecnico.js";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -87,7 +88,8 @@ document.addEventListener("DOMContentLoaded", () => {
       turnos,
       turnosContainer,
       guardarTurno, // 👈 pasamos la función para que grilla pueda guardar
-      estadoTicket  // 👈 pasamos el estado del ticket
+      estadoTicket,  // 👈 pasamos el estado del ticket
+      enviarTicket
     });
   });
 

@@ -2,72 +2,6 @@ import { DAYS, NOMBRES_DIAS } from "./constantes.js";
 import { formatearRango } from "./formateo.js";
 import { hayConflicto, obtenerHorariosDisponibles } from "./validaciones.js";
 
-// ========================================
-// Función de envío al backend remoto (production-ready)
-// ========================================
-async function enviarTicket() {
-  // 1️⃣ Armar objeto con los datos del formulario
-  const data = {
-    nombre: "Agenda",
-    mensaje: {
-      id_cliente: document.getElementById("selectCliente")?.value?.trim(),
-      ticket_id: document.getElementById("selectTicket")?.value?.trim(),
-      tecnico: document.getElementById("selectTecnico")?.value?.trim(),
-      tipo_turno: document.getElementById("selectT")?.value?.trim(),
-      rango_horario: document.getElementById("selectRango")?.value?.trim(),
-      estado: document.getElementById("selectEstadoTicket")?.value?.trim(),
-      fecha_envio: new Date().toISOString(),
-    },
-  };
-
-  // 2️⃣ Validar campos requeridos
-  const camposVacios = Object.entries(data.mensaje)
-    .filter(([_, valor]) => !valor)
-    .map(([campo]) => campo);
-
-  if (camposVacios.length > 0) {
-    alert(`⚠️ Por favor completa los siguientes campos:\n${camposVacios.join(", ")}`);
-    return;
-  }
-
-  // 3️⃣ Mostrar indicador visual (opcional)
-  const boton = document.querySelector("#btnEnviarTicket");
-  if (boton) {
-    boton.disabled = true;
-    boton.textContent = "Enviando...";
-  }
-
-  // 4️⃣ Enviar al backend
-  try {
-    const response = await fetch("https://fenixsi-backend.onrender.com/api/ticket", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-
-    const text = await response.text();
-    let json;
-
-    // 5️⃣ Intentar parsear como JSON
-    try {
-      json = JSON.parse(text);
-      console.log("✅ Respuesta JSON del servidor:", json);
-      alert(`✅ Ticket enviado correctamente: ${json.mensaje || "Sin mensaje del servidor"}`);
-    } catch {
-      console.warn("⚠️ La respuesta no es JSON. Texto recibido:", text);
-      alert("✅ Ticket enviado correctamente (respuesta no JSON del servidor). Revisa la consola.");
-    }
-  } catch (error) {
-    console.error("❌ Error al enviar el ticket:", error);
-    alert("❌ Error al enviar el ticket. Revisa la consola para más detalles.");
-  } finally {
-    // 6️⃣ Restaurar botón
-    if (boton) {
-      boton.disabled = false;
-      boton.textContent = "Enviar Ticket";
-    }
-  }
-}
 
 // ========================================
 // Genera opciones de horario según T y bloques
@@ -209,8 +143,8 @@ function crearCardTurno({
     <div class="editorHorario" style="display:none; margin-top:8px;"></div>
   `;
 
-  configurarSeleccionAutomatica(card, horaStr, opcion, cliente, tecnico, NumeroT, rangoSeleccionado, estadoTicket, guardarTurno, turnos, turnosContainer);
-  configurarSeleccionManual(card, horariosDisponibles, NumeroT, opcion, cliente, tecnico, rangoSeleccionado, estadoTicket, guardarTurno, turnos, turnosContainer);
+  configurarSeleccionAutomatica(card, horaStr, opcion, cliente, tecnico, NumeroT, rangoSeleccionado, estadoTicket, guardarTurno, turnos, turnosContainer, enviarTicket);
+  configurarSeleccionManual(card, horariosDisponibles, NumeroT, opcion, cliente, tecnico, rangoSeleccionado, estadoTicket, guardarTurno, turnos, turnosContainer, enviarTicket);
 
   return card;
 }
@@ -218,7 +152,7 @@ function crearCardTurno({
 // ========================================
 // Configuración selección automática
 // ========================================
-function configurarSeleccionAutomatica(card, horaStr, opcion, cliente, tecnico, NumeroT, rangoSeleccionado, estadoTicket, guardarTurno, turnos, turnosContainer) {
+function configurarSeleccionAutomatica(card, horaStr, opcion, cliente, tecnico, NumeroT, rangoSeleccionado, estadoTicket, guardarTurno, turnos, turnosContainer, enviarTicket) {
   card.querySelector(".btnSeleccionarTurno").addEventListener("click", () => {
     if (horaStr === "Sin horario") return alert("No hay horarios disponibles para este día");
 
@@ -249,7 +183,7 @@ function configurarSeleccionAutomatica(card, horaStr, opcion, cliente, tecnico, 
 // ========================================
 // Configuración selección manual
 // ========================================
-function configurarSeleccionManual(card, horariosDisponibles, NumeroT, opcion, cliente, tecnico, rangoSeleccionado, estadoTicket, guardarTurno, turnos, turnosContainer) {
+function configurarSeleccionManual(card, horariosDisponibles, NumeroT, opcion, cliente, tecnico, rangoSeleccionado, estadoTicket, guardarTurno, turnos, turnosContainer, enviarTicket) {
   card.querySelector(".btnEditarTurno").addEventListener("click", () => {
     const editor = card.querySelector(".editorHorario");
     editor.style.display = editor.style.display === "none" ? "block" : "none";
@@ -318,7 +252,8 @@ export function renderGrillaTurnos({
   turnos,
   turnosContainer,
   guardarTurno,
-  estadoTicket
+  estadoTicket,
+  enviarTicket
 }) {
   turnosContainer.innerHTML = "";
 
