@@ -47,14 +47,62 @@ function mostrarMensaje(card, texto, tipo = "error") {
 // ========================================
 // Validación de existencia de cliente y técnico
 // ========================================
-function obtenerClienteYValidar(clientes, clienteId, tecnico) {
-  const cliente = clientes.find(c => String(c.numeroCliente) === String(clienteId));
-  if (!cliente || !tecnico) {
-    alert("Cliente o Técnico no encontrado");
+// 🧩 Función que obtiene los datos del cliente, ya sea local o desde Andros
+export async function obtenerClienteYValidar(clientes, clienteId, tecnico) {
+  if (!clienteId) {
+    alert("❌ Falta el ID de cliente.");
     return null;
   }
+
+  // Buscar cliente localmente
+  let cliente = clientes.find(c => String(c.numeroCliente) === String(clienteId));
+
+  // Si no está en tu base local, consultamos a Andros
+  if (!cliente) {
+    console.log(`🔎 Cliente ${clienteId} no encontrado localmente. Consultando a Andros...`);
+
+    const API_ANDROS = "https://andros-api.ejemplo.com/api/clientes/";
+
+    try {
+      const response = await fetch(`${API_ANDROS}${clienteId}`);
+      if (!response.ok) throw new Error(`Error ${response.status}`);
+
+      const data = await response.json();
+
+      // Adaptamos la estructura a la de tu sistema
+      cliente = {
+        numeroCliente: data.id || clienteId,
+        nombre: data.nombre || "Sin nombre",
+        apellido: data.apellido || "",
+        direccion: data.direccion || "",
+        telefono: data.telefono || "",
+        fuente: "Andros"
+      };
+
+      console.log("✅ Cliente recuperado desde Andros:", cliente);
+
+      // Agregamos el cliente al arreglo local (para reutilizar)
+      clientes.push(cliente);
+    } catch (error) {
+      console.warn("⚠️ No se pudo obtener cliente desde Andros:", error);
+      cliente = {
+        numeroCliente: clienteId,
+        nombre: "Cliente externo",
+        apellido: "(sin datos)",
+        fuente: "Andros"
+      };
+    }
+  }
+
+  // Validar técnico
+  if (!tecnico) {
+    alert("⚠️ No se encontró el técnico.");
+    return null;
+  }
+
   return cliente;
 }
+
 
 // ========================================
 // Normaliza texto
