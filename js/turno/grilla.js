@@ -285,7 +285,7 @@ function configurarSeleccionManual(card, horariosDisponibles, NumeroT, opcion, c
 // ========================================
 // Render de grilla
 // ========================================
-export function renderGrillaTurnos({
+export async function renderGrillaTurnos({
   clienteId,
   tecnico,
   tSeleccionado,
@@ -299,7 +299,7 @@ export function renderGrillaTurnos({
 }) {
   turnosContainer.innerHTML = "";
 
-  const cliente = obtenerClienteYValidar(clientes, clienteId, tecnico);
+  const cliente = await obtenerClienteYValidar(clientes, clienteId, tecnico);
   if (!cliente) return;
 
   const NumeroT = Number(tSeleccionado);

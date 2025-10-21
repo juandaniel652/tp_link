@@ -1,14 +1,15 @@
-// ✅ envioTicketPOST.js (production-ready)
+// ✅ envioTicketPOST.js
 export async function enviarTicket(turno) {
-  // turno viene desde la grilla, por ejemplo:
-  // { id_cliente, ticket_id, tecnico, tipo_turno, rango_horario, estado }
+  // 🧩 Normalizar claves esperadas por el backend
+  turno.id_cliente = turno.id_cliente || turno.clienteId || turno.numeroCliente || "N/A";
 
-  // 1️⃣ Validar que existan los campos necesarios
+  // 1️⃣ Validar campos requeridos
   const camposRequeridos = ["id_cliente", "ticket_id", "tecnico", "tipo_turno", "rango_horario", "estado"];
-  const faltantes = camposRequeridos.filter(campo => !turno[campo]);
+  const faltantes = camposRequeridos.filter(campo => !turno[campo] || turno[campo] === "N/A");
 
   if (faltantes.length > 0) {
     alert(`⚠️ Por favor completa los siguientes campos: ${faltantes.join(", ")}`);
+    console.warn("Turno incompleto:", turno);
     return;
   }
 
@@ -31,7 +32,6 @@ export async function enviarTicket(turno) {
 
     const text = await response.text();
 
-    // 4️⃣ Intentar parsear JSON
     try {
       const json = JSON.parse(text);
       console.log("✅ Respuesta JSON del servidor:", json);
