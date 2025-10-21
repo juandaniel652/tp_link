@@ -14,7 +14,6 @@ export function renderHistorialTurnos(turnos, turnosContainer, actualizarSelectC
 
   if (!turnos.length) {
     historial.innerHTML += `<p style="text-align:center;color:#555;">No hay turnos registrados.</p>`;
-    // Actualizar select aunque no haya turnos
     if (actualizarSelectClientes) actualizarSelectClientes(turnos);
     return;
   }
@@ -28,14 +27,18 @@ export function renderHistorialTurnos(turnos, turnosContainer, actualizarSelectC
     card.className = "card-turno";
     card.innerHTML = `
       <h3>${t.fechaStr || t.fecha}</h3>
-      <p><strong>Cliente:</strong> ${t.clienteId} - ${t.cliente}</p>
-      <p><strong>Técnico:</strong> ${t.tecnico || (t.tecnicos && t.tecnicos.join(", "))}</p>
-      <p><strong>T:</strong> ${t.t}</p>
-      <p><strong>Rango:</strong> ${t.rango}</p>
-      <p><strong>Horario General:</strong> ${t.rango == "AM" ? "09:00 - 13:00" : "14:00 - 18:00"}</p>
-      <p><strong>Horario:</strong> ${formatearRango(t.hora, t.t)}</p>
-      <p><strong>Estado del Ticket:</strong> ${t.estadoTicket || "N/A"}</p>
-      <button class="btnEliminarTurno" data-id="${t.id}">❌ Eliminar</button>
+      <p><strong>Cliente:</strong> ${t.id_cliente || "N/A"} - ${t.cliente || "Sin nombre"}</p>
+      <p><strong>Técnico:</strong> ${t.tecnico || (t.tecnicos && t.tecnicos.join(", ")) || "Sin técnico"}</p>
+      <p><strong>T:</strong> ${t.t || "N/A"}</p>
+      <p><strong>Rango:</strong> ${t.rango_horario || "N/A"}</p>
+      <p><strong>Horario General:</strong> ${
+        t.rango_horario === "AM" ? "09:00 - 13:00" :
+        t.rango_horario === "PM" ? "14:00 - 18:00" :
+        "No definido"
+      }</p>
+      <p><strong>Horario:</strong> ${t.hora ? formatearRango(t.hora, t.t) : "N/A"}</p>
+      <p><strong>Estado del Ticket:</strong> ${t.estado || "N/A"}</p>
+      <button class="btnEliminarTurno" data-id="${t.ticket_id}">❌ Eliminar</button>
     `;
     historial.appendChild(card);
   });
@@ -44,7 +47,7 @@ export function renderHistorialTurnos(turnos, turnosContainer, actualizarSelectC
   document.querySelectorAll(".btnEliminarTurno").forEach(btn => {
     btn.addEventListener("click", (e) => {
       const id = e.target.dataset.id;
-      const nuevosTurnos = turnos.filter(t => String(t.id) !== String(id));
+      const nuevosTurnos = turnos.filter(t => String(t.ticket_id) !== String(id));
       saveData("turnos", nuevosTurnos);
 
       // Re-render del historial con callback para actualizar select
