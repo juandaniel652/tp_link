@@ -3,7 +3,6 @@ import { formatearRango } from "./formateo.js";
 import { hayConflicto, obtenerHorariosDisponibles } from "./validaciones.js";
 import { enviarTicket } from "./envioTicketPOST.js";
 
-
 // ========================================
 // Genera opciones de horario según T y bloques
 // ========================================
@@ -12,28 +11,25 @@ function generarOpcionesHorarios(NumeroT, bloques) {
 }
 
 // ========================================
-// Obtiene las fechas según los clientes y técnicos ya asignados
+// Filtra horarios por rango AM/PM
 // ========================================
 function filtrarPorRango(horarios, rango, tNum = 1) {
   const limites = {
     AM: { inicio: 9 * 60, fin: 13 * 60 },
     PM: { inicio: 14 * 60, fin: 18 * 60 },
   };
-
   if (!limites[rango]) return horarios;
 
   return horarios.filter(hora => {
     const [h, m] = hora.split(":").map(Number);
     const inicio = h * 60 + m;
-    const duracion = tNum * 15;
-    const fin = inicio + duracion;
-
+    const fin = inicio + tNum * 15;
     return inicio >= limites[rango].inicio && fin <= limites[rango].fin;
   });
 }
 
 // ========================================
-// Función auxiliar para mostrar mensajes dentro de la card
+// Muestra mensajes dentro de la card
 // ========================================
 function mostrarMensaje(card, texto, tipo = "error") {
   let mensaje = card.querySelector(".mensaje-turno");
@@ -49,7 +45,7 @@ function mostrarMensaje(card, texto, tipo = "error") {
 }
 
 // ========================================
-// Validación de existencia de clientes y técnico
+// Validación de existencia de cliente y técnico
 // ========================================
 function obtenerClienteYValidar(clientes, clienteId, tecnico) {
   const cliente = clientes.find(c => String(c.numeroCliente) === String(clienteId));
@@ -61,14 +57,14 @@ function obtenerClienteYValidar(clientes, clienteId, tecnico) {
 }
 
 // ========================================
-// Normalizar texto
+// Normaliza texto
 // ========================================
 function normalizarTexto(texto) {
   return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
 // ========================================
-// Pasa los horarios disponibles en la grilla
+// Obtiene fechas disponibles
 // ========================================
 function obtenerFechasDisponibles(tecnico, turnos, clienteId) {
   const diasDisponibles = tecnico.getDiasDisponibles().map(d => d.toLowerCase());
@@ -80,14 +76,11 @@ function obtenerFechasDisponibles(tecnico, turnos, clienteId) {
   while (fechasOpciones.length < 3 && contador < 30) {
     iterFecha.setDate(iterFecha.getDate() + 1);
     const fechaLocal = new Date(iterFecha.getFullYear(), iterFecha.getMonth(), iterFecha.getDate());
-
     const diaNombre = fechaLocal.toLocaleDateString('es-ES', { weekday: 'long' })
       .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
       .toLowerCase();
-
     const esDomingo = fechaLocal.getDay() === 0;
     const estaDisponible = diasDisponibles.some(d => normalizarTexto(d) === normalizarTexto(diaNombre));
-
     if (esDomingo || !estaDisponible) {
       contador++;
       continue;
@@ -103,10 +96,8 @@ function obtenerFechasDisponibles(tecnico, turnos, clienteId) {
     if (!conflictoCliente) {
       fechasOpciones.push({ fecha: fechaLocal, fechaISO, diaNombre });
     }
-
     contador++;
   }
-
   return fechasOpciones;
 }
 
@@ -163,21 +154,22 @@ function configurarSeleccionAutomatica(card, horaStr, opcion, cliente, tecnico, 
     }
 
     const nuevoTurno = {
-      id: Date.now(),
-      clienteId: cliente.numeroCliente,
-      cliente: `${cliente.nombre} ${cliente.apellido}`.trim(),
+      id_cliente: cliente.numeroCliente,
+      ticket_id: cliente.numeroCliente + "_" + Date.now(),
       tecnico: `${tecnico.nombre} ${tecnico.apellido}`,
-      t: NumeroT,
-      rango: rangoSeleccionado,
+      tipo_turno: "regular",
+      rango_horario: rangoSeleccionado,
+      estado: estadoTicket,
       fecha: opcion.fechaISO,
       fechaStr: `${NOMBRES_DIAS[opcion.diaNombre]} ${opcion.fecha.toLocaleDateString("es-ES",{day:"numeric", month:"long"})}`,
       hora: horaStr,
-      estadoTicket
+      t: NumeroT,
+      cliente: `${cliente.nombre} ${cliente.apellido}`.trim()
     };
 
     guardarTurno(nuevoTurno);
     turnosContainer.innerHTML = "";
-    enviarTicket(nuevoTurno); // ✅ envío automático
+    enviarTicket(nuevoTurno);
   });
 }
 
@@ -218,21 +210,22 @@ function configurarSeleccionManual(card, horariosDisponibles, NumeroT, opcion, c
         }
 
         const nuevoTurno = {
-          id: Date.now(),
-          clienteId: cliente.numeroCliente,
-          cliente: `${cliente.nombre} ${cliente.apellido}`.trim(),
+          id_cliente: cliente.numeroCliente,
+          ticket_id: cliente.numeroCliente + "_" + Date.now(),
           tecnico: `${tecnico.nombre} ${tecnico.apellido}`,
-          t: NumeroT,
-          rango: rangoSeleccionado,
+          tipo_turno: "regular",
+          rango_horario: rangoSeleccionado,
+          estado: estadoTicket,
           fecha: opcion.fechaISO,
           fechaStr: `${NOMBRES_DIAS[opcion.diaNombre]} ${opcion.fecha.toLocaleDateString("es-ES",{day:"numeric", month:"long"})}`,
           hora: horarioSeleccionado,
-          estadoTicket
+          t: NumeroT,
+          cliente: `${cliente.nombre} ${cliente.apellido}`.trim()
         };
 
         guardarTurno(nuevoTurno);
         turnosContainer.innerHTML = "";
-        enviarTicket(nuevoTurno); // ✅ envío automático
+        enviarTicket(nuevoTurno);
       });
 
       editor.appendChild(select);
