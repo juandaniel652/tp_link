@@ -7,13 +7,19 @@ export function clienteYaTieneTurno(clienteId, turnos) {
   return turnos.some(turno => String(turno.clienteId) === String(clienteId));
 }
 
-// Verifica si hay conflicto de horario para un técnico en una fecha
-export function hayConflicto(turnos, fechaISO, hora, tecnicoNombre) {
+// Verifica si hay conflicto de horario para un técnico y opcionalmente para un cliente
+export function hayConflicto(turnos, fechaISO, hora, tecnicoNombre, clienteId = null) {
   const horaNorm = hora.slice(0,5); // "HH:MM"
+  
   return turnos.some(turno => {
-    if (turno.fecha !== fechaISO || turno.tecnico !== tecnicoNombre) return false;
+    if (turno.fecha !== fechaISO) return false;
+
     const bloques = expandirTurno(turno);
-    return bloques.includes(horaNorm);
+
+    const tecnicoOcupado = turno.tecnico === tecnicoNombre && bloques.includes(horaNorm);
+    const clienteOcupado = clienteId ? String(turno.id_cliente) === String(clienteId) && bloques.includes(horaNorm) : false;
+
+    return tecnicoOcupado || clienteOcupado;
   });
 }
 
@@ -23,7 +29,7 @@ export function filtrarClientesDisponibles(clientes, turnos) {
 }
 
 // Devuelve horarios disponibles para un técnico en una fecha
-export function obtenerHorariosDisponibles(turnos, fechaISO, tecnico, diaNombre) {
+export function obtenerHorariosDisponibles(turnos, fechaISO, tecnico, diaNombre, clienteId = null) {
 
   // 🔧 Normaliza el nombre del día (quita tildes, minúsculas)
   const diaNormalizado = diaNombre
@@ -41,7 +47,7 @@ export function obtenerHorariosDisponibles(turnos, fechaISO, tecnico, diaNombre)
   const bloquesDia = bloquesPorDia[diaNormalizado] || [];
 
   return bloquesDia.filter(hora =>
-    !hayConflicto(turnos, fechaISO, hora, `${tecnico.nombre} ${tecnico.apellido}`)
+    !hayConflicto(turnos, fechaISO, hora, `${tecnico.nombre} ${tecnico.apellido}`, clienteId)
   );
 }
 
