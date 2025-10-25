@@ -4,7 +4,7 @@
 
 // Verifica si un cliente ya tiene un turno asignado
 export function clienteYaTieneTurno(clienteId, turnos) {
-  return turnos.some(turno => String(turno.clienteId) === String(clienteId));
+  return turnos.some(turno => String(turno.id_cliente) === String(clienteId));
 }
 
 // Verifica si hay conflicto de horario para un técnico y opcionalmente para un cliente
