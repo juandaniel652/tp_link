@@ -57,12 +57,11 @@ function expandirTurno(turno) {
   const bloques = [];
   let hora = h;
   let minuto = m;
+  const duracion = turno.duracion || 15; // siempre 15 min si no hay otro valor
 
   for (let i = 0; i < turno.t; i++) {
-    const horaStr = `${String(hora).padStart(2,"0")}:${String(minuto).padStart(2,"0")}`;
-    bloques.push(horaStr);
-
-    minuto += turno.duracion || 15; // 👈 usar duración real del técnico si la guardás, si no fijo 15
+    bloques.push(`${String(hora).padStart(2,"0")}:${String(minuto).padStart(2,"0")}`);
+    minuto += duracion;
     if (minuto >= 60) {
       hora += Math.floor(minuto / 60);
       minuto = minuto % 60;
@@ -70,3 +69,4 @@ function expandirTurno(turno) {
   }
   return bloques;
 }
+
