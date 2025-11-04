@@ -548,7 +548,7 @@ main {
   /* Celda de acciones como fila aparte */
   td[data-label="Acciones"] {
     display: flex !important;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     gap: 10px;
     padding-top: 12px;
