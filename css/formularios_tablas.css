@@ -540,3 +540,29 @@ main {
   top: 0;
   z-index: 1000;
 }
+
+
+/* ===== BOTONES RESPONSIVE EN MÓVIL ===== */
+@media (max-width: 480px) {
+
+  /* Celda de acciones como fila aparte */
+  td[data-label="Acciones"] {
+    display: flex !important;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid #ddd;
+  }
+
+  td[data-label="Acciones"]::before {
+    display: none; /* Ocultar label "Acciones" en mobile */
+  }
+
+  .btn-action {
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
+    border-radius: 8px;
+  }
+}

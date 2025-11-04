@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const selectEstadoTicket = document.getElementById("selectEstadoTicket");
 
   // RENDER inicial (clientes pasan turnos para deshabilitar los que ya tienen)
-  renderSelectGen(selectTicket, [100], "Seleccionar Ticket", "");
+  renderSelectGen(selectTicket, [], "Seleccionar Ticket", "");
   renderSelectClientes(selectCliente, clientes, turnos);
   renderSelectTecnicos(selectTecnico, tecnicos);
   renderSelectGen(selectT, T_VALUES, "Seleccionar T", "T");
