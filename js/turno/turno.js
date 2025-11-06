@@ -3,7 +3,7 @@ import { getData, saveData } from "./storage.js"; // 👈 IMPORT saveData
 import { renderSelectClientes, renderSelectTecnicos, renderSelectGen } from "./render_selects.js";
 import { renderHistorialTurnos } from "./historial.js";
 import { renderGrillaTurnos } from "./grilla.js";
-import { clienteYaTieneTurno } from "./validaciones.js"; // 👈 IMPORT
+import { clienteYaTieneTurno, hayConflicto } from "./validaciones.js"; // 👈 IMPORT
 import { enviarTicket } from "./envioTicketPOST.js";
 import Tecnico from "../tecnico/Tecnico.js";
 
@@ -34,6 +34,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // FUNCION GUARDAR TURNO
   // ==============================
   function guardarTurno(nuevoTurno) {
+
+    if (hayConflicto(turnos, nuevoTurno.fecha, nuevoTurno.hora, nuevoTurno.tecnico, nuevoTurno.id_cliente)) {
+    alert(`Conflicto: el técnico ${nuevoTurno.tecnico} ya tiene un turno en ese horario.`);
+    return;
+    }
     // Agregar al array
     turnos.push(nuevoTurno);
 
@@ -77,6 +82,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const tecnico = tecnicos[tecnicoIndex];
+    const tecnicoNombre = `${tecnico.nombre} ${tecnico.apellido}`;
+    const fechaISO = new Date().toISOString().split("T")[0]; // o la fecha que uses
+    const hora = rangoSeleccionado; // si el rango es el bloque horario elegido
+
+    //     🔍 Verifica si el técnico ya tiene un turno en ese rango horario
+    if (hayConflicto(turnos, fechaISO, hora, tecnicoNombre, clienteId)) {
+      return alert(`El técnico ${tecnicoNombre} ya tiene un turno en ese horario.`);
+    }
+
 
     // Llamada a la grilla
     renderGrillaTurnos({
