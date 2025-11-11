@@ -196,7 +196,7 @@ function configurarSeleccionAutomatica(card, horaStr, opcion, cliente, tecnico, 
   card.querySelector(".btnSeleccionarTurno").addEventListener("click", () => {
     if (horaStr === "Sin horario") return alert("No hay horarios disponibles para este día");
 
-    if (hayConflicto(turnos, opcion.fechaISO, horaStr, `${tecnico.nombre} ${tecnico.apellido}`)) {
+    if (hayConflicto(turnos, opcion.fechaISO, horaStr, `${tecnico.nombre} ${tecnico.apellido}`, cliente.numeroCliente, NumeroT)) {
       mostrarMensaje(card, "⚠️ Ese horario ya está ocupado para este técnico.");
       return;
     }
@@ -252,10 +252,11 @@ function configurarSeleccionManual(card, horariosDisponibles, NumeroT, opcion, c
       btnAceptar.addEventListener("click", () => {
         const horarioSeleccionado = select.value.split(" ")[0];
 
-        if (hayConflicto(turnos, opcion.fechaISO, horarioSeleccionado, `${tecnico.nombre} ${tecnico.apellido}`)) {
+        if (hayConflicto(turnos, opcion.fechaISO, horarioSeleccionado, `${tecnico.nombre} ${tecnico.apellido}`, cliente.numeroCliente, NumeroT)) {
           mostrarMensaje(card, "⚠️ Ese horario ya está ocupado para este técnico.");
           return;
         }
+
 
         const nuevoTurno = {
           id_cliente: cliente.numeroCliente,
@@ -310,7 +311,7 @@ export async function renderGrillaTurnos({
   }
 
   fechasOpciones.forEach(opcion => {
-    let horariosDisponibles = obtenerHorariosDisponibles(turnos, opcion.fechaISO, tecnico, opcion.diaNombre);
+    let horariosDisponibles = obtenerHorariosDisponibles(turnos, opcion.fechaISO, tecnico, opcion.diaNombre, cliente.numeroCliente, NumeroT);
     horariosDisponibles = filtrarPorRango(horariosDisponibles, rangoSeleccionado, NumeroT);
 
     const card = crearCardTurno({
