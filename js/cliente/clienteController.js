@@ -92,6 +92,7 @@ export class ClienteController {
   }
 
   async guardarCliente(e) {
+    console.log("GUARDAR CLIENTE EJECUTADO");
     e.preventDefault();
 
     const cliente = new Cliente(
@@ -107,14 +108,14 @@ export class ClienteController {
     if (!this.validador.validar(cliente)) return;
 
     try {
-      const creado = await this.service.create(cliente);
-      this.clientes.push(creado);
-      this.tabla.renderizar(this.clientes);
+      await this.service.create(cliente);
+      await this.cargarClientes(); // fuente única de verdad
       this.limpiarFormulario();
     } catch (error) {
       alert(error.message);
     }
   }
+
 
   // ==============================
   // UI
