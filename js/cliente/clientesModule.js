@@ -65,7 +65,6 @@ export class ClienteManager {
   }
 
   guardarCliente(e) {
-    e.preventDefault();
     this.controller.guardarCliente(e);
     this.contadorTelefono.textContent = "0/8 dígitos";
     this.contadorTelefono.style.color = "orange";
