@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recuperar Contraseña - Acceso Corporativo</title>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css"
+    rel="stylesheet"
+  />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            corporativo: "#005691", // Azul corporativo más profundo y serio
+            corporativoDark: "#153d60", // Un azul casi navy, para el hover
+            grisTexto: "#333333", // Negro sobrio para el texto
+            grisBorde: "#dddddd", // Borde muy claro
+          },
+          boxShadow: {
+            suave: "0 10px 30px rgba(0,0,0,0.08)",
+            inputFocus: "0 0 0 3px rgba(0, 86, 145, 0.2)",
+          },
+        },
+      },
+      daisyui: {
+        themes: [
+          {
+            corporativo: {
+              primary: "#005691",
+              secondary: "#153d60",
+              "base-100": "#ffffff",
+              neutral: "#333333",
+            },
+          },
+        ],
+      },
+    };
+  </script>
+  <style>
+    .initial-hidden {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    .show-form {
+        opacity: 1;
+        transform: scale(1);
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-gray-50 flex items-center justify-center px-4 text-grisTexto">
+
+  <main id="recoveryContainer" class="w-full max-w-sm initial-hidden transition-all duration-700 ease-out">
+    <section
+      class="bg-white border border-grisBorde rounded-2xl shadow-suave p-10 transition-all"
+      style="min-width: 380px;"
+    >
+
+      <header class="text-center mb-8">
+        <h1 class="text-3xl font-extrabold tracking-tight text-corporativoDark">
+          <span class="text-corporativo">Restablecer</span> Acceso
+        </h1>
+        <p class="text-sm text-gray-500 mt-2">
+          Ingresá tu correo electrónico para enviarte las instrucciones.
+        </p>
+      </header>
+
+      <form id="recoveryForm" class="space-y-6" novalidate>
+
+        <div>
+          <label for="email" class="block text-sm font-medium mb-1 text-grisTexto">
+            Correo Electrónico
+          </label>
+          <input
+            type="email"
+            id="email"
+            class="w-full px-4 py-2.5 bg-white text-grisTexto border border-grisBorde rounded-lg
+                   focus:outline-none focus:border-corporativo focus:ring-0 shadow-sm
+                   focus:shadow-inputFocus
+                   transition duration-200 ease-in-out"
+            placeholder="ejemplo@suempresa.com"
+          />
+        </div>
+
+        <div
+          id="message"
+          class="hidden text-sm text-center font-medium
+                 rounded-lg px-4 py-3"
+        ></div>
+
+        <button
+          type="submit"
+          class="w-full bg-corporativo text-white py-3 rounded-lg
+                 font-bold text-base tracking-wide shadow-md
+                 transition-all duration-300 ease-in-out
+                 hover:bg-corporativoDark hover:shadow-lg
+                 active:scale-[0.99] focus:outline-none focus:ring-4 focus:ring-corporativo/30"
+        >
+          <span id="buttonText">Enviar Instrucciones</span>
+        </button>
+
+        <div class="text-center pt-2">
+          <a href="index.html" class="text-sm font-semibold text-gray-500 hover:text-corporativo transition">
+            &larr; Volver al inicio de sesión
+          </a>
+        </div>
+
+      </form>
+
+    </section>
+
+    <footer class="text-center mt-6 text-xs text-gray-400">
+        &copy; 2026 Su Empresa Corporativa. Todos los derechos reservados.
+    </footer>
+
+  </main>
+
+  <script>
+    // Iniciar transición elegante
+    document.addEventListener("DOMContentLoaded", () => {
+        const recoveryContainer = document.getElementById("recoveryContainer");
+        setTimeout(() => {
+            recoveryContainer.classList.remove("initial-hidden");
+            recoveryContainer.classList.add("show-form");
+        }, 10);
+    });
+
+    const form = document.getElementById("recoveryForm");
+    const emailInput = document.getElementById("email");
+    const messageDiv = document.getElementById("message");
+    const buttonText = document.getElementById("buttonText");
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      hideMessage();
+
+      const email = emailInput.value.trim();
+
+      if (!email) {
+        showMessage("El correo electrónico es obligatorio.", "error");
+        return;
+      }
+
+      if (!emailRegex.test(email)) {
+        showMessage("Por favor, ingrese un correo electrónico válido.", "error");
+        return;
+      }
+
+      // Simulación de envío
+      buttonText.textContent = "Enviando...";
+      const originalButtonText = "Enviar Instrucciones";
+
+      setTimeout(() => {
+        // Simulación exitosa
+        showMessage(
+          "¡Enviado! Revisá tu bandeja de entrada para continuar.",
+          "success"
+        );
+        buttonText.textContent = originalButtonText;
+        form.reset();
+      }, 2000); // 2 segundos de carga simulada
+    });
+
+    function showMessage(mensaje, type) {
+      messageDiv.textContent = mensaje;
+      messageDiv.classList.remove("hidden", "bg-red-100", "text-red-700", "bg-green-100", "text-green-700");
+
+      if (type === "error") {
+        messageDiv.classList.add("bg-red-100", "text-red-700");
+      } else if (type === "success") {
+        messageDiv.classList.add("bg-green-100", "text-green-700");
+      }
+    }
+
+    function hideMessage() {
+        messageDiv.classList.add("hidden");
+    }
+  </script>
+
+</body>
+</html>
