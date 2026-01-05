@@ -1,0 +1,2 @@
+Lo que se me ocurre es que el dashboard de login sea ya la entrada de la app, con todo lo que
+eso conlleva de validar, lo veo mañaan (cuando lo leas.... hoy)
