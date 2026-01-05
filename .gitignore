@@ -1,0 +1,4 @@
+login_frontend/
+backend/
+.venv/
+node_modules/
