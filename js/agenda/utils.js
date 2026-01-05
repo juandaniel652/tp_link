@@ -5,6 +5,9 @@
  * @param {Date} fecha
  * @returns {Date} lunes de la semana
  */
+
+export const API_BASE_URL="https://agenda-uipe.onrender.com"
+
 export function getFechaLunes(fecha) {
   const dia = fecha.getDay();
   const diff = (dia === 0 ? -6 : 1) - dia;

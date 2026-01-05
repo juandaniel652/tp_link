@@ -1,31 +1,45 @@
-// Render de selects (clientes, NAP, T, Rango)
-// Permite observar las opciones disponibles en los selects del formulario
-export function renderSelectClientes(selectCliente, clientes) {
+// render_selects.js
+import { clienteYaTieneTurno } from "./validaciones.js";
+
+// Clientes
+export function renderSelectClientes(selectCliente, clientes, turnos = []) {
   selectCliente.innerHTML = `<option value="">Seleccionar Cliente</option>`;
+
   clientes.forEach(c => {
     const option = document.createElement("option");
     option.value = String(c.numeroCliente);
     option.textContent = `${c.numeroCliente} - ${c.nombre} ${c.apellido}`.trim();
+
+    // Si el cliente ya tiene turno, deshabilitamos la opción y agregamos etiqueta
+    if (clienteYaTieneTurno(c.numeroCliente, turnos)) {
+      option.disabled = true;
+      option.textContent += " (Ya tiene turno)";
+      // opcional: agregar clase para estilos
+      option.classList.add("opcion-desactivada");
+    }
+
     selectCliente.appendChild(option);
   });
 }
 
-export function renderSelectNaps(selectNap, puntosAcceso) {
-  selectNap.innerHTML = `<option value="">Seleccionar NAP</option>`;
-  puntosAcceso.forEach(p => {
+// Render técnicos (igual que antes)
+export function renderSelectTecnicos(select, tecnicos) {
+  select.innerHTML = "<option value=''>Seleccionar Técnico</option>";
+  tecnicos.forEach((tecnico, index) => {
     const option = document.createElement("option");
-    option.value = String(p.numero);
-    option.textContent = `NAP ${p.numero}`;
-    selectNap.appendChild(option);
+    option.value = index;
+    option.textContent = `${tecnico.nombre} ${tecnico.apellido}`;
+    select.appendChild(option);
   });
 }
 
-export function renderSelectGen(selectEl, items, placeholder, selectedValue) {
+// Genérico
+export function renderSelectGen(selectEl, items, placeholder, prefix = "") {
   selectEl.innerHTML = `<option value="">${placeholder}</option>`;
   items.forEach(i => {
     const option = document.createElement("option");
     option.value = i;
-    option.textContent = selectedValue + i;
+    option.textContent = prefix + i;
     selectEl.appendChild(option);
   });
 }

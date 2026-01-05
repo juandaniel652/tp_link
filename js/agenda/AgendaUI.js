@@ -19,7 +19,6 @@ export class AgendaUI {
     for (let i = 0; i < this.agenda.numDias; i++) {
       const fechaDia = new Date(this.agenda.fechaInicioSemana);
       fechaDia.setDate(fechaDia.getDate() + i);
-
       const th = document.createElement('th');
       th.textContent = fechaDia.toLocaleDateString('es-ES', {
         weekday: 'long',
@@ -42,12 +41,13 @@ export class AgendaUI {
       this.tooltip.classList.add('tooltip');
       document.body.appendChild(this.tooltip);
     }
+
     this.tooltip.innerHTML = contenido;
     this.tooltip.style.display = 'block';
 
     const moveHandler = (e) => {
-      this.tooltip.style.top = e.pageY + 15 + "px";
-      this.tooltip.style.left = e.pageX + 15 + "px";
+      this.tooltip.style.top = e.pageY + 15 + 'px';
+      this.tooltip.style.left = e.pageX + 15 + 'px';
     };
 
     btn.addEventListener('mousemove', moveHandler);
@@ -63,13 +63,22 @@ export class AgendaUI {
   crearSubEtiqueta(turno) {
     if (!turno.estado) return null;
 
-    const sub = document.createElement("div");
-    sub.classList.add("sub-etiqueta");
+    const sub = document.createElement('div');
+    sub.classList.add('sub-etiqueta');
 
     switch (turno.estado) {
-      case "Confirmado": sub.textContent = "OK"; sub.classList.add("ok"); break;
-      case "Rechazado": sub.textContent = "NOK"; sub.classList.add("nok"); break;
-      case "Reprogramado": sub.textContent = "REPRO"; sub.classList.add("repro"); break;
+      case 'Confirmado':
+        sub.textContent = 'OK';
+        sub.classList.add('ok');
+        break;
+      case 'Rechazado':
+        sub.textContent = 'NOK';
+        sub.classList.add('nok');
+        break;
+      case 'Reprogramado':
+        sub.textContent = 'REPRO';
+        sub.classList.add('repro');
+        break;
     }
 
     return sub;
@@ -90,13 +99,13 @@ export class AgendaUI {
 
     // Tooltip
     btn.addEventListener('mouseenter', () => {
-      const tecnicoStr = Array.isArray(turno.tecnicos) ? turno.tecnicos.join(", ") : "";
+      const tecnicoStr = turno.tecnico || '';
       const contenido = `
         <strong>Cliente:</strong> ${turno.cliente}<br>
         <strong>Técnico:</strong> ${tecnicoStr}<br>
         <strong>T:</strong> ${turno.t}<br>
         <strong>Rango:</strong> ${turno.rango}<br>
-        <strong>Estado:</strong> ${turno.estado}
+        <strong>Estado:</strong> ${turno.estadoTicket}
       `;
       this.mostrarTooltip(btn, contenido);
     });
@@ -115,7 +124,7 @@ export class AgendaUI {
   crearCuerpo() {
     const tbody = document.createElement('tbody');
 
-    // 🔹 Indexar turnos por fecha y hora
+    // Indexar turnos por fecha y hora
     const turnosIndex = {};
     this.agenda.turnos.forEach(turno => {
       const fStr = turno.fecha.replace(/\//g, '-');
@@ -146,7 +155,6 @@ export class AgendaUI {
         tdHora.classList.add('hora');
         const hFin = h + Math.floor((m + this.agenda.minutosBloque) / 60);
         const mFin = (m + this.agenda.minutosBloque) % 60;
-        const hStr = this.agenda.pad(h) + ':' + this.agenda.pad(m);
         tdHora.textContent = `${this.agenda.formatHora(h, m)} - ${this.agenda.formatHora(hFin, mFin)}`;
         tr.appendChild(tdHora);
 
@@ -161,8 +169,9 @@ export class AgendaUI {
           const divBloques = document.createElement('div');
           divBloques.classList.add('bloques-container');
 
-          const turnosBloque = (turnosIndex[fStr]?.[hStr] || []).filter(turno =>
-            !filtroTec || (Array.isArray(turno.tecnicos) && turno.tecnicos.some(t => t.startsWith(filtroTec)))
+          const hStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+          const turnosBloque = (turnosIndex[fStr]?.[hStr] || []).filter(
+            turno => !filtroTec || turno.tecnico === filtroTec
           );
 
           turnosBloque.forEach(turno => {
@@ -199,7 +208,6 @@ export class AgendaUI {
     const table = document.createElement('table');
     table.appendChild(this.crearEncabezado());
     table.appendChild(this.crearCuerpo());
-
     container.appendChild(table);
   }
 }

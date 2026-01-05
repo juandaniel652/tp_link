@@ -24,10 +24,9 @@ export class AgendaNav {
     select.appendChild(new Option('Agenda Unificada', ''));
 
     this.agenda.tecnicoService.getAll().forEach(t => {
-      const nombreCompleto = `${t.nombre} ${t.apellido}`;
+      const nombreCompleto = `${t.nombre} ${t.apellido}`.trim();
       select.appendChild(new Option(nombreCompleto, nombreCompleto));
-    }); //Mientras no haya un Base de datos, se valida al técncio por el nombre completo (Lo podemos usar de doble validación con el ID posteriormente
-    //impelmentada la Base)
+    });
 
     // Seleccionar automáticamente el técnico filtrado si existe
     if (this.agenda.tecnicoFiltro) {
@@ -37,7 +36,7 @@ export class AgendaNav {
     select.addEventListener('change', e => {
       this.agenda.tecnicoFiltro = e.target.value;
       this.agenda.cargarClientesPorTecnico(this.agenda.tecnicoFiltro);
-      this.agenda.generarTabla();
+      this.agenda.refrescarCuerpo(); // 👈 único y correcto
     });
 
     return select;
@@ -50,14 +49,14 @@ export class AgendaNav {
 
     const renderSemanas = () => {
       select.innerHTML = '';
+
       // Opción para volver rápido a la semana actual
       const optActual = new Option('⏪ Semana Actual', 0);
       if (this.agenda.semanaSeleccionada === 0) optActual.selected = true;
       select.appendChild(optActual);
 
       for (let i = this.agenda.semanaSeleccionada - 4; i <= this.agenda.semanaSeleccionada + 4; i++) {
-        // Evitar duplicar la opción de semana actual
-        if (i === 0) continue;
+        if (i === 0) continue; // evitar duplicar semana actual
         const fecha = new Date(lunesActual);
         fecha.setDate(fecha.getDate() + i * 7);
         const fechaFin = new Date(fecha);

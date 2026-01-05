@@ -9,9 +9,20 @@
   <link rel="stylesheet" href="../css/general.css">
   <link rel="stylesheet" href="../css/menu.css">
   <link rel="stylesheet" href="../css/formularios_tablas.css">
-  <link rel="icon" type="image/png" href="../img/icono_logo.ico">
+  <link rel="stylesheet" href="../css/horarios_tecnico.css">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/logo-transparente-tp-link-blanco.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/logo-transparente-tp-link-blanco.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/img/logo-transparente-tp-link-blanco.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="/img/logo-transparente-tp-link-blanco.png">
+
+  <link rel="shortcut icon" href="img/logo-transparente-tp-link-blanco.png?v=2" type="image/x-icon">
 </head>
 <body>
+
+  <script type="module" src="../js/conexion_backend/validacion_token.js"></script>
+
   <!-- HEADER UNIFICADO TIPO DASHBOARD -->
   <header class="site-header">
     <div class="header-container">
@@ -29,7 +40,6 @@
           <li><a href="../html/cliente.html">Clientes</a></li>
           <li><a href="../html/tecnico.html" class="active">Técnicos</a></li>
           <li><a href="../html/turno.html">Turnos</a></li>
-          <li><a href="../html/punto_acceso.html">NAPs</a></li>
           <li><a href="../html/agenda.html">Agenda</a></li>
         </ul>
       </nav>
@@ -55,18 +65,33 @@
           </div>
 
           <div class="form-group">
+            <label for="duracionEmail">Email</label>
+            <input type="email" id="duracionEmail" placeholder="ejemplo@gmail.com" required>
+          </div>
+
+          <div class="form-group">
             <label for="telefono">Teléfono</label>
             <input type="text" id="telefono" maxlength="12" placeholder="Ingrese teléfono" required>
           </div>
 
+          <!-- Campo nuevo para imagen -->
           <div class="form-group">
-            <label for="duracionTurno">Duración del turno (minutos)</label>
+            <label for="imagen">Imagen (opcional)</label>
+            <input type="file" id="imagen" accept="image/*">
+            <img id="previewImagen" src="" alt="Preview" style="display:none;width:80px;height:80px;border-radius:8px;margin-top:5px;">
+          </div>
+    
+          
+          <div class="form-group">
+            <label for="duracionTurno">Duración Habitual del Turno en Minutos</label>
             <input type="number" id="duracionTurno" placeholder="Ej: 15" required>
           </div>
 
           <div class="form-group">
-            <label>Puntos de acceso</label>
-            <div id="puntosAcceso" class="chips-container"></div>
+            <label>Días y Horarios disponibles</label>
+            <div id="diasHorarioGrid">
+              <!-- JS insertará dinámicamente las filas -->
+            </div>
           </div>
         </fieldset>
 
@@ -83,11 +108,12 @@
         <table class="table-general">
           <thead>
             <tr>
+              <td data-label="Imagen">Imagen</td>
               <td data-label="Nombre">Nombre</td>
               <td data-label="Apellido">Apellido</td>
               <td data-label="Teléfono">Teléfono</td>
               <td data-label="Duración turno">Duración Turnos</td>
-              <td data-label="Puntos de acceso">Puntos Acceso</td>
+              <td data-label="Horarios">Horarios</td>
               <td data-label="Acciones">Acciones</td>
             </tr>
           </thead>
@@ -106,11 +132,11 @@
   </footer>
 
   <!-- Script módulo técnicos -->
-  <script src="../js/tecnicosModule.js"></script>
+  <script type="module" src="../js/tecnico/tecnicosModule.js"></script>
 
   <!-- Script menú hamburguesa -->
   <script>
-      document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', () => {
       const menuToggle = document.querySelector('.menu-toggle');
       const nav = document.querySelector('.site-nav');
         

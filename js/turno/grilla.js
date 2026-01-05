@@ -1,169 +1,230 @@
 import { DAYS, NOMBRES_DIAS } from "./constantes.js";
 import { formatearRango } from "./formateo.js";
-import { saveData } from "./storage.js";
-import { renderHistorialTurnos } from "./historial.js";
-import { hayConflicto } from "./validaciones.js";
+import { hayConflicto, obtenerHorariosDisponibles } from "./validaciones.js";
+import { enviarTicket } from "./envioTicketPOST.js";
 
-/* ========================= */
-/* AUXILIARES DE NEGOCIO     */
-/* ========================= */
-// ahora devuelve objetos { inicio: "HH:MM", label: "09:00 - 09:15" }
-function generarOpcionesHorarios(rango, tNum) {
-  const opciones = [];
-  let inicio = rango === "AM" ? 9 * 60 : 14 * 60;
-  let fin = rango === "AM" ? 13 * 60 : 18 * 60;
-
-  for (let min = inicio; min + tNum * 15 <= fin; min += 15) {
-    const h = Math.floor(min / 60).toString().padStart(2, "0");
-    const m = (min % 60).toString().padStart(2, "0");
-    const horaStr = `${h}:${m}`; // inicio en HH:MM
-    const label = formatearRango(horaStr, tNum);
-    opciones.push({ inicio: horaStr, label });
-  }
-  return opciones;
+// ========================================
+// Genera opciones de horario según T y bloques
+// ========================================
+function generarOpcionesHorarios(NumeroT, bloques) {
+  return bloques.map(bloque => formatearRango(bloque, NumeroT));
 }
 
-function obtenerClienteNap({ clienteId, napNumero, clientes, puntosAcceso }) {
-  const cliente = clientes.find(c => String(c.numeroCliente) === String(clienteId));
-  const nap = puntosAcceso.find(p => String(p.numero) === String(napNumero));
-  return { cliente, nap };
-}
+// ========================================
+// Filtra horarios por rango AM/PM
+// ========================================
+function filtrarPorRango(horarios, rango, tNum = 1) {
+  const limites = {
+    AM: { inicio: 9 * 60, fin: 13 * 60 },
+    PM: { inicio: 14 * 60, fin: 18 * 60 },
+  };
+  if (!limites[rango]) return horarios;
 
-function obtenerTecnicosDisponibles(nap, tecnicos) {
-  const napStr = String(nap.numero);
-  return tecnicos.filter(t =>
-    Array.isArray(t.puntosAcceso) && t.puntosAcceso.map(String).includes(napStr)
-  );
-}
-
-// Normaliza turnos existentes: deja turno.hora en "HH:MM" y t como Number
-function normalizarTurnos(turnos) {
-  if (!Array.isArray(turnos)) return;
-  turnos.forEach(turno => {
-    if (turno && turno.hora) {
-      const match = String(turno.hora).match(/(\d{1,2}:\d{2})/);
-      if (match) turno.hora = match[1].padStart(5, "0");
-    }
-    turno.t = Number(turno.t) || 1;
+  return horarios.filter(hora => {
+    const [h, m] = hora.split(":").map(Number);
+    const inicio = h * 60 + m;
+    const fin = inicio + tNum * 15;
+    return inicio >= limites[rango].inicio && fin <= limites[rango].fin;
   });
 }
 
-function generarFechasDisponibles({ nap, cliente, rangoSeleccionado, tNum, turnos }) {
+// ========================================
+// Muestra mensajes dentro de la card
+// ========================================
+function mostrarMensaje(card, texto, tipo = "error") {
+  let mensaje = card.querySelector(".mensaje-turno");
+  if (!mensaje) {
+    mensaje = document.createElement("div");
+    mensaje.className = "mensaje-turno";
+    card.appendChild(mensaje);
+  }
+  mensaje.textContent = texto;
+  mensaje.style.color = tipo === "error" ? "red" : "green";
+  mensaje.style.fontWeight = "bold";
+  mensaje.style.marginTop = "6px";
+}
+
+// ========================================
+// Validación de existencia de cliente y técnico
+// ========================================
+// 🧩 Función que obtiene los datos del cliente, ya sea local o desde Andros
+export async function obtenerClienteYValidar(clientes, clienteId, tecnico) {
+  if (!clienteId) {
+    alert("❌ Falta el ID de cliente.");
+    return null;
+  }
+
+  // Buscar cliente localmente
+  let cliente = clientes.find(c => String(c.numeroCliente) === String(clienteId));
+
+  // Si no está en tu base local, consultamos a Andros
+  if (!cliente) {
+    console.log(`🔎 Cliente ${clienteId} no encontrado localmente. Consultando a Andros...`);
+
+    const API_ANDROS = "https://andros-api.ejemplo.com/api/clientes/";
+
+    try {
+      const response = await fetch(`${API_ANDROS}${clienteId}`);
+      if (!response.ok) throw new Error(`Error ${response.status}`);
+
+      const data = await response.json();
+
+      // Adaptamos la estructura a la de tu sistema
+      cliente = {
+        numeroCliente: data.id || clienteId,
+        nombre: data.nombre || "Sin nombre",
+        apellido: data.apellido || "",
+        direccion: data.direccion || "",
+        telefono: data.telefono || "",
+        fuente: "Andros"
+      };
+
+      console.log("✅ Cliente recuperado desde Andros:", cliente);
+
+      // Agregamos el cliente al arreglo local (para reutilizar)
+      clientes.push(cliente);
+    } catch (error) {
+      console.warn("⚠️ No se pudo obtener cliente desde Andros:", error);
+      cliente = {
+        numeroCliente: clienteId,
+        nombre: "Cliente externo",
+        apellido: "(sin datos)",
+        fuente: "Andros"
+      };
+    }
+  }
+
+  // Validar técnico
+  if (!tecnico) {
+    alert("⚠️ No se encontró el técnico.");
+    return null;
+  }
+
+  return cliente;
+}
+
+
+// ========================================
+// Normaliza texto
+// ========================================
+function normalizarTexto(texto) {
+  return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+// ========================================
+// Obtiene fechas disponibles
+// ========================================
+function obtenerFechasDisponibles(tecnico, turnos, clienteId) {
+  const diasDisponibles = tecnico.getDiasDisponibles().map(d => d.toLowerCase());
   const hoy = new Date();
   const fechasOpciones = [];
   let iterFecha = new Date(hoy);
+  let contador = 0;
 
-  const horariosNap = Array.isArray(nap.horarios) ? nap.horarios : [];
-
-  while (fechasOpciones.length < 3) {
+  while (fechasOpciones.length < 3 && contador < 30) {
     iterFecha.setDate(iterFecha.getDate() + 1);
-
     const fechaLocal = new Date(iterFecha.getFullYear(), iterFecha.getMonth(), iterFecha.getDate());
-    const diaNombre = DAYS[fechaLocal.getDay()];
-
-    const permitido = horariosNap.some(h => h.dia === diaNombre && h.rango === rangoSeleccionado);
-    if (!permitido) continue;
-
-    const fechaISO = `${fechaLocal.getFullYear()}-${String(fechaLocal.getMonth() + 1).padStart(2, "0")}-${String(fechaLocal.getDate()).padStart(2, "0")}`;
-
-    // Generamos todas las opciones y buscamos el primer inicio libre ese día
-    const opciones = generarOpcionesHorarios(rangoSeleccionado, tNum);
-    let primerInicioLibre = null;
-    for (const opt of opciones) {
-      const inicio = opt.inicio; // ahora es confiable "HH:MM"
-      if (!hayConflicto(turnos, fechaISO, inicio, nap.numero, tNum)) {
-        primerInicioLibre = inicio;
-        break;
-      }
+    const diaNombre = fechaLocal.toLocaleDateString('es-ES', { weekday: 'long' })
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+    const esDomingo = fechaLocal.getDay() === 0;
+    const estaDisponible = diasDisponibles.some(d => normalizarTexto(d) === normalizarTexto(diaNombre));
+    if (esDomingo || !estaDisponible) {
+      contador++;
+      continue;
     }
 
-    if (primerInicioLibre) {
-      fechasOpciones.push({ fecha: fechaLocal, fechaISO, diaNombre, horaStr: primerInicioLibre });
+    const fechaISO = `${fechaLocal.getFullYear()}-${String(fechaLocal.getMonth() + 1).padStart(2,"0")}-${String(fechaLocal.getDate()).padStart(2,"0")}`;
+
+    const conflictoCliente = turnos.some(turno =>
+      String(turno.clienteId) === String(clienteId) &&
+      turno.fecha === fechaISO
+    );
+
+    if (!conflictoCliente) {
+      fechasOpciones.push({ fecha: fechaLocal, fechaISO, diaNombre });
     }
-    // si no hay inicio libre en ese día, lo descartamos
+    contador++;
   }
   return fechasOpciones;
 }
 
-
-/* ========================= */
-/* AUXILIARES DE UI          */
-/* ========================= */
-function crearCardTurno({ opcion, cliente, nap, tNum, rangoSeleccionado, tecnicosDisp, turnos, turnosContainer }) {
+// ========================================
+// Crea la card de turno
+// ========================================
+function crearCardTurno({
+  cliente,
+  tecnico,
+  NumeroT,
+  rangoSeleccionado,
+  opcion,
+  horariosDisponibles,
+  estadoTicket,
+  guardarTurno,
+  turnos,
+  turnosContainer
+}) {
   const card = document.createElement("div");
   card.className = "card-turno";
+
+  const horaStr = horariosDisponibles.length ? horariosDisponibles[0] : "Sin horario";
+
   card.innerHTML = `
-    <h3>${NOMBRES_DIAS[opcion.diaNombre]} ${opcion.fecha.toLocaleDateString("es-ES", { day: "numeric", month: "long" })}</h3>
+    <h3>${NOMBRES_DIAS[opcion.diaNombre]} ${opcion.fecha.toLocaleDateString("es-ES",{day:"numeric", month:"long"})}</h3>
     <p><strong>Cliente:</strong> ${cliente.numeroCliente} - ${cliente.nombre} ${cliente.apellido}</p>
-    <p><strong>NAP:</strong> ${nap.numero}</p>
-    <p><strong>T:</strong> ${tNum}</p>
+    <p><strong>Técnico:</strong> ${tecnico.nombre} ${tecnico.apellido}</p>
+    <p><strong>T:</strong> ${NumeroT}</p>
     <p><strong>Rango:</strong> ${rangoSeleccionado}</p>
-    <p><strong>Horario (sugerido):</strong> ${formatearRango(opcion.horaStr, tNum)}</p>
-    <p><strong>Técnicos disponibles:</strong> ${tecnicosDisp.map(t => t.nombre + ' ' + (t.apellido || '')).join(", ")}</p>
-    <button class="btnSeleccionarTurno">Selección automática</button>
+    <p><strong>Horario General:</strong> ${rangoSeleccionado == "AM" ? "09:00 - 13:00" : "14:00 - 18:00"}</p>
+    <p><strong>Horario Sugerido:</strong> ${horaStr !== "Sin horario" ? formatearRango(horaStr, NumeroT) : "Sin horario disponible"}</p>
+    <p><strong>Estado del Ticket:</strong> ${estadoTicket}</p>
+    <button class="btnSeleccionarTurno" ${horaStr === "Sin horario" ? "disabled" : ""}>Selección automática</button>
     <button class="btnEditarTurno">Selección Manual</button>
     <div class="editorHorario" style="display:none; margin-top:8px;"></div>
   `;
 
-  configurarBotonSeleccionAutomatica({ card, opcion, cliente, nap, tNum, rangoSeleccionado, tecnicosDisp, turnos, turnosContainer });
-  configurarBotonEdicionManual({ card, opcion, cliente, nap, tNum, rangoSeleccionado, tecnicosDisp, turnos, turnosContainer });
+  configurarSeleccionAutomatica(card, horaStr, opcion, cliente, tecnico, NumeroT, rangoSeleccionado, estadoTicket, guardarTurno, turnos, turnosContainer, enviarTicket);
+  configurarSeleccionManual(card, horariosDisponibles, NumeroT, opcion, cliente, tecnico, rangoSeleccionado, estadoTicket, guardarTurno, turnos, turnosContainer, enviarTicket);
 
   return card;
 }
 
-function configurarBotonSeleccionAutomatica({ card, opcion, cliente, nap, tNum, rangoSeleccionado, tecnicosDisp, turnos, turnosContainer }) {
+// ========================================
+// Configuración selección automática
+// ========================================
+function configurarSeleccionAutomatica(card, horaStr, opcion, cliente, tecnico, NumeroT, rangoSeleccionado, estadoTicket, guardarTurno, turnos, turnosContainer, enviarTicket) {
   card.querySelector(".btnSeleccionarTurno").addEventListener("click", () => {
-    // Buscamos el primer inicio disponible para esa fecha y tNum
-    const opciones = generarOpcionesHorarios(rangoSeleccionado, tNum);
-    let inicioLibre = null;
-    for (const opt of opciones) {
-      const inicio = opt.inicio;
-      if (!hayConflicto(turnos, opcion.fechaISO, inicio, nap.numero, tNum)) {
-        inicioLibre = inicio;
-        break;
-      }
-    }
+    if (horaStr === "Sin horario") return alert("No hay horarios disponibles para este día");
 
-    if (!inicioLibre) {
-      alert("No hay horarios libres en esa fecha para asignación automática.");
+    if (hayConflicto(turnos, opcion.fechaISO, horaStr, `${tecnico.nombre} ${tecnico.apellido}`, cliente.numeroCliente, NumeroT)) {
+      mostrarMensaje(card, "⚠️ Ese horario ya está ocupado para este técnico.");
       return;
     }
 
-    // comprobación final ANTES de guardar (protege race condition / doble click)
-    if (hayConflicto(turnos, opcion.fechaISO, inicioLibre, nap.numero, tNum)) {
-      alert("El horario ya fue ocupado por otro turno. Se actualizará la grilla.");
-      // opcional: forzar refresco de la grilla actual (puede llamarse desde el orquestador)
-      // como mínimo removemos esta card para que no quede visible
-      card.remove();
-      return;
-    }
-
-    const tecnicoElegido = tecnicosDisp[0];
     const nuevoTurno = {
-      id: Date.now(),
-      clienteId: cliente.numeroCliente,
-      cliente: `${cliente.nombre} ${cliente.apellido}`.trim(),
-      nap: nap.numero,
-      t: tNum,
-      rango: rangoSeleccionado,
+      id_cliente: cliente.numeroCliente,
+      ticket_id: cliente.numeroCliente + "_" + Date.now(),
+      tecnico: `${tecnico.nombre} ${tecnico.apellido}`,
+      tipo_turno: "regular",
+      rango_horario: rangoSeleccionado,
+      estado: estadoTicket,
       fecha: opcion.fechaISO,
-      fechaStr: `${NOMBRES_DIAS[opcion.diaNombre]} ${opcion.fecha.toLocaleDateString("es-ES", { day: "numeric", month: "long" })}`,
-      hora: inicioLibre, // guardamos sólo inicio en HH:MM
-      tecnicos: [tecnicoElegido.nombre + ' ' + (tecnicoElegido.apellido || '')]
+      fechaStr: `${NOMBRES_DIAS[opcion.diaNombre]} ${opcion.fecha.toLocaleDateString("es-ES",{day:"numeric", month:"long"})}`,
+      hora: horaStr,
+      t: NumeroT,
+      cliente: `${cliente.nombre} ${cliente.apellido}`.trim()
     };
 
-    turnos.push(nuevoTurno);
-    saveData("turnos", turnos);
-    renderHistorialTurnos(turnos, turnosContainer);
-    // 🚀 Notificar a turno.js que hay un nuevo turno
-    document.dispatchEvent(new CustomEvent("turnoGuardado"));
-    // removemos la card para que no siga ofertando la misma opción visualmente
-    card.remove();
+    guardarTurno(nuevoTurno);
     turnosContainer.innerHTML = "";
+    enviarTicket(nuevoTurno);
   });
 }
 
-function configurarBotonEdicionManual({ card, opcion, cliente, nap, tNum, rangoSeleccionado, tecnicosDisp, turnos, turnosContainer }) {
+// ========================================
+// Configuración selección manual
+// ========================================
+function configurarSeleccionManual(card, horariosDisponibles, NumeroT, opcion, cliente, tecnico, rangoSeleccionado, estadoTicket, guardarTurno, turnos, turnosContainer, enviarTicket) {
   card.querySelector(".btnEditarTurno").addEventListener("click", () => {
     const editor = card.querySelector(".editorHorario");
     editor.style.display = editor.style.display === "none" ? "block" : "none";
@@ -173,61 +234,47 @@ function configurarBotonEdicionManual({ card, opcion, cliente, nap, tNum, rangoS
       const select = document.createElement("select");
       select.className = "form-turno-select";
 
-      // Generamos opciones como objetos {inicio,label}
-      const opciones = generarOpcionesHorarios(rangoSeleccionado, tNum);
-      opciones.forEach(opt => {
-        const inicio = opt.inicio; // "HH:MM"
-        const ocupado = hayConflicto(turnos, opcion.fechaISO, inicio, nap.numero, tNum);
-
-        if (!ocupado) {
-          const option = document.createElement("option");
-          option.value = inicio;      // guardamos sólo el inicio
-          option.textContent = opt.label;   // mostramos la etiqueta formateada
-          select.appendChild(option);
-        }
-      });
-
-      if (!select.options.length) {
-        const msg = document.createElement("p");
-        msg.textContent = "No hay horarios disponibles en este rango.";
-        editor.appendChild(msg);
+      if (!horariosDisponibles.length) {
+        editor.innerHTML = "<p>No hay horarios disponibles</p>";
         return;
       }
+
+      generarOpcionesHorarios(NumeroT, horariosDisponibles).forEach(opt => {
+        const option = document.createElement("option");
+        option.value = opt;
+        option.textContent = opt;
+        select.appendChild(option);
+      });
 
       const btnAceptar = document.createElement("button");
       btnAceptar.textContent = "Aceptar horario manual";
       btnAceptar.className = "btn-primary";
       btnAceptar.addEventListener("click", () => {
-        const horarioSeleccionado = select.value; // ya es "HH:MM"
+        const horarioSeleccionado = select.value.split(" ")[0];
 
-        // comprobación final ANTES de guardar
-        if (hayConflicto(turnos, opcion.fechaISO, horarioSeleccionado, nap.numero, tNum)) {
-          alert("El horario seleccionado ya fue reservado por otro turno. Vuelva a intentar.");
-          // podemos forzar la reapertura del editor o actualizar la lista:
-          editor.innerHTML = "";
-          card.querySelector(".btnEditarTurno").click(); // toggle para cerrar
+        if (hayConflicto(turnos, opcion.fechaISO, horarioSeleccionado, `${tecnico.nombre} ${tecnico.apellido}`, cliente.numeroCliente, NumeroT)) {
+          mostrarMensaje(card, "⚠️ Ese horario ya está ocupado para este técnico.");
           return;
         }
 
-        const tecnicoElegido = tecnicosDisp[0];
+
         const nuevoTurno = {
-          id: Date.now(),
-          clienteId: cliente.numeroCliente,
-          cliente: `${cliente.nombre} ${cliente.apellido}`.trim(),
-          nap: nap.numero,
-          t: tNum,
-          rango: rangoSeleccionado,
+          id_cliente: cliente.numeroCliente,
+          ticket_id: cliente.numeroCliente + "_" + Date.now(),
+          tecnico: `${tecnico.nombre} ${tecnico.apellido}`,
+          tipo_turno: "regular",
+          rango_horario: rangoSeleccionado,
+          estado: estadoTicket,
           fecha: opcion.fechaISO,
-          fechaStr: `${NOMBRES_DIAS[opcion.diaNombre]} ${opcion.fecha.toLocaleDateString("es-ES", { day: "numeric", month: "long" })}`,
+          fechaStr: `${NOMBRES_DIAS[opcion.diaNombre]} ${opcion.fecha.toLocaleDateString("es-ES",{day:"numeric", month:"long"})}`,
           hora: horarioSeleccionado,
-          tecnicos: [tecnicoElegido.nombre + ' ' + (tecnicoElegido.apellido || '')]
+          t: NumeroT,
+          cliente: `${cliente.nombre} ${cliente.apellido}`.trim()
         };
 
-        turnos.push(nuevoTurno);
-        saveData("turnos", turnos);
-        renderHistorialTurnos(turnos, turnosContainer);
+        guardarTurno(nuevoTurno);
         turnosContainer.innerHTML = "";
-        card.remove(); // quitamos la card para que no siga apareciendo la opción
+        enviarTicket(nuevoTurno);
       });
 
       editor.appendChild(select);
@@ -236,47 +283,51 @@ function configurarBotonEdicionManual({ card, opcion, cliente, nap, tNum, rangoS
   });
 }
 
-/* ========================= */
-/* ORQUESTADOR PRINCIPAL     */
-/* ========================= */
-export function renderGrillaTurnos({ clienteId, napNumero, tSeleccionado, rangoSeleccionado, clientes, puntosAcceso, tecnicos, turnos, turnosContainer }) {
+// ========================================
+// Render de grilla
+// ========================================
+export async function renderGrillaTurnos({
+  clienteId,
+  tecnico,
+  tSeleccionado,
+  rangoSeleccionado,
+  clientes,
+  turnos,
+  turnosContainer,
+  guardarTurno,
+  estadoTicket,
+  enviarTicket
+}) {
   turnosContainer.innerHTML = "";
 
-  // Normalizamos turnos antes de cualquier lógica
-  normalizarTurnos(turnos);
+  const cliente = await obtenerClienteYValidar(clientes, clienteId, tecnico);
+  if (!cliente) return;
 
-  const { cliente, nap } = obtenerClienteNap({ clienteId, napNumero, clientes, puntosAcceso });
-  if (!cliente || !nap) return alert("Cliente o NAP no encontrado");
+  const NumeroT = Number(tSeleccionado);
+  const fechasOpciones = obtenerFechasDisponibles(tecnico, turnos, cliente.numeroCliente);
 
-  if (turnos.some(turno => String(turno.clienteId) === String(cliente.numeroCliente))) {
-    return alert("Este cliente ya tiene un turno asignado.");
+  if (!fechasOpciones.length) {
+    return alert("No hay fechas disponibles según el técnico en los próximos 30 días");
   }
-
-  const tecnicosDisp = obtenerTecnicosDisponibles(nap, tecnicos);
-  if (!tecnicosDisp.length) return alert("No hay técnicos que cubran este NAP");
-
-  const tNum = Number(tSeleccionado);
-
-  // validar rangoSeleccionado contra horarios del NAP
-  const horariosNap = Array.isArray(nap.horarios) ? nap.horarios : [];
-  const rangosPermitidos = horariosNap.map(h => `${h.dia}|${h.rango}`);
-
-  if (!rangosPermitidos.some(r => r.endsWith(`|${rangoSeleccionado}`))) {
-    return alert(`El NAP ${nap.numero} no tiene configurado el rango ${rangoSeleccionado}`);
-  }
-
-  // ahora generamos fechas que tengan al menos 1 inicio libre para ese tNum
-  const fechasOpciones = generarFechasDisponibles({ nap, cliente, rangoSeleccionado, tNum, turnos });
-
-  if (!fechasOpciones.length) return alert("No hay fechas próximas disponibles para este NAP");
 
   fechasOpciones.forEach(opcion => {
-    const clave = `${opcion.diaNombre}|${rangoSeleccionado}`;
-    if (!rangosPermitidos.includes(clave)) return;
+    let horariosDisponibles = obtenerHorariosDisponibles(turnos, opcion.fechaISO, tecnico, opcion.diaNombre, cliente.numeroCliente, NumeroT);
+    horariosDisponibles = filtrarPorRango(horariosDisponibles, rangoSeleccionado, NumeroT);
 
-    const card = crearCardTurno({ 
-      opcion, cliente, nap, tNum, rangoSeleccionado, tecnicosDisp, turnos, turnosContainer 
+    const card = crearCardTurno({
+      cliente,
+      tecnico,
+      NumeroT,
+      rangoSeleccionado,
+      opcion,
+      horariosDisponibles,
+      estadoTicket,
+      guardarTurno,
+      turnos,
+      turnosContainer,
+      enviarTicket
     });
+
     turnosContainer.appendChild(card);
   });
 }

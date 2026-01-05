@@ -3,15 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Sistema de gestión S-Link: clientes, técnicos, turnos, puntos de acceso y agenda.">
+  <meta name="description" content="Sistema dewhich git gestión S-Link: clientes, técnicos, turnos, puntos de acceso y agenda.">
   <meta name="author" content="Juan Dominguez">
   <meta name="robots" content="index, follow">
 
-  <title>TPs - S-Link</title>
+  <title>Wifi S-Link</title>
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="img/icono_logo.ico">
-  <link rel="shortcut icon" href="img/icono_logo.ico" type="image/x-icon">
+  <link rel="icon" type="image/png" sizes="16x16" href="img/logo-transparente-tp-link-blanco.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="img/logo-transparente-tp-link-blanco.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="img/logo-transparente-tp-link-blanco.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="img/logo-transparente-tp-link-blanco.png">
+
+  <link rel="shortcut icon" href="img/logo-transparente-tp-link-blanco.png?v=2" type="image/x-icon">
+
 
   <!-- Estilos -->
   <link rel="stylesheet" href="/css/general.css">
@@ -19,12 +24,15 @@
 </head>
 <body>
 
+  <script type="module" src="js/conexion_backend/validacion_token.js"></script>
+
   <!-- HEADER -->
   <header class="header">
     <div class="header-container">
       <div class="logo-container">
         <img src="img/logo-transparente-tp-link-blanco.png" alt="Logo S-Link" class="logo">
         <span class="brand-name">Menú principal</span>
+        <span id="userEmail" style="margin-left: 10px; font-weight: bold; color: #fff;"></span>
       </div>
 
       <!-- Botón hamburguesa -->
@@ -36,7 +44,6 @@
           <li><a href="html/cliente.html">Clientes</a></li>
           <li><a href="html/tecnico.html">Técnicos</a></li>
           <li><a href="html/turno.html">Turnos</a></li>
-          <li><a href="html/punto_acceso.html">NAPs</a></li>
           <li><a href="html/agenda.html">Agenda</a></li>
         </ul>
       </nav>
@@ -60,11 +67,6 @@
       <a href="html/turno.html" class="menu-button" target="_blank" rel="noopener noreferrer">
         <img src="img/ticket_turno.png" alt="Turnos">
         <span>Turno</span>
-      </a>
-
-      <a href="html/punto_acceso.html" class="menu-button" target="_blank" rel="noopener noreferrer">
-        <img src="img/punto_acceso.png" alt="NAPs">
-        <span>Punto de Acceso</span>
       </a>
 
       <a href="html/agenda.html" class="menu-button" target="_blank" rel="noopener noreferrer">

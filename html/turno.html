@@ -4,9 +4,17 @@
   <meta charset="UTF-8">
   <title>Gestión de Turnos</title>
   <link rel="stylesheet" href="../css/turnos.css">
-  <link rel="icon" type="image/png" href="../img/icono_logo.ico">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/logo-transparente-tp-link-blanco.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/logo-transparente-tp-link-blanco.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/img/logo-transparente-tp-link-blanco.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="/img/logo-transparente-tp-link-blanco.png">
+
+  <link rel="shortcut icon" href="img/logo-transparente-tp-link-blanco.png?v=2" type="image/x-icon">
 </head>
 <body>
+
+  <script type="module" src="../js/conexion_backend/validacion_token.js"></script>
 
 <!-- HEADER con toggle responsive -->
 <header class="site-header">
@@ -29,7 +37,6 @@
         <li><a href="../html/cliente.html">Clientes</a></li>
         <li><a href="../html/tecnico.html">Técnicos</a></li>
         <li><a href="../html/turno.html" class="active">Turnos</a></li>
-        <li><a href="../html/punto_acceso.html">NAPs</a></li>
         <li><a href="../html/agenda.html">Agenda</a></li>
       </ul>
     </nav>
@@ -42,17 +49,24 @@
   <aside class="sidebar">
     <h2>Crear Turno</h2>
     <form id="formTurno" class="form-turno">
+
+      <label for="selectTicket">Ticket</label>
+      <select id="selectTicket" required></select>
+
       <label for="selectCliente">Cliente</label>
       <select id="selectCliente" required></select>
 
-      <label for="selectNap">Punto Acceso</label>
-      <select id="selectNap" required></select>
+      <label for="selectTecnico">Tecnico</label>
+      <select id="selectTecnico" required></select>
 
       <label for="selectT">Tipo de Turno</label>
       <select id="selectT" required></select>
 
       <label for="selectRango">Rango Horario</label>
       <select id="selectRango" required></select>
+
+      <label for="selectEstadoTicket">Estado del ticket</label>
+      <select id="selectEstadoTicket"></select>
 
       <button id="btnMostrarTurnos" type="button" class="btn-primary">Mostrar Turnos</button>
     </form>
@@ -74,8 +88,6 @@
   </div>
 </footer>
 
-<!-- Script de la app -->
-<script type="module" src="../js/turno/turno.js"></script>
 
 <!-- Script para el toggle -->
 <script>
@@ -89,6 +101,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+
+<!-- Scripts de la app -->
+<script type="module" src="../js/turno/turno.js"></script>
+<script type="module" src="../js/conexion/getDataFromAndros.js"></script>
 
 </body>
 </html>
