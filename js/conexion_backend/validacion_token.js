@@ -1,56 +1,57 @@
-console.log("validacion_token.js CARGADO");
-
-console.log("URL completa:", window.location.href);
-console.log("Token URL:", tokenFromUrl);
-
 // validacion_token.js
 document.addEventListener("DOMContentLoaded", async () => {
+  console.log("validacion_token.js CARGADO");
 
-  // 1️⃣ Capturar token desde la URL (si viene del login)
+  const LOGIN_URL = "https://loginagenda.netlify.app/";
+  const API_ME = "https://agenda-uipe.onrender.com/api/v1/auth/me";
+
+  // 1️⃣ Capturar token desde la URL (SOLO primera vez)
   const params = new URLSearchParams(window.location.search);
   const tokenFromUrl = params.get("token");
 
   if (tokenFromUrl) {
+    console.log("Token recibido por URL");
+
     localStorage.setItem("access_token", tokenFromUrl);
 
-    // Limpia la URL para no dejar el token visible
+    // Limpia la URL (muy importante)
     window.history.replaceState({}, document.title, window.location.pathname);
   }
 
-  // 2️⃣ Leer token desde localStorage (ya normalizado)
+  // 2️⃣ Leer token persistido
   const token = localStorage.getItem("access_token");
-  console.log("Token localStorage:", token);
-
+  console.log("Token actual:", token);
 
   if (!token) {
-    window.location.replace("https://loginagenda.netlify.app/");
+    console.log("No hay token → login");
+    window.location.replace(LOGIN_URL);
     return;
   }
 
   try {
-    // 3️⃣ Validar token contra el backend
-    const response = await fetch(
-      "https://agenda-uipe.onrender.com/api/v1/auth/me",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    // 3️⃣ Validar token con backend
+    const response = await fetch(API_ME, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-    if (!response.ok) throw new Error("Token inválido");
+    if (!response.ok) {
+      throw new Error("Token inválido");
+    }
 
     const user = await response.json();
-    console.log("Usuario logueado:", user);
+    console.log("Usuario autenticado:", user);
 
-    // 4️⃣ Mostrar email (opcional)
+    // 4️⃣ Uso normal de la app
     const emailEl = document.getElementById("userEmail");
     if (emailEl) emailEl.textContent = user.email;
 
-  } catch (err) {
-    // 5️⃣ Token inválido o expirado
+  } catch (error) {
+    console.error("Error de autenticación:", error);
+
+    // 5️⃣ Token inválido → limpiar y volver al login
     localStorage.removeItem("access_token");
-    window.location.replace("https://loginagenda.netlify.app/");
+    window.location.replace(LOGIN_URL);
   }
 });
