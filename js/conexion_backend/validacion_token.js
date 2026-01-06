@@ -1,3 +1,6 @@
+console.log("URL completa:", window.location.href);
+console.log("Token URL:", tokenFromUrl);
+
 // validacion_token.js
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -14,6 +17,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // 2️⃣ Leer token desde localStorage (ya normalizado)
   const token = localStorage.getItem("access_token");
+  console.log("Token localStorage:", token);
+
 
   if (!token) {
     window.location.replace("https://loginagenda.netlify.app/");
