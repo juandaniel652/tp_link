@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   console.log("validacion_token.js CARGADO");
 
   const LOGIN_URL = "https://loginagenda.netlify.app/";
-  const API_ME = "https://agenda-uipe.onrender.com/api/v1/auth/me";
+  const API_ME = "https://login-agenda-backend.onrender.com/api/v1/auth/me";
 
   // 1️⃣ Capturar token desde la URL (SOLO primera vez)
   const params = new URLSearchParams(window.location.search);
@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const response = await fetch(API_ME, {
       headers: {
         Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
     });
 
