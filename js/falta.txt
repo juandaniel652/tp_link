@@ -5,3 +5,7 @@ Versión 1.0
 - Turnos con misma lógica sin NAPS, solo con los datos de Técnicos
 - Muestra en Agenda
 - Base de datos 
+
+
+Ya està todo, solo falta poner la opcion A para hacer bien el URL en chatgpt y lo hago y ya queda
+bien el login
