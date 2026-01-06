@@ -1,3 +1,5 @@
+console.log("validacion_token.js CARGADO");
+
 console.log("URL completa:", window.location.href);
 console.log("Token URL:", tokenFromUrl);
 
