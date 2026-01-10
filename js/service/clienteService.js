@@ -3,6 +3,9 @@ const API_URL = 'https://agenda-uipe.onrender.com/api/v1/clientes';
 export class ClienteService {
 
   static async obtenerTodos(token) {
+    if (!token) {
+    throw new Error("Sesión no válida. Inicie sesión nuevamente.");
+    }
     const res = await fetch(API_URL + '/', {
       headers: {
         'Authorization': `Bearer ${token}`
