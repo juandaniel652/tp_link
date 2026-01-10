@@ -80,41 +80,70 @@ export class ClienteController {
   async guardarCliente(e) {
     e.preventDefault();
 
-    const cliente = new Cliente(
-      this.inputs.numeroCliente.value,
-      this.inputs.nombre.value,
-      this.inputs.apellido.value,
-      this.inputs.telefono.value,
-      this.inputs.domicilio.value,
-      this.inputs.numeroDomicilio.value,
-      this.inputs.email.value
-    );
+    const cliente = {
+      numero_cliente: this.inputs.numeroCliente.value,
+      nombre: this.inputs.nombre.value,
+      apellido: this.inputs.apellido.value,
+      telefono: this.inputs.telefono.value,
+      domicilio: this.inputs.domicilio.value,
+      numero_domicilio: this.inputs.numeroDomicilio.value,
+      email: this.inputs.email.value
+    };
 
     if (!this.validador.validar(cliente)) return;
 
     try {
-      await ClienteService.crear(cliente);
+      if (this.indiceEdicion === null) {
+        // CREAR
+        await ClienteService.crear(cliente);
+      } else {
+        // EDITAR
+        const clienteEditado = this.clientes[this.indiceEdicion];
+        await ClienteService.actualizar(clienteEditado.id, cliente);
+        this.indiceEdicion = null;
+      }
+
       await this.cargarClientes();
       this.limpiarFormulario();
+
     } catch (error) {
       alert(error.message);
     }
   }
 
+
   editarCliente(index) {
     const cliente = this.clientes[index];
-    this.inputs.numeroCliente.value = cliente.numero_cliente ?? '';
-    this.inputs.nombre.value = cliente.nombre ?? '';
-    this.inputs.apellido.value = cliente.apellido ?? '';
-    this.inputs.telefono.value = cliente.telefono ?? '';
-    this.inputs.domicilio.value = cliente.domicilio ?? '';
-    this.inputs.numeroDomicilio.value = cliente.numero_domicilio ?? '';
-    this.inputs.email.value = cliente.email ?? '';
-  }
 
-  eliminarCliente(index) {
-    alert("Eliminar aún no implementado");
-  }
+    this.inputs.numeroCliente.value = cliente.numero_cliente;
+    this.inputs.nombre.value = cliente.nombre;
+    this.inputs.apellido.value = cliente.apellido;
+    this.inputs.telefono.value = cliente.telefono;
+    this.inputs.domicilio.value = cliente.domicilio;
+    this.inputs.numeroDomicilio.value = cliente.numero_domicilio;
+    this.inputs.email.value = cliente.email;
+
+    this.indiceEdicion = index;
+    }
+
+
+    async eliminarCliente(index) {
+      const cliente = this.clientes[index];
+      
+      const confirmar = confirm(
+        `¿Eliminar al cliente ${cliente.nombre} ${cliente.apellido}?`
+      );
+    
+      if (!confirmar) return;
+    
+      try {
+        await ClienteService.eliminar(cliente.id);
+        await this.cargarClientes();
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+
 
   limpiarFormulario() {
     Object.values(this.inputs).forEach(input => input.value = '');

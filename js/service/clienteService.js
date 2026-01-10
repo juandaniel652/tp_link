@@ -1,4 +1,4 @@
-import { apiRequest } from "../conexion_backend/api.js";
+import { apiRequest } from "../api/apiRequest.js";
 
 export class ClienteService {
 
@@ -13,16 +13,16 @@ export class ClienteService {
     });
   }
 
-  static eliminar(id) {
-    return apiRequest(`/clientes/${id}`, {
-      method: "DELETE"
-    });
-  }
-
   static actualizar(id, cliente) {
     return apiRequest(`/clientes/${id}`, {
       method: "PUT",
       body: JSON.stringify(cliente)
+    });
+  }
+
+  static eliminar(id) {
+    return apiRequest(`/clientes/${id}`, {
+      method: "DELETE"
     });
   }
 }
