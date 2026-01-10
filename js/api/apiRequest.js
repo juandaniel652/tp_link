@@ -1,6 +1,7 @@
 // js/api/apiRequest.js
 export async function apiRequest(endpoint, options = {}) {
-  const token = localStorage.getItem("token"); // o "access_token"
+  const token = localStorage.getItem("access_token"); // mismo que login
+
   if (!token) {
     window.location.href = "/html/login.html"; // redirigir si no hay token
     throw new Error("No autenticado");
