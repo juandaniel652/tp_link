@@ -8,15 +8,21 @@ export class ClienteService {
 
   async getAll() {
     const response = await fetch(ENDPOINT, {
-      headers: getAuthHeaders()
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+      },
     });
 
     if (!response.ok) {
       throw new Error("Error al obtener clientes");
     }
 
-    return response.json();
+    const data = await response.json();
+
+    // Normalización limpia
+    return Array.isArray(data) ? data : data.data;
   }
+
 
   async create(cliente) {
     const payload = {
