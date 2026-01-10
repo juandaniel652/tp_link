@@ -22,7 +22,7 @@ export class ClienteTabla {
 
     clientes.forEach((cliente, index) => {
       const tr = document.createElement('tr');
-      tr.appendChild(this.crearTd(cliente.numeroCliente, "Número"));
+      tr.appendChild(this.crearTd(cliente.numero_cliente, "Número"));
       tr.appendChild(this.crearTd(cliente.nombre, "Nombre"));
       tr.appendChild(this.crearTd(cliente.apellido, "Apellido"));
       tr.appendChild(this.crearTd(cliente.telefono, "Teléfono"));

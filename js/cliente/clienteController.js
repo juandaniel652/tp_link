@@ -2,7 +2,7 @@
 import { Cliente } from './cliente.js';
 import { ValidadorClientes } from './validadorClientes.js';
 import { ClienteTabla } from './clienteTabla.js';
-import { ClienteService } from "../agenda/ClienteService.js";
+import { ClienteService } from "../service/clienteService.js";
 
 export class ClienteController {
   constructor(formId, tablaId) {
