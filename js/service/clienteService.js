@@ -1,13 +1,12 @@
 import { apiRequest } from "../api/apiRequest.js";
 
 export class ClienteService {
-
   static obtenerTodos() {
-    return apiRequest("/clientes/");
+    return apiRequest("/clientes");
   }
 
   static crear(cliente) {
-    return apiRequest("/clientes/", {
+    return apiRequest("/clientes", {
       method: "POST",
       body: JSON.stringify(cliente)
     });
@@ -21,8 +20,6 @@ export class ClienteService {
   }
 
   static eliminar(id) {
-    return apiRequest(`/clientes/${id}`, {
-      method: "DELETE"
-    });
+    return apiRequest(`/clientes/${id}`, { method: "DELETE" });
   }
 }
