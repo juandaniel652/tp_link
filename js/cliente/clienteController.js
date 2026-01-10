@@ -84,18 +84,26 @@ export class ClienteController {
   async cargarClientes() {
     try {
       const token = localStorage.getItem('token');
+    
+      if (!token) {
+        alert("Debe iniciar sesión nuevamente");
+        window.location.href = "/html/login.html"; // o donde tengas login
+        return;
+      }
+    
       this.clientes = await ClienteService.obtenerTodos(token);
       this.tabla.renderizar(this.clientes);
     } catch (error) {
       console.error(error);
-      alert("No se pudieron cargar los clientes");
+      alert(error.message);
     }
   }
 
 
+
   async guardarCliente(e) {
     e.preventDefault();
-    
+
     const cliente = new Cliente(
       this.inputs.numeroCliente.value,
       this.inputs.nombre.value,
@@ -105,9 +113,9 @@ export class ClienteController {
       this.inputs.numeroDomicilio.value,
       this.inputs.email.value
     );
-  
+
     if (!this.validador.validar(cliente)) return;
-  
+
     try {
       const token = localStorage.getItem('token');
       await ClienteService.crear(cliente, token);
