@@ -3,6 +3,7 @@ import { getAuthHeaders } from "../agenda/auth.js";
 
 const ENDPOINT = `${API_BASE_URL}/clientes`;
 
+
 export class ClienteService {
 
   async getAll() {
