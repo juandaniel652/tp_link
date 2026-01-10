@@ -84,13 +84,13 @@ export class ClienteController {
   async cargarClientes() {
     try {
       const token = localStorage.getItem('token');
-    
+
       if (!token) {
         alert("Debe iniciar sesión nuevamente");
-        window.location.href = "/html/login.html"; // o donde tengas login
+        window.location.href = "https://loginagenda.netlify.app/"; // o donde tengas login
         return;
       }
-    
+
       this.clientes = await ClienteService.obtenerTodos(token);
       this.tabla.renderizar(this.clientes);
     } catch (error) {
