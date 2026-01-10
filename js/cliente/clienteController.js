@@ -6,14 +6,9 @@ import { ClienteService } from "../service/clienteService.js";
 
 export class ClienteController {
   constructor(formId, tablaId) {
-    // === Elementos del DOM ===
     this.form = document.getElementById(formId);
     this.tablaBody = document.querySelector(`#${tablaId} tbody`);
 
-    // === Servicios ===
-    this.service = new ClienteService();
-
-    // === Campos del formulario ===
     this.inputs = {
       numeroCliente: this.form.querySelector('#NumeroCliente'),
       nombre: this.form.querySelector('#clienteNombre'),
@@ -24,18 +19,15 @@ export class ClienteController {
       email: this.form.querySelector('#clienteEmail')
     };
 
-    // === Estado ===
     this.clientes = [];
     this.indiceEdicion = null;
 
-    // === Mensajes dinámicos ===
     this.mensajeValidacion = document.createElement('small');
     this.mensajeValidacion.style.display = 'block';
     this.mensajeValidacion.style.marginTop = '8px';
     this.mensajeValidacion.style.color = 'red';
     this.form.appendChild(this.mensajeValidacion);
 
-    // === Inicialización ===
     this.validador = new ValidadorClientes(this.mensajeValidacion);
     this.tabla = new ClienteTabla(
       this.tablaBody,
@@ -47,9 +39,6 @@ export class ClienteController {
     this.cargarClientes();
   }
 
-  // ==============================
-  // EVENTOS
-  // ==============================
   configurarEventos() {
     this.form.addEventListener('submit', (e) => this.guardarCliente(e));
 
@@ -61,9 +50,6 @@ export class ClienteController {
     this.inputs.telefono.addEventListener('input', e => this.formatearTelefono(e));
   }
 
-  // ==============================
-  // VALIDACIONES AUX
-  // ==============================
   limpiarLetras(e) {
     e.target.value = e.target.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
   }
@@ -83,23 +69,13 @@ export class ClienteController {
   // ==============================
   async cargarClientes() {
     try {
-      const token = localStorage.getItem('token');
-
-      if (!token) {
-        alert("Debe iniciar sesión nuevamente");
-        window.location.href = "https://loginagenda.netlify.app/"; // o donde tengas login
-        return;
-      }
-
-      this.clientes = await ClienteService.obtenerTodos(token);
+      this.clientes = await ClienteService.obtenerTodos();
       this.tabla.renderizar(this.clientes);
     } catch (error) {
       console.error(error);
       alert(error.message);
     }
   }
-
-
 
   async guardarCliente(e) {
     e.preventDefault();
@@ -117,8 +93,7 @@ export class ClienteController {
     if (!this.validador.validar(cliente)) return;
 
     try {
-      const token = localStorage.getItem('token');
-      await ClienteService.crear(cliente, token);
+      await ClienteService.crear(cliente);
       await this.cargarClientes();
       this.limpiarFormulario();
     } catch (error) {
@@ -126,24 +101,19 @@ export class ClienteController {
     }
   }
 
-
-
-  // ==============================
-  // UI
-  // ==============================
   editarCliente(index) {
     const cliente = this.clientes[index];
-    this.inputs.numeroCliente.value = cliente.numeroCliente || '';
-    this.inputs.nombre.value = cliente.nombre || '';
-    this.inputs.apellido.value = cliente.apellido || '';
-    this.inputs.telefono.value = cliente.telefono || '';
-    this.inputs.domicilio.value = cliente.domicilio || '';
-    this.inputs.numeroDomicilio.value = cliente.numeroDomicilio || '';
-    this.inputs.email.value = cliente.email || '';
+    this.inputs.numeroCliente.value = cliente.numero_cliente ?? '';
+    this.inputs.nombre.value = cliente.nombre ?? '';
+    this.inputs.apellido.value = cliente.apellido ?? '';
+    this.inputs.telefono.value = cliente.telefono ?? '';
+    this.inputs.domicilio.value = cliente.domicilio ?? '';
+    this.inputs.numeroDomicilio.value = cliente.numero_domicilio ?? '';
+    this.inputs.email.value = cliente.email ?? '';
   }
 
   eliminarCliente(index) {
-    alert("Eliminar aún no implementado en backend");
+    alert("Eliminar aún no implementado");
   }
 
   limpiarFormulario() {

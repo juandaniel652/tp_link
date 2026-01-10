@@ -1,57 +1,28 @@
-const API_URL = 'https://agenda-uipe.onrender.com/api/v1/clientes';
+import { apiRequest } from "../conexion_backend/api.js";
 
 export class ClienteService {
 
-  static async obtenerTodos(token) {
-    if (!token) {
-    throw new Error("Sesión no válida. Inicie sesión nuevamente.");
-    }
-    const res = await fetch(API_URL + '/', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-
-    if (!res.ok) throw new Error('Error al obtener clientes');
-    return res.json();
+  static obtenerTodos() {
+    return apiRequest("/clientes/");
   }
 
-  static async crear(cliente, token) {
-    const res = await fetch(API_URL + '/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
+  static crear(cliente) {
+    return apiRequest("/clientes/", {
+      method: "POST",
       body: JSON.stringify(cliente)
     });
-
-    if (!res.ok) throw new Error('Error al crear cliente');
-    return res.json();
   }
 
-  static async eliminar(id, token) {
-    const res = await fetch(`${API_URL}/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+  static eliminar(id) {
+    return apiRequest(`/clientes/${id}`, {
+      method: "DELETE"
     });
-
-    if (!res.ok) throw new Error('Error al eliminar cliente');
   }
 
-  static async actualizar(id, cliente, token) {
-    const res = await fetch(`${API_URL}/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
+  static actualizar(id, cliente) {
+    return apiRequest(`/clientes/${id}`, {
+      method: "PUT",
       body: JSON.stringify(cliente)
     });
-
-    if (!res.ok) throw new Error('Error al actualizar cliente');
-    return res.json();
   }
 }
