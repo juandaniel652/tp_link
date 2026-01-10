@@ -83,7 +83,8 @@ export class ClienteController {
   // ==============================
   async cargarClientes() {
     try {
-      this.clientes = await this.service.getAll();
+      const token = localStorage.getItem('token');
+      this.clientes = await ClienteService.obtenerTodos(token);
       this.tabla.renderizar(this.clientes);
     } catch (error) {
       console.error(error);
@@ -91,10 +92,10 @@ export class ClienteController {
     }
   }
 
-  async guardarCliente(e) {
-    console.log("GUARDAR CLIENTE EJECUTADO");
-    e.preventDefault();
 
+  async guardarCliente(e) {
+    e.preventDefault();
+    
     const cliente = new Cliente(
       this.inputs.numeroCliente.value,
       this.inputs.nombre.value,
@@ -104,17 +105,19 @@ export class ClienteController {
       this.inputs.numeroDomicilio.value,
       this.inputs.email.value
     );
-
+  
     if (!this.validador.validar(cliente)) return;
-
+  
     try {
-      await this.service.create(cliente);
-      await this.cargarClientes(); // fuente única de verdad
+      const token = localStorage.getItem('token');
+      await ClienteService.crear(cliente, token);
+      await this.cargarClientes();
       this.limpiarFormulario();
     } catch (error) {
       alert(error.message);
     }
   }
+
 
 
   // ==============================
