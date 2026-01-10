@@ -1,36 +1,36 @@
-// validacion_token.js
 document.addEventListener("DOMContentLoaded", async () => {
+  const LOGIN_URL = "https://loginagenda.netlify.app/";
+  const API_ME = "https://agenda-uipe.onrender.com/api/v1/auth/me";
+
+  const params = new URLSearchParams(window.location.search);
+  const tokenFromUrl = params.get("token");
+
+  if (tokenFromUrl) {
+    localStorage.setItem("access_token", tokenFromUrl);
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
   const token = localStorage.getItem("access_token");
 
   if (!token) {
-    // Redirige al login si no hay token
-    window.location.replace("https://loginagenda.netlify.app/");
+    window.location.replace(LOGIN_URL);
     return;
   }
 
   try {
-    const response = await fetch(
-      "https://agenda-uipe.onrender.com/api/v1/auth/me",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await fetch(API_ME, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     if (!response.ok) throw new Error("Token inválido");
 
     const user = await response.json();
-    console.log("Usuario logueado:", user);
+    console.log("Usuario autenticado:", user);
 
-    // Opcional: mostrar email en algún lugar del header
-    const emailEl = document.getElementById("userEmail");
-    if (emailEl) emailEl.textContent = user.email;
-
-  } catch (err) {
-    // Token inválido o expirado → redirige al login
+  } catch (error) {
     localStorage.removeItem("access_token");
-    window.location.replace("https://loginagenda.netlify.app/");
+    window.location.replace(LOGIN_URL);
   }
 });
