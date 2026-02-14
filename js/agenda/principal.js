@@ -1,5 +1,5 @@
-import { TurnoService } from '../agenda/turnoService.js';
-import { ClienteService } from '../service/clienteService.js';
+import { TurnoService } from '../agenda/TurnoService.js';
+import { ClienteService } from '../service/ClienteService.js';
 import { TecnicoService } from './TecnicoService.js';
 import { AgendaUI } from './AgendaUI.js';
 import { AgendaNav } from './AgendaNav.js';
@@ -9,6 +9,7 @@ export class Agenda {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
 
+    // servicios conectados al backend
     this.turnoService = new TurnoService();
     this.clienteService = new ClienteService();
     this.tecnicoService = new TecnicoService();
@@ -21,7 +22,6 @@ export class Agenda {
     this.semanaSeleccionada = 0;
     this.tecnicoFiltro = '';
     this.fechaInicioSemana = getFechaLunes(new Date());
-    this.turnos = this.turnoService.getAll();
 
     // helpers de utils
     this.formatHora = formatHora;
@@ -30,12 +30,21 @@ export class Agenda {
     this.nav = new AgendaNav(this);
     this.ui = new AgendaUI(this);
 
+    // 🔹 inicialización async
+    this.init();
+  }
+
+  async init() {
+    // Traer datos desde el backend
+    this.turnos = await this.turnoService.obtenerTodos();
+    this.clientes = await this.clienteService.obtenerTodos();
+    this.tecnicos = await this.tecnicoService.obtenerTodos();
+
+    // Generar tabla
     this.generarTabla();
   }
 
   generarTabla() {
-    this.turnos = this.turnoService.getAll();
-
     this.container.innerHTML = '';
     this.container.appendChild(this.nav.crearNavegacion());
 
@@ -47,20 +56,15 @@ export class Agenda {
     this.cargarClientesPorTecnico(this.tecnicoFiltro);
   }
 
-  // 🔹 Refrescar solo el cuerpo de la tabla (cuando cambio de técnico)
-  refrescarCuerpo() {
-    this.turnos = this.turnoService.getAll();
+  async refrescarCuerpo() {
+    this.turnos = await this.turnoService.obtenerTodos();
 
     const table = this.container.querySelector('table');
     if (!table) return;
 
-    // eliminar tbody anterior
     const oldTbody = table.querySelector('tbody');
-    if (oldTbody) {
-      oldTbody.remove();
-    }
+    if (oldTbody) oldTbody.remove();
 
-    // insertar tbody nuevo
     table.appendChild(this.ui.crearCuerpo());
 
     this.cargarClientesPorTecnico(this.tecnicoFiltro);
@@ -70,40 +74,25 @@ export class Agenda {
     const clientesSelect = document.getElementById('selectCliente');
     if (!clientesSelect) return;
 
-    const clientes = this.clienteService.getAll();
     clientesSelect.innerHTML = '<option value="">Seleccionar Cliente</option>';
 
-    let clientesFiltrados = clientes;
+    let clientesFiltrados = this.clientes;
 
     if (tecnico) {
-      // Normalizamos nombres de técnicos y clientes en turnos
       const clientesConTurno = this.turnos
         .filter(t => {
-          // 🔹 el técnico en los turnos puede ser string o un objeto
-          if (typeof t.tecnico === "string") {
-            return t.tecnico.trim() === tecnico.trim();
-          } else if (t.tecnico?.nombre && t.tecnico?.apellido) {
-            const nombreCompletoTec = `${t.tecnico.nombre} ${t.tecnico.apellido}`.trim();
-            return nombreCompletoTec === tecnico.trim();
-          }
+          if (typeof t.tecnico === "string") return t.tecnico.trim() === tecnico.trim();
+          else if (t.tecnico?.nombre && t.tecnico?.apellido) return `${t.tecnico.nombre} ${t.tecnico.apellido}`.trim() === tecnico.trim();
           return false;
         })
-        .map(t => {
-          if (typeof t.cliente === "string") {
-            return t.cliente.trim();
-          } else if (t.cliente?.nombre && t.cliente?.apellido) {
-            return `${t.cliente.nombre} ${t.cliente.apellido}`.trim();
-          }
-          return "";
-        });
+        .map(t => typeof t.cliente === "string" ? t.cliente.trim() : `${t.cliente.nombre} ${t.cliente.apellido}`.trim());
 
-      clientesFiltrados = clientes.filter(c => {
+      clientesFiltrados = this.clientes.filter(c => {
         const nombreCompleto = `${c.nombre} ${c.apellido}`.trim();
         return clientesConTurno.includes(nombreCompleto);
       });
     }
 
-    // Agregar opciones al select
     clientesFiltrados.forEach(c => {
       const nombreCompleto = `${c.nombre} ${c.apellido}`.trim();
       const option = new Option(nombreCompleto, nombreCompleto);
@@ -111,18 +100,51 @@ export class Agenda {
     });
   }
 
-  asignarTurno(fStr, hStr) {
+  async asignarTurno(fStr, hStr) {
     if (!this.tecnicoFiltro) {
       alert('Debe seleccionar un técnico');
       return;
     }
-
-    localStorage.setItem('nuevoTurno', JSON.stringify({
+  
+    // 🔹 Seleccionar cliente
+    const clienteNombre = prompt(
+      'Seleccione cliente para el turno:',
+      this.clientes.length ? `${this.clientes[0].nombre} ${this.clientes[0].apellido}` : ''
+    );
+  
+    if (!clienteNombre) return; // usuario canceló
+  
+    // Buscar cliente en la lista para obtener id real (si es que tu backend lo requiere)
+    const clienteSeleccionado = this.clientes.find(c => `${c.nombre} ${c.apellido}`.trim() === clienteNombre.trim());
+    if (!clienteSeleccionado) {
+      alert('Cliente no encontrado');
+      return;
+    }
+  
+    // 🔹 Construir objeto turno
+    const turnoNuevo = {
       fecha: fStr,
       hora: hStr,
-      tecnico: this.tecnicoFiltro
-    }));
-
-    window.location.href = '../html/turno.html';
+      tecnico: this.tecnicoFiltro,
+      cliente: clienteSeleccionado.nombre + ' ' + clienteSeleccionado.apellido,
+      t: 1, // cantidad de bloques (puede ajustarse)
+      rango: `${hStr} - ${this.formatHora(parseInt(hStr.split(':')[0]), parseInt(hStr.split(':')[1]) + 15)}`,
+      estadoTicket: 'Confirmado', // inicial
+      color: '#1E90FF' // opcional
+    };
+  
+    try {
+      // 🔹 Crear turno en backend
+      await this.turnoService.crear(turnoNuevo);
+    
+      // 🔹 Refrescar tabla con el nuevo turno
+      await this.refrescarCuerpo();
+    
+      alert('Turno creado correctamente!');
+    } catch (err) {
+      console.error('Error al crear turno:', err);
+      alert('No se pudo crear el turno.');
+    }
   }
+
 }
