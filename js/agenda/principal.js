@@ -1,5 +1,5 @@
 import { TurnoService } from '../agenda/turnoService.js';
-import { ClienteService } from '../agenda/ClienteService.js';
+import { ClienteService } from '../service/clienteService.js';
 import { TecnicoService } from './TecnicoService.js';
 import { AgendaUI } from './AgendaUI.js';
 import { AgendaNav } from './AgendaNav.js';
