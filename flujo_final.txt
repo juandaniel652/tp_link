@@ -1,0 +1,20 @@
+🔹 Flujo final que podemos armar
+
+FRONTEND (Netlify)
+ ├─ index.html, cliente.html, tecnico.html, agenda.html
+ ├─ JS modular
+ │   ├─ api.js → fetch con JWT
+ │   └─ validacion_token.js → valida token, redirige si inválido
+ ↓
+BACKEND UNIFICADO (FastAPI, Render)
+ ├─ /api/v1/auth
+ │    ├─ /login → JWT
+ │    └─ /me → info usuario
+ ├─ /api/v1/clientes → CRUD clientes
+ ├─ /api/v1/tecnicos → CRUD técnicos (POST ya, agregar GET/PUT/DELETE)
+ └─ /api/v1/health → status
+ ↓
+BASE DE DATOS (Neon/PostgreSQL)
+ ├─ users
+ ├─ clientes
+ └─ tecnicos

@@ -1,2 +1,14 @@
 Lo que se me ocurre es que el dashboard de login sea ya la entrada de la app, con todo lo que
 eso conlleva de validar, lo veo mañaan (cuando lo leas.... hoy)
+
+HECHO
+---------------------------------------------------------
+10/01/2026
+
+- Se necesita: 
+
+    1. Probar eliminar y editar cliente
+    2. Llevar lo mismo a tecnico
+    3. Probar turnos
+    4. Con todos los datos listos de estos ir a agenda y listo, con eso terminamos
+----------------------------------------------------------
