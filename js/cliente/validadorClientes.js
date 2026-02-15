@@ -21,49 +21,42 @@ export class ValidadorClientes {
 
   validar(cliente) {
     this.limpiarMensaje();
-
-    try{
-
-      if ( !cliente.numeroCliente?.trim() || !cliente.nombre?.trim() || !cliente.apellido?.trim() || 
-      !cliente.telefono?.trim() || !cliente.domicilio?.trim() || !cliente.numeroDomicilio?.trim() 
-      || !cliente.email?.trim()) 
-      
-      {
-        return this.mostrarError('Por favor, complete todos los campos.');
-      }
+    
+    if (!cliente.numero_cliente?.trim() || !cliente.nombre?.trim() || !cliente.apellido?.trim() ||
+        !cliente.telefono?.trim() || !cliente.domicilio?.trim() || !cliente.numero_domicilio?.trim() ||
+        !cliente.email?.trim()) {
+      return this.mostrarError('Por favor, complete todos los campos.');
     }
-    catch(error){
-      console.log("El error es ", error.message);
-    }
-
-    if (!this.regexSoloNumeros.test(cliente.numeroCliente)) {
+  
+    if (!this.regexSoloNumeros.test(cliente.numero_cliente)) {
       return this.mostrarError('El número de cliente solo puede contener números.');
     }
-
+  
     if (!this.regexSoloLetras.test(cliente.nombre)) {
       return this.mostrarError('El nombre solo puede contener letras.');
     }
-
+  
     if (!this.regexSoloLetras.test(cliente.apellido)) {
       return this.mostrarError('El apellido solo puede contener letras.');
     }
-
+  
     if (!this.regexTelefono.test(cliente.telefono)) {
       return this.mostrarError('El teléfono debe comenzar con 11 y tener exactamente 10 dígitos.');
     }
-
+  
     if (!this.regexSoloLetras.test(cliente.domicilio)) {
       return this.mostrarError('La calle solo puede contener letras.');
     }
-
-    if (!this.regexSoloNumeros.test(cliente.numeroDomicilio)) {
+  
+    if (!this.regexSoloNumeros.test(cliente.numero_domicilio)) {
       return this.mostrarError('El número de domicilio solo puede contener números.');
     }
-
+  
     if (!this.regexEmail.test(cliente.email)) {
       return this.mostrarError('El email no es válido.');
     }
-
+  
     return true;
   }
+
 }
