@@ -26,6 +26,8 @@ export default class UIHandler {
     // Horarios (HTML nuevo)
     this.btnAddHorario = this.form.querySelector("#addHorario");
 
+    this.horariosContainer = this.form.querySelector("#listaHorarios");
+
     this.indiceEdicion = null;
 
     this._bindEvents();
@@ -170,7 +172,7 @@ export default class UIHandler {
     this.inputs.telefono.value = registro.telefono || "";
     this.inputs.duracion.value = registro.duracion_turno_min;
     this.inputs.email.value = registro.email || "";
-    
+
     this.horarios = registro.horarios || [];
     this._renderHorarios(); // esto ya usa listaHorarios
   }
