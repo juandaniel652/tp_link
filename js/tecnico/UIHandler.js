@@ -145,7 +145,8 @@ export default class UIHandler {
       horarios: tecnico.horarios
     };
 
-    if (this.indiceEdicion) {
+    if (this.indiceEdicion !== null) {
+
       await TecnicoService.actualizar(this.indiceEdicion, payload);
     } else {
       await TecnicoService.crear(payload);
