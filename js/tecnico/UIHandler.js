@@ -162,8 +162,8 @@ export default class UIHandler {
       imagen_url: tecnico.imagen,
       horarios: tecnico.horarios.map(h => ({
         dia_semana: h.dia,
-        hora_desde: h.desde,
-        hora_hasta: h.hasta
+        hora_desde: h.inicio,
+        hora_hasta: h.fin
       }))
     };
 
