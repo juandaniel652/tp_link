@@ -22,12 +22,18 @@ export class ValidadorClientes {
   validar(cliente) {
     this.limpiarMensaje();
 
-    if ( !cliente.numeroCliente?.trim() || !cliente.nombre?.trim() || !cliente.apellido?.trim() || 
-    !cliente.telefono?.trim() || !cliente.domicilio?.trim() || !cliente.numeroDomicilio?.trim() 
-    || !cliente.email?.trim()) 
-    
-    {
-      return this.mostrarError('Por favor, complete todos los campos.');
+    try{
+
+      if ( !cliente.numeroCliente?.trim() || !cliente.nombre?.trim() || !cliente.apellido?.trim() || 
+      !cliente.telefono?.trim() || !cliente.domicilio?.trim() || !cliente.numeroDomicilio?.trim() 
+      || !cliente.email?.trim()) 
+      
+      {
+        return this.mostrarError('Por favor, complete todos los campos.');
+      }
+    }
+    catch(error){
+      console.log("El error es ", error.message);
     }
 
     if (!this.regexSoloNumeros.test(cliente.numeroCliente)) {
