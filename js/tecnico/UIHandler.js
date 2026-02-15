@@ -13,7 +13,6 @@ export default class UIHandler {
       return;
     }
 
-    // Inputs reales del HTML
     this.inputs = {
       nombre: this.form.querySelector("#nombre"),
       apellido: this.form.querySelector("#apellido"),
@@ -23,25 +22,20 @@ export default class UIHandler {
       imagen: this.form.querySelector("#imagen")
     };
 
-    // Contenedor horarios
-    this.horariosContainer = this.form.querySelector("#diasHorarioGrid");
+    // Horarios
+    this.diaSemana = this.form.querySelector("#diaSemana");
+    this.horaDesde = this.form.querySelector("#horaDesde");
+    this.horaHasta = this.form.querySelector("#horaHasta");
+    this.listaHorarios = this.form.querySelector("#listaHorarios");
     this.btnAddHorario = this.form.querySelector("#addHorario");
 
-    // Chequeo defensivo
-    Object.entries(this.inputs).forEach(([k, v]) => {
-      if (!v) console.error(`Input faltante en HTML: ${k}`);
-    });
-    if (!this.horariosContainer) console.error("Falta #diasHorarioGrid");
-    if (!this.btnAddHorario) console.error("Falta #addHorario");
-
+    this.horarios = [];
     this.indiceEdicion = null;
+
     this._bindEvents();
     this._inicializarHorariosUI();
   }
 
-  // =========================
-  // EVENTS
-  // =========================
   _bindEvents() {
     this.form.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -50,50 +44,45 @@ export default class UIHandler {
   }
 
   _inicializarHorariosUI() {
+    if (!this.btnAddHorario) {
+      console.warn("No hay UI de horarios (modo simple)");
+      return;
+    }
+
     this.btnAddHorario.addEventListener("click", () => {
-      this._agregarFilaHorario();
+      const horario = {
+        dia: Number(this.diaSemana.value),
+        desde: this.horaDesde.value,
+        hasta: this.horaHasta.value
+      };
+
+      if (!horario.desde || !horario.hasta) {
+        alert("Completar horas");
+        return;
+      }
+
+      this.horarios.push(horario);
+      this._renderHorarios();
     });
   }
 
-  // =========================
-  // HORARIOS UI
-  // =========================
-  _agregarFilaHorario(data = {}) {
-    const row = document.createElement("div");
-    row.classList.add("horario-row");
+  _renderHorarios() {
+    this.listaHorarios.innerHTML = "";
 
-    row.innerHTML = `
-      <select class="dia">
-        <option value="Lunes">Lunes</option>
-        <option value="Martes">Martes</option>
-        <option value="Miércoles">Miércoles</option>
-        <option value="Jueves">Jueves</option>
-        <option value="Viernes">Viernes</option>
-        <option value="Sábado">Sábado</option>
-      </select>
+    this.horarios.forEach((h, i) => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        Día ${h.dia} — ${h.desde} a ${h.hasta}
+        <button data-i="${i}">❌</button>
+      `;
 
-      <input type="time" class="inicio">
-      <input type="time" class="fin">
-      <button type="button" class="remove">🗑️</button>
-    `;
+      li.querySelector("button").addEventListener("click", () => {
+        this.horarios.splice(i, 1);
+        this._renderHorarios();
+      });
 
-    // Setear valores si viene de edición
-    if (data.dia) row.querySelector(".dia").value = data.dia;
-    if (data.inicio) row.querySelector(".inicio").value = data.inicio;
-    if (data.fin) row.querySelector(".fin").value = data.fin;
-
-    row.querySelector(".remove").onclick = () => row.remove();
-    this.horariosContainer.appendChild(row);
-  }
-
-  _recopilarHorarios() {
-    const rows = this.horariosContainer.querySelectorAll(".horario-row");
-
-    return Array.from(rows).map(row => ({
-      dia: row.querySelector(".dia").value,
-      inicio: row.querySelector(".inicio").value,
-      fin: row.querySelector(".fin").value
-    }));
+      this.listaHorarios.appendChild(li);
+    });
   }
 
   // =========================
@@ -111,7 +100,7 @@ export default class UIHandler {
 
     if (!this.tecnicos || this.tecnicos.length === 0) {
       const tr = document.createElement("tr");
-      tr.innerHTML = `<td colspan="7" class="no-data">No hay registros</td>`;
+      tr.innerHTML = `<td colspan="7">No hay registros</td>`;
       this.contenedor.appendChild(tr);
       return;
     }
@@ -119,19 +108,15 @@ export default class UIHandler {
     this.tecnicos.forEach((r) => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>
-          ${r.imagen_url
-            ? `<img src="${r.imagen_url}" class="foto-tecnico">`
-            : "—"}
-        </td>
+        <td>${r.imagen_url ? `<img src="${r.imagen_url}" class="foto-tecnico">` : "—"}</td>
         <td>${r.nombre}</td>
         <td>${r.apellido}</td>
         <td>${r.telefono || "-"}</td>
         <td>${r.duracion_turno_min} min</td>
         <td>${r.horarios?.length || 0}</td>
         <td>
-          <button class="edit" style="color: green;">✏️</button>
-          <button class="delete" style="color: red;">🗑️</button>
+          <button class="edit" style="color:green">✏️</button>
+          <button class="delete" style="color:red">🗑️</button>
         </td>
       `;
 
@@ -187,13 +172,8 @@ export default class UIHandler {
     this.inputs.telefono.value = registro.telefono || "";
     this.inputs.duracion.value = registro.duracion_turno_min;
     this.inputs.email.value = registro.email || "";
-    this.inputs.imagen.value = "";
-
-    // Cargar horarios
-    this.horariosContainer.innerHTML = "";
-    if (registro.horarios && registro.horarios.length > 0) {
-      registro.horarios.forEach(h => this._agregarFilaHorario(h));
-    }
+    this.horarios = registro.horarios || [];
+    this._renderHorarios();
   }
 
   // =========================
@@ -216,13 +196,14 @@ export default class UIHandler {
       duracionTurnoMinutos: this.inputs.duracion.value,
       email: this.inputs.email.value.trim(),
       imagen: this.inputs.imagen.value,
-      horarios: this._recopilarHorarios()
+      horarios: this.horarios
     });
   }
 
   limpiarFormulario() {
     this.form.reset();
-    this.horariosContainer.innerHTML = "";
+    this.horarios = [];
+    this._renderHorarios();
     this.indiceEdicion = null;
   }
 }
