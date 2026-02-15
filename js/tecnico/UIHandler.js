@@ -86,12 +86,11 @@ export default class UIHandler {
 
   _renderHorarios() {
     this.horariosContainer.innerHTML = "";
-
     this.horarios.forEach(h => {
       this._agregarFilaHorario({
-        dia: h.dia_semana || h.dia,
-        inicio: h.hora_desde || h.inicio,
-        fin: h.hora_hasta || h.fin
+        dia: h.dia_semana,
+        inicio: h.hora_desde,
+        fin: h.hora_hasta
       });
     });
   }
