@@ -6,7 +6,8 @@
  * @returns {Date} lunes de la semana
  */
 
-export const API_BASE_URL = "https://agenda-uipe.onrender.com/api/v1";
+export const API_BASE_URL = "https://agenda-1-zomu.onrender.com/api/v1";
+
 
 export function getFechaLunes(fecha) {
   const dia = fecha.getDay();
