@@ -13,7 +13,7 @@ export async function apiRequest(endpoint, options = {}) {
   };
 
   const response = await fetch(
-    `https://agenda-uipe.onrender.com/api/v1${endpoint}`,
+    `https://agenda-1-zomu.onrender.com/api/v1${endpoint}`,
     {
       ...options,
       headers

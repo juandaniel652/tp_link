@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  const LOGIN_URL = "https://loginagenda.netlify.app/";
-  const API_ME = "https://agenda-uipe.onrender.com/api/v1/auth/me";
+  const LOGIN_URL = "https://loginagenda.netlify.app/";  // tu frontend de login
+  const API_ME = "https://agenda-1-zomu.onrender.com/api/v1/auth/me"; // tu backend Render
+
 
   const params = new URLSearchParams(window.location.search);
   const tokenFromUrl = params.get("token");
