@@ -8,17 +8,27 @@ export default class UIHandler {
     this.form = document.querySelector(formSelector);
     this.contenedor = document.querySelector(tableBodySelector);
 
+    if (!this.form || !this.contenedor) {
+      console.error("No se encontró el formulario o el contenedor");
+      return;
+    }
+
+    // IDs reales del HTML
     this.inputs = {
       nombre: this.form.querySelector("#nombre"),
       apellido: this.form.querySelector("#apellido"),
       telefono: this.form.querySelector("#telefono"),
-      duracion: this.form.querySelector("#duracion"),
-      email: this.form.querySelector("#email"),
+      duracion: this.form.querySelector("#duracionTurno"),
+      email: this.form.querySelector("#duracionEmail"),
       imagen: this.form.querySelector("#imagen")
     };
 
-    this.indiceEdicion = null;
+    // chequeo defensivo (modo profesional)
+    Object.entries(this.inputs).forEach(([k, v]) => {
+      if (!v) console.error(`Input faltante en HTML: ${k}`);
+    });
 
+    this.indiceEdicion = null;
     this._bindEvents();
   }
 
@@ -34,9 +44,15 @@ export default class UIHandler {
   // =========================
   async renderTabla() {
     this.contenedor.innerHTML = "";
-    this.tecnicos = await TecnicoService.obtenerTodos();
 
-    if (this.tecnicos.length === 0) {
+    try {
+      this.tecnicos = await TecnicoService.obtenerTodos();
+    } catch (e) {
+      console.error("Error cargando técnicos:", e.message);
+      return;
+    }
+
+    if (!this.tecnicos || this.tecnicos.length === 0) {
       const tr = document.createElement("tr");
       tr.innerHTML = `<td colspan="7" class="no-data">No hay registros</td>`;
       this.contenedor.appendChild(tr);
@@ -44,10 +60,6 @@ export default class UIHandler {
     }
 
     this.tecnicos.forEach((r) => {
-      const horariosStr = r.horarios
-        ? r.horarios.map((h) => `${h.dia}: ${h.inicio} - ${h.fin}`).join("<br>")
-        : "";
-
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>
@@ -59,7 +71,7 @@ export default class UIHandler {
         <td>${r.apellido}</td>
         <td>${r.telefono || "-"}</td>
         <td>${r.duracion_turno_min} min</td>
-        <td>${horariosStr}</td>
+        <td>-</td>
         <td>
           <button class="edit">✏️</button>
           <button class="delete">🗑️</button>
@@ -77,24 +89,9 @@ export default class UIHandler {
   }
 
   // =========================
-  // GUARDAR (CREATE / UPDATE)
+  // GUARDAR
   // =========================
   async _guardarTecnico() {
-    let valido = true;
-    let errores = [];
-
-    Object.entries(this.inputs).forEach(([key, input]) => {
-      if (key !== "imagen" && !this._validarCampoIndividual(key, input.value)) {
-        valido = false;
-        errores.push(key);
-      }
-    });
-
-    if (!valido) {
-      this._mostrarErrorGlobal("Revisa los campos: " + errores.join(", "));
-      return;
-    }
-
     try {
       const tecnico = await this._recopilarDatosFormulario();
 
@@ -104,8 +101,7 @@ export default class UIHandler {
         telefono: tecnico.telefono,
         duracion_turno_min: Number(tecnico.duracionTurnoMinutos),
         email: tecnico.email,
-        imagen_url: tecnico.imagen,
-        horarios: tecnico.horarios
+        imagen_url: tecnico.imagen
       };
 
       if (this.indiceEdicion) {
@@ -118,7 +114,8 @@ export default class UIHandler {
       await this.renderTabla();
 
     } catch (e) {
-      console.warn("Error al guardar técnico:", e.message);
+      console.error("Error al guardar técnico:", e.message);
+      alert(e.message);
     }
   }
 
@@ -132,7 +129,7 @@ export default class UIHandler {
     this.inputs.telefono.value = registro.telefono || "";
     this.inputs.duracion.value = registro.duracion_turno_min;
     this.inputs.email.value = registro.email || "";
-    this.inputs.imagen.value = registro.imagen_url || "";
+    this.inputs.imagen.value = ""; // no se puede setear file por seguridad
   }
 
   // =========================
@@ -149,38 +146,18 @@ export default class UIHandler {
   // =========================
   async _recopilarDatosFormulario() {
     return new Tecnico({
-      nombre: this.inputs.nombre.value,
-      apellido: this.inputs.apellido.value,
-      telefono: this.inputs.telefono.value,
+      nombre: this.inputs.nombre.value.trim(),
+      apellido: this.inputs.apellido.value.trim(),
+      telefono: this.inputs.telefono.value.trim(),
       duracionTurnoMinutos: this.inputs.duracion.value,
-      email: this.inputs.email.value,
-      imagen: this.inputs.imagen.value,
-      horarios: [] // después lo enchufamos
+      email: this.inputs.email.value.trim(),
+      imagen: this.inputs.imagen.value, // luego se hace upload real
+      horarios: []
     });
-  }
-
-  _validarCampoIndividual(campo, valor) {
-    const error = Tecnico.validarCampo(campo, valor);
-    if (error) {
-      this._mostrarErrorCampo(campo, error);
-      return false;
-    }
-    this._limpiarErrorCampo(campo);
-    return true;
   }
 
   limpiarFormulario() {
     this.form.reset();
     this.indiceEdicion = null;
-  }
-
-  _mostrarErrorCampo(campo, mensaje) {
-    console.warn(`Error en ${campo}: ${mensaje}`);
-  }
-
-  _limpiarErrorCampo(campo) {}
-
-  _mostrarErrorGlobal(mensaje) {
-    alert(mensaje);
   }
 }
