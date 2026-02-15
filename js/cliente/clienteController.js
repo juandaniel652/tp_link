@@ -1,5 +1,6 @@
 // controllers/ClienteController.js
 import { Cliente } from './cliente.js';
+import { ToastService } from '../ui/ToastService.js';
 import { ValidadorClientes } from './validadorClientes.js';
 import { ClienteTabla } from './clienteTabla.js';
 import { ClienteService } from "../service/clienteService.js";
@@ -73,7 +74,7 @@ export class ClienteController {
       this.tabla.renderizar(this.clientes);
     } catch (error) {
       console.error(error);
-      alert(error.message);
+      ToastService.error(error.message);
     }
   }
 
@@ -96,10 +97,12 @@ export class ClienteController {
       if (this.indiceEdicion === null) {
         // CREAR
         await ClienteService.crear(cliente);
+        ToastService.success("Cliente creado correctamente");
       } else {
         // EDITAR
         const clienteEditado = this.clientes[this.indiceEdicion];
         await ClienteService.actualizar(clienteEditado.id, cliente);
+        ToastService.success("Cliente creado correctamente");
         this.indiceEdicion = null;
       }
 
@@ -107,7 +110,7 @@ export class ClienteController {
       this.limpiarFormulario();
 
     } catch (error) {
-      alert(error.message);
+      ToastService.error(error.message);
     }
   }
 
@@ -139,8 +142,9 @@ export class ClienteController {
       try {
         await ClienteService.eliminar(cliente.id);
         await this.cargarClientes();
+        ToastService.success("Cliente eliminado");
       } catch (error) {
-        alert(error.message);
+        ToastService.error(error.message);
       }
     }
 

@@ -1,0 +1,37 @@
+// js/ui/ToastService.js
+export class ToastService {
+  static container = document.getElementById("toast-container");
+
+  static show(message, type = "info", duration = 3000) {
+    if (!this.container) return;
+
+    const toast = document.createElement("div");
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+
+    this.container.appendChild(toast);
+
+    // animación entrada
+    setTimeout(() => {
+      toast.classList.add("show");
+    }, 50);
+
+    // salida automática
+    setTimeout(() => {
+      toast.classList.remove("show");
+      setTimeout(() => toast.remove(), 400);
+    }, duration);
+  }
+
+  static success(msg) {
+    this.show(msg, "success");
+  }
+
+  static error(msg) {
+    this.show(msg, "error");
+  }
+
+  static info(msg) {
+    this.show(msg, "info");
+  }
+}
