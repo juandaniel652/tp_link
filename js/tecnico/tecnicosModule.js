@@ -1,6 +1,6 @@
 import UIHandler from "./UIHandler.js";
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
   const ui = new UIHandler("#formGeneral", "#generalContainer");
-  await ui.renderTabla();
+  ui.renderTabla();
 });
