@@ -142,8 +142,13 @@ export default class UIHandler {
       duracion_turno_min: Number(tecnico.duracionTurnoMinutos),
       email: tecnico.email,
       imagen_url: tecnico.imagen,
-      horarios: tecnico.horarios
+      horarios: tecnico.horarios.map(h => ({
+        dia_semana: h.dia,
+        hora_desde: h.desde,
+        hora_hasta: h.hasta
+      }))
     };
+
 
     if (this.indiceEdicion !== null) {
 
