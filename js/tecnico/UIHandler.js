@@ -24,7 +24,6 @@ export default class UIHandler {
     };
 
     // Horarios (HTML nuevo)
-    this.horariosContainer = this.form.querySelector("#diasHorarioGrid");
     this.btnAddHorario = this.form.querySelector("#addHorario");
 
     this.indiceEdicion = null;
@@ -171,12 +170,9 @@ export default class UIHandler {
     this.inputs.telefono.value = registro.telefono || "";
     this.inputs.duracion.value = registro.duracion_turno_min;
     this.inputs.email.value = registro.email || "";
-
-    // cargar horarios
-    this.horariosContainer.innerHTML = "";
-    if (registro.horarios) {
-      registro.horarios.forEach(h => this._agregarFilaHorario(h));
-    }
+    
+    this.horarios = registro.horarios || [];
+    this._renderHorarios(); // esto ya usa listaHorarios
   }
 
   // =========================
@@ -205,7 +201,6 @@ export default class UIHandler {
 
   limpiarFormulario() {
     this.form.reset();
-    this.horariosContainer.innerHTML = "";
     this.indiceEdicion = null;
   }
 }
