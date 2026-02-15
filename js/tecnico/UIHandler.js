@@ -13,7 +13,7 @@ export default class UIHandler {
       return;
     }
 
-    // IDs reales del HTML
+    // Inputs reales del HTML
     this.inputs = {
       nombre: this.form.querySelector("#nombre"),
       apellido: this.form.querySelector("#apellido"),
@@ -23,20 +23,77 @@ export default class UIHandler {
       imagen: this.form.querySelector("#imagen")
     };
 
-    // chequeo defensivo (modo profesional)
+    // Contenedor horarios
+    this.horariosContainer = this.form.querySelector("#diasHorarioGrid");
+    this.btnAddHorario = this.form.querySelector("#addHorario");
+
+    // Chequeo defensivo
     Object.entries(this.inputs).forEach(([k, v]) => {
       if (!v) console.error(`Input faltante en HTML: ${k}`);
     });
+    if (!this.horariosContainer) console.error("Falta #diasHorarioGrid");
+    if (!this.btnAddHorario) console.error("Falta #addHorario");
 
     this.indiceEdicion = null;
     this._bindEvents();
+    this._inicializarHorariosUI();
   }
 
+  // =========================
+  // EVENTS
+  // =========================
   _bindEvents() {
     this.form.addEventListener("submit", (e) => {
       e.preventDefault();
       this._guardarTecnico();
     });
+  }
+
+  _inicializarHorariosUI() {
+    this.btnAddHorario.addEventListener("click", () => {
+      this._agregarFilaHorario();
+    });
+  }
+
+  // =========================
+  // HORARIOS UI
+  // =========================
+  _agregarFilaHorario(data = {}) {
+    const row = document.createElement("div");
+    row.classList.add("horario-row");
+
+    row.innerHTML = `
+      <select class="dia">
+        <option value="Lunes">Lunes</option>
+        <option value="Martes">Martes</option>
+        <option value="Miércoles">Miércoles</option>
+        <option value="Jueves">Jueves</option>
+        <option value="Viernes">Viernes</option>
+        <option value="Sábado">Sábado</option>
+      </select>
+
+      <input type="time" class="inicio">
+      <input type="time" class="fin">
+      <button type="button" class="remove">🗑️</button>
+    `;
+
+    // Setear valores si viene de edición
+    if (data.dia) row.querySelector(".dia").value = data.dia;
+    if (data.inicio) row.querySelector(".inicio").value = data.inicio;
+    if (data.fin) row.querySelector(".fin").value = data.fin;
+
+    row.querySelector(".remove").onclick = () => row.remove();
+    this.horariosContainer.appendChild(row);
+  }
+
+  _recopilarHorarios() {
+    const rows = this.horariosContainer.querySelectorAll(".horario-row");
+
+    return Array.from(rows).map(row => ({
+      dia: row.querySelector(".dia").value,
+      inicio: row.querySelector(".inicio").value,
+      fin: row.querySelector(".fin").value
+    }));
   }
 
   // =========================
@@ -71,10 +128,10 @@ export default class UIHandler {
         <td>${r.apellido}</td>
         <td>${r.telefono || "-"}</td>
         <td>${r.duracion_turno_min} min</td>
-        <td>-</td>
+        <td>${r.horarios?.length || 0}</td>
         <td>
-          <button class="edit">✏️</button>
-          <button class="delete">🗑️</button>
+          <button class="edit" style="color: green;">✏️</button>
+          <button class="delete" style="color: red;">🗑️</button>
         </td>
       `;
 
@@ -101,7 +158,8 @@ export default class UIHandler {
         telefono: tecnico.telefono,
         duracion_turno_min: Number(tecnico.duracionTurnoMinutos),
         email: tecnico.email,
-        imagen_url: tecnico.imagen
+        imagen_url: tecnico.imagen,
+        horarios: tecnico.horarios
       };
 
       if (this.indiceEdicion) {
@@ -129,7 +187,13 @@ export default class UIHandler {
     this.inputs.telefono.value = registro.telefono || "";
     this.inputs.duracion.value = registro.duracion_turno_min;
     this.inputs.email.value = registro.email || "";
-    this.inputs.imagen.value = ""; // no se puede setear file por seguridad
+    this.inputs.imagen.value = "";
+
+    // Cargar horarios
+    this.horariosContainer.innerHTML = "";
+    if (registro.horarios && registro.horarios.length > 0) {
+      registro.horarios.forEach(h => this._agregarFilaHorario(h));
+    }
   }
 
   // =========================
@@ -151,13 +215,14 @@ export default class UIHandler {
       telefono: this.inputs.telefono.value.trim(),
       duracionTurnoMinutos: this.inputs.duracion.value,
       email: this.inputs.email.value.trim(),
-      imagen: this.inputs.imagen.value, // luego se hace upload real
-      horarios: []
+      imagen: this.inputs.imagen.value,
+      horarios: this._recopilarHorarios()
     });
   }
 
   limpiarFormulario() {
     this.form.reset();
+    this.horariosContainer.innerHTML = "";
     this.indiceEdicion = null;
   }
 }
