@@ -150,6 +150,7 @@ export default class UIHandler {
   // GUARDAR
   // =========================
   async _guardarTecnico() {
+
     const tecnico = await this._recopilarDatosFormulario();
 
     const payload = {
@@ -165,6 +166,8 @@ export default class UIHandler {
         hora_hasta: h.hasta
       }))
     };
+
+    console.log("PAYLOAD:", payload);
 
     if (this.indiceEdicion !== null) {
       await TecnicoService.actualizar(this.indiceEdicion, payload);
