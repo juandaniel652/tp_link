@@ -22,8 +22,11 @@ export class ValidadorClientes {
   validar(cliente) {
     this.limpiarMensaje();
 
-    if (!cliente.numeroCliente || !cliente.nombre || !cliente.apellido ||
-        !cliente.telefono || !cliente.domicilio || !cliente.numeroDomicilio || !cliente.email) {
+    if ( !cliente.numeroCliente?.trim() || !cliente.nombre?.trim() || !cliente.apellido?.trim() || 
+    !cliente.telefono?.trim() || !cliente.domicilio?.trim() || !cliente.numeroDomicilio?.trim() 
+    || !cliente.email?.trim()) 
+    
+    {
       return this.mostrarError('Por favor, complete todos los campos.');
     }
 
