@@ -9,9 +9,12 @@ export default class UIHandler {
     this.contenedor = document.querySelector(tableBodySelector);
 
     if (!this.form || !this.contenedor) {
-      console.error("No se encontró el formulario o el contenedor");
-      return;
+      throw new Error("No se encontró el formulario o el contenedor");
     }
+
+    // Bind crítico de contexto
+    this._editarTecnico = this._editarTecnico.bind(this);
+    this._guardarTecnico = this._guardarTecnico.bind(this);
 
     // Inputs reales del HTML
     this.inputs = {
@@ -23,15 +26,18 @@ export default class UIHandler {
       imagen: this.form.querySelector("#imagen")
     };
 
-    // Horarios (HTML nuevo)
+    // Horarios
     this.btnAddHorario = this.form.querySelector("#addHorario");
-
     this.horariosContainer = this.form.querySelector("#listaHorarios");
 
+    if (!this.btnAddHorario || !this.horariosContainer) {
+      throw new Error("No existe #addHorario o #listaHorarios en el HTML");
+    }
+
     this.indiceEdicion = null;
+    this.horarios = [];
 
     this._bindEvents();
-    this._inicializarHorariosUI();
   }
 
   // =========================
@@ -42,16 +48,14 @@ export default class UIHandler {
       e.preventDefault();
       this._guardarTecnico();
     });
-  }
 
-  _inicializarHorariosUI() {
     this.btnAddHorario.addEventListener("click", () => {
       this._agregarFilaHorario();
     });
   }
 
   // =========================
-  // HORARIOS UI (nuevo sistema)
+  // HORARIOS UI
   // =========================
   _agregarFilaHorario(data = {}) {
     const row = document.createElement("div");
@@ -80,13 +84,25 @@ export default class UIHandler {
     this.horariosContainer.appendChild(row);
   }
 
+  _renderHorarios() {
+    this.horariosContainer.innerHTML = "";
+
+    this.horarios.forEach(h => {
+      this._agregarFilaHorario({
+        dia: h.dia_semana || h.dia,
+        inicio: h.hora_desde || h.inicio,
+        fin: h.hora_hasta || h.fin
+      });
+    });
+  }
+
   _recopilarHorarios() {
     const rows = this.horariosContainer.querySelectorAll(".horario-row");
 
     return Array.from(rows).map(row => ({
       dia: row.querySelector(".dia").value,
-      inicio: row.querySelector(".inicio").value,
-      fin: row.querySelector(".fin").value
+      desde: row.querySelector(".inicio").value,
+      hasta: row.querySelector(".fin").value
     }));
   }
 
@@ -150,9 +166,7 @@ export default class UIHandler {
       }))
     };
 
-
     if (this.indiceEdicion !== null) {
-
       await TecnicoService.actualizar(this.indiceEdicion, payload);
     } else {
       await TecnicoService.crear(payload);
@@ -167,14 +181,16 @@ export default class UIHandler {
   // =========================
   _editarTecnico(registro) {
     this.indiceEdicion = registro.id;
+
     this.inputs.nombre.value = registro.nombre;
     this.inputs.apellido.value = registro.apellido;
     this.inputs.telefono.value = registro.telefono || "";
     this.inputs.duracion.value = registro.duracion_turno_min;
     this.inputs.email.value = registro.email || "";
+    this.inputs.imagen.value = registro.imagen_url || "";
 
     this.horarios = registro.horarios || [];
-    this._renderHorarios(); // esto ya usa listaHorarios
+    this._renderHorarios();
   }
 
   // =========================
@@ -203,6 +219,8 @@ export default class UIHandler {
 
   limpiarFormulario() {
     this.form.reset();
+    this.horariosContainer.innerHTML = "";
     this.indiceEdicion = null;
+    this.horarios = [];
   }
 }
