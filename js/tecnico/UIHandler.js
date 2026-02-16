@@ -134,7 +134,7 @@ export default class UIHandler {
   async _guardarTecnico() {
 
     const tecnico = await this._recopilarDatosFormulario();
-    
+
     const payload = {
       nombre: tecnico.nombre,
       apellido: tecnico.apellido,
@@ -145,16 +145,16 @@ export default class UIHandler {
       activo: true,                 // ← ESTO NO ESTÁ LLEGANDO HOY
       horarios: tecnico.horarios
     };
-  
+
     console.log("PAYLOAD FINAL REAL", payload);
-  
+
     if (this.indiceEdicion !== null) {
       await TecnicoService.actualizar(this.indiceEdicion, payload);
     } else {
       delete payload.horarios;
       await TecnicoService.crear(payload);
     }
-  
+
     this.limpiarFormulario();
     await this.renderTabla();
   }
@@ -179,6 +179,22 @@ export default class UIHandler {
       this._agregarFilaHorario(h);
     });
   }
+
+  // =========================
+  // HELPERS
+  // =========================
+  _recopilarDatosFormulario() {
+    return {
+      nombre: this.inputs.nombre.value.trim(),
+      apellido: this.inputs.apellido.value.trim(),
+      telefono: this.inputs.telefono.value.trim(),
+      duracionTurnoMinutos: this.inputs.duracion.value,
+      email: this.inputs.email.value.trim(),
+      imagen: this.inputs.imagen.value,
+      horarios: this._recopilarHorarios()
+    };
+  }
+
 
   async _eliminarTecnico(id) {
     if (!confirm("¿Eliminar técnico?")) return;
