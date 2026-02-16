@@ -105,7 +105,10 @@ export default class UIHandler {
         dia_semana: Number(row.querySelector(".dia").value),        // coincide con schema
         hora_inicio: row.querySelector(".inicio").value + ":00",    // convierte a HH:MM:SS
         hora_fin: row.querySelector(".fin").value + ":00"           // convierte a HH:MM:SS
-      }));
+      }
+      ))
+
+    .filter(Boolean); // elimina nulls
   }
 
 

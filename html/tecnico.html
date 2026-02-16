@@ -16,17 +16,14 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/img/logo-transparente-tp-link-blanco.png">
   <link rel="icon" type="image/png" sizes="48x48" href="/img/logo-transparente-tp-link-blanco.png">
   <link rel="icon" type="image/png" sizes="64x64" href="/img/logo-transparente-tp-link-blanco.png">
-
-  <link rel="shortcut icon" href="img/logo-transparente-tp-link-blanco.png?v=2" type="image/x-icon">
 </head>
 
-   <!-- Toast container -->
-  <div id="toast-container"></div>
 <body>
 
+  <!-- Validación token -->
   <script type="module" src="../js/conexion_backend/validacion_token.js"></script>
 
-  <!-- HEADER UNIFICADO TIPO DASHBOARD -->
+  <!-- HEADER -->
   <header class="site-header">
     <div class="header-container">
       <a href="../index.html" class="logo-link">
@@ -34,10 +31,9 @@
       </a>
       <h1 class="site-title">Técnicos</h1>
 
-      <!-- Botón hamburguesa -->
       <button class="menu-toggle" aria-label="Abrir menú">&#9776;</button>
 
-      <nav class="site-nav" aria-label="Menú principal">
+      <nav class="site-nav">
         <ul>
           <li><a href="../index.html">Menú</a></li>
           <li><a href="../html/cliente.html">Clientes</a></li>
@@ -50,6 +46,7 @@
   </header>
 
   <main class="container main-container">
+
     <!-- === FORMULARIO === -->
     <section class="box">
       <h2>Formulario</h2>
@@ -59,60 +56,44 @@
 
           <div class="form-group">
             <label for="nombre">Nombre</label>
-            <input type="text" id="nombre" placeholder="Ingrese nombre" required>
+            <input type="text" id="nombre" required>
           </div>
 
           <div class="form-group">
             <label for="apellido">Apellido</label>
-            <input type="text" id="apellido" placeholder="Ingrese apellido" required>
+            <input type="text" id="apellido" required>
           </div>
 
           <div class="form-group">
             <label for="duracionEmail">Email</label>
-            <input type="email" id="duracionEmail" placeholder="ejemplo@gmail.com" required>
+            <input type="email" id="duracionEmail" required>
           </div>
 
           <div class="form-group">
             <label for="telefono">Teléfono</label>
-            <input type="text" id="telefono" maxlength="12" placeholder="Ingrese teléfono" required>
+            <input type="text" id="telefono" maxlength="12" required>
           </div>
 
-          <!-- Campo nuevo para imagen -->
           <div class="form-group">
             <label for="imagen">Imagen (opcional)</label>
             <input type="file" id="imagen" accept="image/*">
-            <img id="previewImagen" src="" alt="Preview" style="display:none;width:80px;height:80px;border-radius:8px;margin-top:5px;">
-          </div>
-    
-          
-          <div class="form-group">
-            <label for="duracionTurno">Duración Habitual del Turno en Minutos</label>
-            <input type="number" id="duracionTurno" placeholder="Ej: 15" required>
           </div>
 
           <div class="form-group">
-      <label>Días y Horarios disponibles</label>
-              
-      <div class="horarios-row">
-        <select id="diaSemana">
-          <option value="1">Lunes</option>
-          <option value="2">Martes</option>
-          <option value="3">Miércoles</option>
-          <option value="4">Jueves</option>
-          <option value="5">Viernes</option>
-          <option value="6">Sábado</option>
-        </select>
-      
-        <input type="time" id="horaDesde">
-        <input type="time" id="horaHasta">
-      </div>
+            <label for="duracionTurno">Duración habitual del turno (min)</label>
+            <input type="number" id="duracionTurno" required>
+          </div>
 
-  <button type="button" id="addHorario" class="btn-add-horario">
-    + Agregar horario
-  </button>
+          <!-- HORARIOS DINÁMICOS -->
+          <div class="form-group">
+            <label>Días y horarios disponibles</label>
 
-  <ul id="listaHorarios"></ul>
-</div>
+            <button type="button" id="addHorario" class="btn-add-horario">
+              + Agregar horario
+            </button>
+
+            <div id="listaHorarios"></div>
+          </div>
 
         </fieldset>
 
@@ -122,49 +103,48 @@
       </form>
     </section>
 
-    <!-- === LISTA EN TABLA === -->
+    <!-- === LISTADO === -->
     <section class="box">
       <h2>Listado</h2>
       <div class="table-container">
         <table class="table-general">
           <thead>
             <tr>
-              <td data-label="Imagen">Imagen</td>
-              <td data-label="Nombre">Nombre</td>
-              <td data-label="Apellido">Apellido</td>
-              <td data-label="Teléfono">Teléfono</td>
-              <td data-label="Duración turno">Duración Turnos</td>
-              <td data-label="Horarios">Horarios</td>
-              <td data-label="Acciones">Acciones</td>
+              <td>Imagen</td>
+              <td>Nombre</td>
+              <td>Apellido</td>
+              <td>Teléfono</td>
+              <td>Duración turno</td>
+              <td>Horarios</td>
+              <td>Acciones</td>
             </tr>
           </thead>
-          <tbody id="generalContainer">
-            <!-- JS renderiza dinámicamente -->
-          </tbody>
+          <tbody id="generalContainer"></tbody>
         </table>
       </div>
     </section>
+
   </main>
 
   <footer class="footer">
     <div class="container">
-      <p>&copy; 2025 Sistema de Turnos — Todos los derechos reservados</p>
+      <p>&copy; 2025 Sistema de Turnos</p>
     </div>
   </footer>
 
-  <!-- Script módulo técnicos -->
+  <!-- JS Técnicos -->
   <script type="module" src="../js/tecnico/tecnicosModule.js"></script>
 
-  <!-- Script menú hamburguesa -->
+  <!-- Menú hamburguesa -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const menuToggle = document.querySelector('.menu-toggle');
       const nav = document.querySelector('.site-nav');
-        
       menuToggle.addEventListener('click', () => {
         nav.classList.toggle('active');
       });
     });
   </script>
+
 </body>
 </html>
