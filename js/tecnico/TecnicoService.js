@@ -50,11 +50,13 @@ export default class TecnicoService {
 
   static async actualizar(id, data) {
     const payload = this.toApiPayload(data, true);
+    console.log("API PAYLOAD UPDATE REAL", payload);
     return apiRequest(`/tecnicos/${id}`, {
       method: "PUT",
       body: JSON.stringify(payload)
     });
   }
+
 
   static async eliminar(id) {
     return apiRequest(`/tecnicos/${id}`, {
