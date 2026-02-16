@@ -175,6 +175,7 @@ export default class UIHandler {
     if (this.indiceEdicion !== null) {
       await TecnicoService.actualizar(this.indiceEdicion, payload);
     } else {
+      delete payload.horarios;   // 👈 CLAVE
       await TecnicoService.crear(payload);
     }
 

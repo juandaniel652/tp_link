@@ -2,40 +2,54 @@ import { apiRequest } from "../api/apiRequest.js";
 
 export default class TecnicoService {
 
-  static toApiPayload(tecnico) {
-    return {
-      nombre: tecnico.nombre,
-      apellido: tecnico.apellido,
-      telefono: tecnico.telefono,
-      duracion_turno_minutos: tecnico.duracionTurnoMinutos,
-      email: tecnico.email,
-      imagen: tecnico.imagen || "",
-      horarios: tecnico.horarios.map(h => ({
-        dia_semana: Number(h.dia),
-        hora_inicio: h.inicio + ":00",
-        hora_fin: h.fin + ":00"
-      }))
+  static normalizeHour(hora) {
+    if (!hora) return null;
+    return hora.length === 5 ? hora + ":00" : hora;
+  }
+
+  static toApiPayload(data, isUpdate = false) {
+    if (!data.nombre || !data.apellido) {
+      throw new Error("Nombre y apellido son obligatorios");
+    }
+
+    if (!data.duracion_turno_min || isNaN(data.duracion_turno_min)) {
+      throw new Error("Duración de turno inválida");
+    }
+
+    const payload = {
+      nombre: data.nombre.trim(),
+      apellido: data.apellido.trim(),
+      telefono: data.telefono || null,
+      duracion_turno_min: Number(data.duracion_turno_min),
+      email: data.email || null,
+      imagen_url: data.imagen_url || ""
     };
+
+    if (isUpdate && Array.isArray(data.horarios)) {
+      payload.horarios = data.horarios.map(h => ({
+        dia_semana: Number(h.dia),
+        hora_inicio: this.normalizeHour(h.inicio),
+        hora_fin: this.normalizeHour(h.fin)
+      }));
+    }
+
+    return payload;
   }
 
   static async obtenerTodos() {
     return apiRequest("/tecnicos");
   }
 
-  static async crear(tecnico) {
-    const payload = this.toApiPayload(tecnico);
-    console.log("API PAYLOAD CREATE", payload);
-
+  static async crear(data) {
+    const payload = this.toApiPayload(data);
     return apiRequest("/tecnicos", {
       method: "POST",
       body: JSON.stringify(payload)
     });
   }
 
-  static async actualizar(id, tecnico) {
-    const payload = this.toApiPayload(tecnico);
-    console.log("API PAYLOAD UPDATE", payload);
-
+  static async actualizar(id, data) {
+    const payload = this.toApiPayload(data, true);
     return apiRequest(`/tecnicos/${id}`, {
       method: "PUT",
       body: JSON.stringify(payload)
