@@ -213,16 +213,17 @@ export default class UIHandler {
   // HELPERS
   // =========================
   async _recopilarDatosFormulario() {
-    return new Tecnico({
+    return {
       nombre: this.inputs.nombre.value.trim(),
       apellido: this.inputs.apellido.value.trim(),
       telefono: this.inputs.telefono.value.trim(),
       duracionTurnoMinutos: this.inputs.duracion.value,
       email: this.inputs.email.value.trim(),
       imagen: this.inputs.imagen.value,
-      horarios: this._recopilarHorarios()
-    });
+      horarios: this._recopilarHorarios()   // ya está OK
+    };
   }
+
 
   limpiarFormulario() {
     this.form.reset();
