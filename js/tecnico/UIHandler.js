@@ -138,6 +138,7 @@ export default class UIHandler {
       telefono: this.inputs.telefono.value.trim(),
       duracion_turno_min: Number(this.inputs.duracion.value),
       email: this.inputs.email.value.trim(),
+      activo: true,  
       imagen_url: this.inputs.imagen.value,
       horarios: this._recopilarHorarios()
     };
