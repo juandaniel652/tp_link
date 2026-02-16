@@ -8,12 +8,15 @@ export default class Tecnico {
     this.email = email.trim(); // 🔹 Nuevo atributo
 
     this.horarios = Array.isArray(horarios)
-      ? horarios.map(h => ({
-          dia: h.dia.toLowerCase(),
-          inicio: h.inicio,
-          fin: h.fin
+    ? horarios
+        .filter(h => h && (h.dia || h.dia_semana))
+        .map(h => ({
+          dia: (h.dia ?? h.dia_semana).toString().toLowerCase(),
+          inicio: (h.inicio ?? h.hora_inicio).slice(0,5),
+          fin: (h.fin ?? h.hora_fin).slice(0,5)
         }))
-      : [];
+    : [];
+
   }
 
   // ======================
