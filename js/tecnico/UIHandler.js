@@ -62,13 +62,13 @@ export default class UIHandler {
     row.classList.add("horario-row");
 
     row.innerHTML = `
-      <select class="dia">
-        <option value="Lunes">Lunes</option>
-        <option value="Martes">Martes</option>
-        <option value="Miércoles">Miércoles</option>
-        <option value="Jueves">Jueves</option>
-        <option value="Viernes">Viernes</option>
-        <option value="Sábado">Sábado</option>
+      <<select class="dia">
+        <option value="1">Lunes</option>
+        <option value="2">Martes</option>
+        <option value="3">Miércoles</option>
+        <option value="4">Jueves</option>
+        <option value="5">Viernes</option>
+        <option value="6">Sábado</option>
       </select>
 
       <input type="time" class="inicio">
@@ -89,8 +89,8 @@ export default class UIHandler {
     this.horarios.forEach(h => {
       this._agregarFilaHorario({
         dia: h.dia_semana,
-        inicio: h.hora_desde,
-        fin: h.hora_hasta
+        inicio: h.hora_inicio,
+        fin: h.hora_fin
       });
     });
   }
@@ -100,8 +100,8 @@ export default class UIHandler {
 
     return Array.from(rows).map(row => ({
       dia: row.querySelector(".dia").value,
-      desde: row.querySelector(".inicio").value,
-      hasta: row.querySelector(".fin").value
+      inicio: row.querySelector(".inicio").value,
+      fin: row.querySelector(".fin").value
     }));
   }
 
@@ -161,8 +161,8 @@ export default class UIHandler {
       imagen_url: tecnico.imagen,
       horarios: tecnico.horarios.map(h => ({
         dia_semana: h.dia,
-        hora_desde: h.inicio,
-        hora_hasta: h.fin
+        hora_inicio: h.inicio,
+        hora_fin: h.fin
       }))
     };
 
