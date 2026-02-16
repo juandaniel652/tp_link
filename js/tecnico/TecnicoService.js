@@ -2,9 +2,6 @@ import { apiRequest } from "../api/apiRequest.js";
 
 export default class TecnicoService {
 
-  // =========================
-  // ADAPTER FRONT -> BACK
-  // =========================
   static toApiPayload(tecnico) {
     return {
       nombre: tecnico.nombre,
@@ -12,7 +9,7 @@ export default class TecnicoService {
       telefono: tecnico.telefono,
       duracion_turno_minutos: tecnico.duracionTurnoMinutos,
       email: tecnico.email,
-      imagen: tecnico.imagen,
+      imagen: tecnico.imagen || "",
       horarios: tecnico.horarios.map(h => ({
         dia_semana: Number(h.dia),
         hora_inicio: h.inicio + ":00",
@@ -21,15 +18,14 @@ export default class TecnicoService {
     };
   }
 
-  // =========================
-  // CRUD
-  // =========================
   static async obtenerTodos() {
     return apiRequest("/tecnicos");
   }
 
   static async crear(tecnico) {
     const payload = this.toApiPayload(tecnico);
+    console.log("API PAYLOAD CREATE", payload);
+
     return apiRequest("/tecnicos", {
       method: "POST",
       body: JSON.stringify(payload)
@@ -38,6 +34,8 @@ export default class TecnicoService {
 
   static async actualizar(id, tecnico) {
     const payload = this.toApiPayload(tecnico);
+    console.log("API PAYLOAD UPDATE", payload);
+
     return apiRequest(`/tecnicos/${id}`, {
       method: "PUT",
       body: JSON.stringify(payload)
