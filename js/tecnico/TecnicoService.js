@@ -15,7 +15,8 @@ export default class TecnicoService {
       telefono: data.telefono || null,
       duracion_turno_min: Number(data.duracion_turno_min),
       email: data.email || null,
-      imagen_url: data.imagen_url || ""
+      imagen_url: data.imagen_url || "",
+      activo: data.activo ?? true
     };
 
     if (isUpdate && Array.isArray(data.horarios)) {
