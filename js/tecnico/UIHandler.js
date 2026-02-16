@@ -132,29 +132,33 @@ export default class UIHandler {
   // GUARDAR
   // =========================
   async _guardarTecnico() {
+
+    const tecnico = await this._recopilarDatosFormulario();
+    
     const payload = {
-      nombre: this.inputs.nombre.value.trim(),
-      apellido: this.inputs.apellido.value.trim(),
-      telefono: this.inputs.telefono.value.trim(),
-      duracion_turno_min: Number(this.inputs.duracion.value),
-      email: this.inputs.email.value.trim(),
-      activo: true,  
-      imagen_url: this.inputs.imagen.value,
-      horarios: this._recopilarHorarios()
+      nombre: tecnico.nombre,
+      apellido: tecnico.apellido,
+      telefono: tecnico.telefono,
+      duracion_turno_min: Number(tecnico.duracionTurnoMinutos),
+      email: tecnico.email,
+      imagen_url: tecnico.imagen,
+      activo: true,                 // ← ESTO NO ESTÁ LLEGANDO HOY
+      horarios: tecnico.horarios
     };
-
-    console.log("PAYLOAD FINAL REAL", JSON.stringify(payload));
-
-    if (this.indiceEdicion) {
+  
+    console.log("PAYLOAD FINAL REAL", payload);
+  
+    if (this.indiceEdicion !== null) {
       await TecnicoService.actualizar(this.indiceEdicion, payload);
     } else {
       delete payload.horarios;
       await TecnicoService.crear(payload);
     }
-
+  
     this.limpiarFormulario();
     await this.renderTabla();
   }
+
 
   // =========================
   // EDITAR
