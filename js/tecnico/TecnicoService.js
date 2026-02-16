@@ -26,11 +26,7 @@ export default class TecnicoService {
     };
 
     if (isUpdate && Array.isArray(data.horarios)) {
-      payload.horarios = data.horarios.map(h => ({
-        dia_semana: Number(h.dia),
-        hora_inicio: this.normalizeHour(h.inicio),
-        hora_fin: this.normalizeHour(h.fin)
-      }));
+      payload.horarios = data.horarios; 
     }
 
     return payload;
