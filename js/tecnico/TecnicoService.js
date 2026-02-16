@@ -41,7 +41,7 @@ export default class TecnicoService {
   }
 
   static async crear(data) {
-    const payload = this.toApiPayload(data);
+    const payload = this.toApiPayload(data, true);
     return apiRequest("/tecnicos", {
       method: "POST",
       body: JSON.stringify(payload)
