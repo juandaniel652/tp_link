@@ -1,5 +1,4 @@
 // tecnico/UIHandler.js
-import Tecnico from "./Tecnico.js";
 import TecnicoService from "./TecnicoService.js";
 
 export default class UIHandler {
@@ -12,11 +11,9 @@ export default class UIHandler {
       throw new Error("No se encontró el formulario o el contenedor");
     }
 
-    // Bind crítico de contexto
     this._editarTecnico = this._editarTecnico.bind(this);
     this._guardarTecnico = this._guardarTecnico.bind(this);
 
-    // Inputs reales del HTML
     this.inputs = {
       nombre: this.form.querySelector("#nombre"),
       apellido: this.form.querySelector("#apellido"),
@@ -26,16 +23,10 @@ export default class UIHandler {
       imagen: this.form.querySelector("#imagen")
     };
 
-    // Horarios
     this.btnAddHorario = this.form.querySelector("#addHorario");
     this.horariosContainer = this.form.querySelector("#listaHorarios");
 
-    if (!this.btnAddHorario || !this.horariosContainer) {
-      throw new Error("No existe #addHorario o #listaHorarios en el HTML");
-    }
-
     this.indiceEdicion = null;
-    this.horarios = [];
 
     this._bindEvents();
   }
@@ -76,59 +67,47 @@ export default class UIHandler {
       <button type="button" class="remove" style="color:red">🗑️</button>
     `;
 
-    if (data.dia_semana !== undefined) row.querySelector(".dia").value = data.dia_semana;
-    if (data.hora_inicio) row.querySelector(".inicio").value = data.hora_inicio.slice(0,5);
-    if (data.hora_fin) row.querySelector(".fin").value = data.hora_fin.slice(0,5);
+    if (data.dia_semana !== undefined)
+      row.querySelector(".dia").value = data.dia_semana;
 
+    if (data.hora_inicio)
+      row.querySelector(".inicio").value = data.hora_inicio.slice(0,5);
+
+    if (data.hora_fin)
+      row.querySelector(".fin").value = data.hora_fin.slice(0,5);
 
     row.querySelector(".remove").onclick = () => row.remove();
     this.horariosContainer.appendChild(row);
-  }
-
-  _renderHorarios() {
-    this.horariosContainer.innerHTML = "";
-    this.horarios.forEach(h => {
-      this._agregarFilaHorario({
-        dia: h.dia_semana,
-        inicio: h.hora_inicio,
-        fin: h.hora_fin
-      });
-    });
   }
 
   _recopilarHorarios() {
     const rows = this.horariosContainer.querySelectorAll(".horario-row");
 
     return Array.from(rows)
-      .filter(row => row.querySelector(".inicio").value && row.querySelector(".fin").value) // filtro vacíos
+      .filter(row =>
+        row.querySelector(".inicio").value &&
+        row.querySelector(".fin").value
+      )
       .map(row => ({
-        dia_semana: Number(row.querySelector(".dia").value),        // coincide con schema
-        hora_inicio: row.querySelector(".inicio").value + ":00",    // convierte a HH:MM:SS
-        hora_fin: row.querySelector(".fin").value + ":00"           // convierte a HH:MM:SS
-      }
-      ))
-
-    .filter(Boolean); // elimina nulls
+        dia_semana: Number(row.querySelector(".dia").value),
+        hora_inicio: row.querySelector(".inicio").value + ":00",
+        hora_fin: row.querySelector(".fin").value + ":00"
+      }));
   }
-
-
 
   // =========================
   // RENDER TABLA
   // =========================
   async renderTabla() {
     this.contenedor.innerHTML = "";
+    const tecnicos = await TecnicoService.obtenerTodos();
 
-    this.tecnicos = await TecnicoService.obtenerTodos();
-
-    if (!this.tecnicos || this.tecnicos.length === 0) {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td colspan="7">No hay registros</td>`;
-      this.contenedor.appendChild(tr);
+    if (!tecnicos.length) {
+      this.contenedor.innerHTML = `<tr><td colspan="7">No hay registros</td></tr>`;
       return;
     }
 
-    this.tecnicos.forEach((r) => {
+    tecnicos.forEach((r) => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${r.imagen_url ? `<img src="${r.imagen_url}" class="foto-tecnico">` : "—"}</td>
@@ -138,17 +117,13 @@ export default class UIHandler {
         <td>${r.duracion_turno_min} min</td>
         <td>${r.horarios?.length || 0}</td>
         <td>
-          <button class="edit" style="color:green">✏️</button>
-          <button class="delete" style="color:red">🗑️</button>
+          <button class="edit">✏️</button>
+          <button class="delete">🗑️</button>
         </td>
       `;
 
-      tr.querySelector(".edit")
-        .addEventListener("click", () => this._editarTecnico(r));
-
-      tr.querySelector(".delete")
-        .addEventListener("click", () => this._eliminarTecnico(r.id));
-
+      tr.querySelector(".edit").onclick = () => this._editarTecnico(r);
+      tr.querySelector(".delete").onclick = () => this._eliminarTecnico(r.id);
       this.contenedor.appendChild(tr);
     });
   }
@@ -157,25 +132,22 @@ export default class UIHandler {
   // GUARDAR
   // =========================
   async _guardarTecnico() {
-
-    const tecnico = await this._recopilarDatosFormulario();
-
     const payload = {
-      nombre: tecnico.nombre,
-      apellido: tecnico.apellido,
-      telefono: tecnico.telefono,
-      duracion_turno_min: Number(tecnico.duracionTurnoMinutos),
-      email: tecnico.email,
-      imagen_url: tecnico.imagen,
-      horarios: tecnico.horarios  // ya vienen con nombres correctos desde _recopilarHorarios
+      nombre: this.inputs.nombre.value.trim(),
+      apellido: this.inputs.apellido.value.trim(),
+      telefono: this.inputs.telefono.value.trim(),
+      duracion_turno_min: Number(this.inputs.duracion.value),
+      email: this.inputs.email.value.trim(),
+      imagen_url: this.inputs.imagen.value,
+      horarios: this._recopilarHorarios()
     };
 
-    console.log("PAYLOAD:", payload);
+    console.log("PAYLOAD FINAL REAL", JSON.stringify(payload));
 
-    if (this.indiceEdicion !== null) {
+    if (this.indiceEdicion) {
       await TecnicoService.actualizar(this.indiceEdicion, payload);
     } else {
-      delete payload.horarios;   // 👈 CLAVE
+      delete payload.horarios;
       await TecnicoService.crear(payload);
     }
 
@@ -196,39 +168,22 @@ export default class UIHandler {
     this.inputs.email.value = registro.email || "";
     this.inputs.imagen.value = registro.imagen_url || "";
 
-    this.horarios = registro.horarios || [];
-    this._renderHorarios();
+    // render directo desde backend
+    this.horariosContainer.innerHTML = "";
+    (registro.horarios || []).forEach(h => {
+      this._agregarFilaHorario(h);
+    });
   }
 
-  // =========================
-  // ELIMINAR
-  // =========================
   async _eliminarTecnico(id) {
     if (!confirm("¿Eliminar técnico?")) return;
     await TecnicoService.eliminar(id);
     await this.renderTabla();
   }
 
-  // =========================
-  // HELPERS
-  // =========================
-  async _recopilarDatosFormulario() {
-    return {
-      nombre: this.inputs.nombre.value.trim(),
-      apellido: this.inputs.apellido.value.trim(),
-      telefono: this.inputs.telefono.value.trim(),
-      duracionTurnoMinutos: this.inputs.duracion.value,
-      email: this.inputs.email.value.trim(),
-      imagen: this.inputs.imagen.value,
-      horarios: this._recopilarHorarios()   // ya está OK
-    };
-  }
-
-
   limpiarFormulario() {
     this.form.reset();
     this.horariosContainer.innerHTML = "";
     this.indiceEdicion = null;
-    this.horarios = [];
   }
 }

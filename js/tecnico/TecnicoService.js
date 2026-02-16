@@ -1,3 +1,4 @@
+// tecnico/TecnicoService.js
 import { apiRequest } from "../api/apiRequest.js";
 
 export default class TecnicoService {
@@ -8,17 +9,9 @@ export default class TecnicoService {
   }
 
   static toApiPayload(data, isUpdate = false) {
-    if (!data.nombre || !data.apellido) {
-      throw new Error("Nombre y apellido son obligatorios");
-    }
-
-    if (!data.duracion_turno_min || isNaN(data.duracion_turno_min)) {
-      throw new Error("Duración de turno inválida");
-    }
-
     const payload = {
-      nombre: data.nombre.trim(),
-      apellido: data.apellido.trim(),
+      nombre: data.nombre,
+      apellido: data.apellido,
       telefono: data.telefono || null,
       duracion_turno_min: Number(data.duracion_turno_min),
       email: data.email || null,
@@ -26,37 +19,35 @@ export default class TecnicoService {
     };
 
     if (isUpdate && Array.isArray(data.horarios)) {
-      payload.horarios = data.horarios; 
+      payload.horarios = data.horarios.map(h => ({
+        dia_semana: Number(h.dia_semana),
+        hora_inicio: this.normalizeHour(h.hora_inicio),
+        hora_fin: this.normalizeHour(h.hora_fin)
+      }));
     }
 
     return payload;
   }
 
-  static async obtenerTodos() {
+  static obtenerTodos() {
     return apiRequest("/tecnicos");
   }
 
-  static async crear(data) {
-    const payload = this.toApiPayload(data, true);
+  static crear(data) {
     return apiRequest("/tecnicos", {
       method: "POST",
-      body: JSON.stringify(payload)
+      body: JSON.stringify(this.toApiPayload(data))
     });
   }
 
-  static async actualizar(id, data) {
-    const payload = this.toApiPayload(data, true);
-    console.log("API PAYLOAD UPDATE REAL", payload);
+  static actualizar(id, data) {
     return apiRequest(`/tecnicos/${id}`, {
       method: "PUT",
-      body: JSON.stringify(payload)
+      body: JSON.stringify(this.toApiPayload(data, true))
     });
   }
 
-
-  static async eliminar(id) {
-    return apiRequest(`/tecnicos/${id}`, {
-      method: "DELETE"
-    });
+  static eliminar(id) {
+    return apiRequest(`/tecnicos/${id}`, { method: "DELETE" });
   }
 }
