@@ -62,7 +62,7 @@ export default class UIHandler {
     row.classList.add("horario-row");
 
     row.innerHTML = `
-      <<select class="dia">
+      <select class="dia">
         <option value="1">Lunes</option>
         <option value="2">Martes</option>
         <option value="3">Miércoles</option>
