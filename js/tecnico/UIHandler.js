@@ -76,9 +76,10 @@ export default class UIHandler {
       <button type="button" class="remove" style="color:red">🗑️</button>
     `;
 
-    if (data.dia) row.querySelector(".dia").value = data.dia;
-    if (data.inicio) row.querySelector(".inicio").value = data.inicio;
-    if (data.fin) row.querySelector(".fin").value = data.fin;
+    if (data.dia_semana !== undefined) row.querySelector(".dia").value = data.dia_semana;
+    if (data.hora_inicio) row.querySelector(".inicio").value = data.hora_inicio.slice(0,5);
+    if (data.hora_fin) row.querySelector(".fin").value = data.hora_fin.slice(0,5);
+
 
     row.querySelector(".remove").onclick = () => row.remove();
     this.horariosContainer.appendChild(row);
@@ -98,12 +99,16 @@ export default class UIHandler {
   _recopilarHorarios() {
     const rows = this.horariosContainer.querySelectorAll(".horario-row");
 
-    return Array.from(rows).map(row => ({
-      dia: row.querySelector(".dia").value,
-      inicio: row.querySelector(".inicio").value,
-      fin: row.querySelector(".fin").value
-    }));
+    return Array.from(rows)
+      .filter(row => row.querySelector(".inicio").value && row.querySelector(".fin").value) // filtro vacíos
+      .map(row => ({
+        dia_semana: Number(row.querySelector(".dia").value),        // coincide con schema
+        hora_inicio: row.querySelector(".inicio").value + ":00",    // convierte a HH:MM:SS
+        hora_fin: row.querySelector(".fin").value + ":00"           // convierte a HH:MM:SS
+      }));
   }
+
+
 
   // =========================
   // RENDER TABLA
@@ -159,11 +164,7 @@ export default class UIHandler {
       duracion_turno_min: Number(tecnico.duracionTurnoMinutos),
       email: tecnico.email,
       imagen_url: tecnico.imagen,
-      horarios: tecnico.horarios.map(h => ({
-        dia_semana: h.dia,
-        hora_inicio: h.inicio,
-        hora_fin: h.fin
-      }))
+      horarios: tecnico.horarios  // ya vienen con nombres correctos desde _recopilarHorarios
     };
 
     console.log("PAYLOAD:", payload);
