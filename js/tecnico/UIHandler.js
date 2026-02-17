@@ -107,27 +107,34 @@ export default class UIHandler {
       return;
     }
 
+    const diasSemana = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+
     tecnicos.forEach((r) => {
       const tr = document.createElement("tr");
+    
+      // transformar horarios a texto
+      const horariosTexto = (r.horarios || [])
+        .map(h => `${diasSemana[h.dia_semana]} ${h.hora_inicio.slice(0,5)}-${h.hora_fin.slice(0,5)}`)
+        .join("<br>");
+    
       tr.innerHTML = `
         <td>${r.imagen_url ? `<img src="${r.imagen_url}" class="foto-tecnico">` : "—"}</td>
         <td>${r.nombre}</td>
         <td>${r.apellido}</td>
         <td>${r.telefono || "-"}</td>
         <td>${r.duracion_turno_min} min</td>
-        <td>${r.horarios || 0}</td>
+        <td>${horariosTexto || "-"}</td>
         <td>
           <button class="edit">✏️</button>
           <button class="delete">🗑️</button>
         </td>
       `;
-
-        console.log("Como es horarios", r.horarios)
-
+    
       tr.querySelector(".edit").onclick = () => this._editarTecnico(r);
       tr.querySelector(".delete").onclick = () => this._eliminarTecnico(r.id);
       this.contenedor.appendChild(tr);
     });
+
   }
 
   // =========================
