@@ -115,12 +115,14 @@ export default class UIHandler {
         <td>${r.apellido}</td>
         <td>${r.telefono || "-"}</td>
         <td>${r.duracion_turno_min} min</td>
-        <td>${r.horarios?.length || 0}</td>
+        <td>${r.horarios || 0}</td>
         <td>
           <button class="edit">✏️</button>
           <button class="delete">🗑️</button>
         </td>
       `;
+
+        console.log("Como es horarios", r.horarios)
 
       tr.querySelector(".edit").onclick = () => this._editarTecnico(r);
       tr.querySelector(".delete").onclick = () => this._eliminarTecnico(r.id);
