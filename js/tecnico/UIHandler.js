@@ -111,10 +111,10 @@ export default class UIHandler {
     { 1: "Lunes", 
       2: "Martes", 
       3: "Miércoles", 
-      4: "Jueves", 5: 
-      "Viernes", 6: 
-      "Sábado", 7: 
-      "Domingo" 
+      4: "Jueves", 
+      5: "Viernes", 
+      6: "Sábado", 
+      7: "Domingo" 
     };
 
     tecnicos.forEach((r) => {
@@ -133,13 +133,13 @@ export default class UIHandler {
         <td>${r.duracion_turno_min} min</td>
         <td>${horariosTexto || "-"}</td>
         <td>
-          <button type="button" class=".btn-action.edit">✏️</button>
-          <button type="button" class=".btn-action.delete">🗑️</button>
+          <button type="button" class="edit" style="color:green">✏️</button>
+          <button type="button" class="delete" style="color:red">🗑️</button>
         </td>
       `;
     
-      tr.querySelector(".btn-action.edit").onclick = () => this._editarTecnico(r);
-      tr.querySelector(".btn-action.delete").onclick = () => this._eliminarTecnico(r.id);
+      tr.querySelector(".edit").onclick = () => this._editarTecnico(r);
+      tr.querySelector(".delete").onclick = () => this._eliminarTecnico(r.id);
       this.contenedor.appendChild(tr);
     });
 
