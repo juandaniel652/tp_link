@@ -64,7 +64,7 @@ export default class UIHandler {
 
       <input type="time" class="inicio">
       <input type="time" class="fin">
-      <button type="button" class="remove" style="color:red">🗑️</button>
+      <button type="button" class="remove" style="btn-delete">🗑️</button>
     `;
 
     if (data.dia_semana !== undefined)
@@ -107,24 +107,23 @@ export default class UIHandler {
       return;
     }
 
-    const diasSemana = 
-    { 1: "Lunes", 
-      2: "Martes", 
-      3: "Miércoles", 
-      4: "Jueves", 
-      5: "Viernes", 
-      6: "Sábado", 
-      7: "Domingo" 
+    const diasSemana = {
+      1: "Lunes",
+      2: "Martes",
+      3: "Miércoles",
+      4: "Jueves",
+      5: "Viernes",
+      6: "Sábado",
+      7: "Domingo"
     };
 
     tecnicos.forEach((r) => {
       const tr = document.createElement("tr");
-    
-      // transformar horarios a texto
+
       const horariosTexto = (r.horarios || [])
         .map(h => `${diasSemana[h.dia_semana]} ${h.hora_inicio.slice(0,5)}-${h.hora_fin.slice(0,5)}`)
         .join("<br>");
-    
+
       tr.innerHTML = `
         <td>${r.imagen_url ? `<img src="${r.imagen_url}" class="foto-tecnico">` : "—"}</td>
         <td>${r.nombre}</td>
@@ -133,17 +132,18 @@ export default class UIHandler {
         <td>${r.duracion_turno_min} min</td>
         <td>${horariosTexto || "-"}</td>
         <td>
-          <button type="button" class="edit" style="color:green">✏️</button>
-          <button type="button" class="delete" style="color:red">🗑️</button>
+          <button type="button" class="btn-edit">✏️</button>
+          <button type="button" class="btn-delete">🗑️</button>
         </td>
       `;
-    
-      tr.querySelector(".edit").onclick = () => this._editarTecnico(r);
-      tr.querySelector(".delete").onclick = () => this._eliminarTecnico(r.id);
+
+      tr.querySelector(".btn-edit").onclick = () => this._editarTecnico(r);
+      tr.querySelector(".btn-delete").onclick = () => this._eliminarTecnico(r.id);
+
       this.contenedor.appendChild(tr);
     });
-
   }
+
 
   // =========================
   // GUARDAR
