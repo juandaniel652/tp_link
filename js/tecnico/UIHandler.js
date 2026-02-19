@@ -6,6 +6,8 @@ export default class UIHandler {
   constructor(formSelector, tableBodySelector) {
     this.form = document.querySelector(formSelector);
     this.contenedor = document.querySelector(tableBodySelector);
+    this.previewImagen = document.getElementById("previewImagen");
+    this.imagenActual = null;
 
     if (!this.form || !this.contenedor) {
       throw new Error("No se encontró el formulario o el contenedor");
@@ -35,6 +37,7 @@ export default class UIHandler {
   // EVENTS
   // =========================
   _bindEvents() {
+
     this.form.addEventListener("submit", (e) => {
       e.preventDefault();
       this._guardarTecnico();
@@ -43,6 +46,21 @@ export default class UIHandler {
     this.btnAddHorario.addEventListener("click", () => {
       this._agregarFilaHorario();
     });
+
+    // PREVIEW DE IMAGEN (ESTE ES EL PUNTO 4)
+    this.inputs.imagen.addEventListener("change", () => {
+
+      const file = this.inputs.imagen.files[0];
+
+      if (file) {
+        this.previewImagen.src = URL.createObjectURL(file);
+        this.previewImagen.style.display = "block";
+      } else {
+        this.previewImagen.style.display = "none";
+      }
+
+    });
+
   }
 
   // =========================
@@ -151,7 +169,7 @@ export default class UIHandler {
   async _guardarTecnico() {
 
     const tecnico = await this._recopilarDatosFormulario();
-
+    
     const payload = {
       nombre: tecnico.nombre,
       apellido: tecnico.apellido,
@@ -159,28 +177,36 @@ export default class UIHandler {
       duracion_turno_min: Number(tecnico.duracionTurnoMinutos),
       email: tecnico.email,
       imagen_url: tecnico.imagen,
-      activo: true,                 
-      horarios: tecnico.horarios
+      activo: true
     };
-
-    console.log("PAYLOAD FINAL REAL", payload);
-
+  
     if (this.indiceEdicion !== null) {
+    
+      // solo enviar horarios si existen
+      if (tecnico.horarios.length > 0) {
+        payload.horarios = tecnico.horarios;
+      }
+    
       await TecnicoService.actualizar(this.indiceEdicion, payload);
+    
     } else {
-      delete payload.horarios;
+    
       await TecnicoService.crear(payload);
+    
     }
-
+  
     this.limpiarFormulario();
     await this.renderTabla();
+  
   }
+
 
 
   // =========================
   // EDITAR
   // =========================
   _editarTecnico(registro) {
+
     this.indiceEdicion = registro.id;
 
     this.inputs.nombre.value = registro.nombre;
@@ -188,29 +214,47 @@ export default class UIHandler {
     this.inputs.telefono.value = registro.telefono || "";
     this.inputs.duracion.value = registro.duracion_turno_min;
     this.inputs.email.value = registro.email || "";
-    this.inputs.imagen.value = registro.imagen_url || "";
 
-    // render directo desde backend
+    // guardar url actual
+    this.imagenActual = registro.imagen_url || null;
+
+    this.inputs.imagen.value = "";
+
+    if (registro.imagen_url) {
+      this.previewImagen.src = registro.imagen_url;
+      this.previewImagen.style.display = "block";
+    } else {
+      this.previewImagen.style.display = "none";
+    }
+
     this.horariosContainer.innerHTML = "";
     (registro.horarios || []).forEach(h => {
       this._agregarFilaHorario(h);
     });
+
   }
 
   // =========================
   // HELPERS
   // =========================
   _recopilarDatosFormulario() {
+
+    const nuevaImagen = this.inputs.imagen.files[0];
+
     return {
       nombre: this.inputs.nombre.value.trim(),
       apellido: this.inputs.apellido.value.trim(),
       telefono: this.inputs.telefono.value.trim(),
       duracionTurnoMinutos: this.inputs.duracion.value,
       email: this.inputs.email.value.trim(),
-      imagen: this.inputs.imagen.value,
+
+      // si no hay nueva imagen, mantener la actual
+      imagen: nuevaImagen ? nuevaImagen : this.imagenActual,
+
       horarios: this._recopilarHorarios()
     };
   }
+
 
 
   async _eliminarTecnico(id) {
