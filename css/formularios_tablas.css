@@ -300,12 +300,16 @@ main {
 }
 
 .foto-tecnico {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 6px; /* cuadrado con bordes suaves */
-  display: block;
-}
+   width: 48px;
+    height: 48px;
+  
+    object-fit: cover;
+    object-position: center;
+  
+    border-radius: 50%;
+  
+    display: block;
+} 
 
 
 
