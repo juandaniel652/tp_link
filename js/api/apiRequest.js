@@ -8,9 +8,13 @@ export async function apiRequest(endpoint, options = {}) {
   }
 
   const headers = {
-    "Authorization": `Bearer ${token}`,
-    ...options.headers
+  "Authorization": `Bearer ${token}`,
+  ...options.headers
   };
+  
+  if (!(options.body instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
+  }
 
   // Detectar tipo de body
   if (options.body) {
