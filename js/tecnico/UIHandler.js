@@ -125,8 +125,8 @@ export default class UIHandler {
         <td>${r.duracion_turno_min} min</td>
         <td>${horariosTexto || "-"}</td>
         <td>
-          <button type="button" class="remove" style="color:green">✏️</button>
-          <button type="button" class="remove" style="color:red">🗑️</button>
+          <button type="button" class="edit" style="color:green">✏️</button>
+          <button type="button" class="delete" style="color:red">🗑️</button>
         </td>
       `;
     
