@@ -8,6 +8,8 @@ export default class UIHandler {
     this.contenedor = document.querySelector(tableBodySelector);
     this.previewImagen = document.getElementById("previewImagen");
     this.imagenActual = null;
+    this.btnSubmit = this.form.querySelector("#btnSubmit");
+
 
     if (!this.form || !this.contenedor) {
       throw new Error("No se encontró el formulario o el contenedor");
@@ -233,6 +235,9 @@ export default class UIHandler {
       this._agregarFilaHorario(h);
     });
 
+    this.btnSubmit.textContent = "Actualizar";
+
+
   }
 
   // =========================
@@ -265,8 +270,25 @@ export default class UIHandler {
   }
 
   limpiarFormulario() {
+
+    // reset inputs HTML
     this.form.reset();
+
+    // limpiar horarios UI
     this.horariosContainer.innerHTML = "";
+
+    // salir de modo edición
     this.indiceEdicion = null;
+
+    // limpiar imagen actual en memoria
+    this.imagenActual = null;
+
+    // limpiar preview visual
+    this.previewImagen.src = "";
+    this.previewImagen.style.display = "none";
+
+    this.btnSubmit.textContent = "Guardar";
+
   }
+
 }
