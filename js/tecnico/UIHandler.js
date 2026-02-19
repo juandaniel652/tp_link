@@ -169,36 +169,46 @@ export default class UIHandler {
   async _guardarTecnico() {
 
     const tecnico = await this._recopilarDatosFormulario();
-    
+
+    let imagenUrl = this.imagenActual;
+
+    // si seleccionó nueva imagen
+    if (tecnico.imagen instanceof File) {
+
+      imagenUrl = await TecnicoService.subirImagen(tecnico.imagen);
+
+    }
+
     const payload = {
       nombre: tecnico.nombre,
       apellido: tecnico.apellido,
       telefono: tecnico.telefono,
       duracion_turno_min: Number(tecnico.duracionTurnoMinutos),
       email: tecnico.email,
-      imagen_url: tecnico.imagen,
+      imagen_url: typeof tecnico.imagen === "string"
+      ? tecnico.imagen
+      : this.imagenActual,
       activo: true
     };
-  
+
     if (this.indiceEdicion !== null) {
-    
-      // solo enviar horarios si existen
-      if (tecnico.horarios.length > 0) {
+
+      if (tecnico.horarios.length > 0)
         payload.horarios = tecnico.horarios;
-      }
-    
+
       await TecnicoService.actualizar(this.indiceEdicion, payload);
-    
+
     } else {
-    
+
       await TecnicoService.crear(payload);
-    
+
     }
-  
+
     this.limpiarFormulario();
     await this.renderTabla();
-  
+
   }
+
 
 
 
