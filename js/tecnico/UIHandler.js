@@ -125,8 +125,8 @@ export default class UIHandler {
         <td>${r.duracion_turno_min} min</td>
         <td>${horariosTexto || "-"}</td>
         <td>
-          <button class="edit">✏️</button>
-          <button class="delete">🗑️</button>
+          <button type="button" class="remove" style="color:green">✏️</button>
+          <button type="button" class="remove" style="color:red">🗑️</button>
         </td>
       `;
     
@@ -151,7 +151,7 @@ export default class UIHandler {
       duracion_turno_min: Number(tecnico.duracionTurnoMinutos),
       email: tecnico.email,
       imagen_url: tecnico.imagen,
-      activo: true,                 // ← ESTO NO ESTÁ LLEGANDO HOY
+      activo: true,                 
       horarios: tecnico.horarios
     };
 
