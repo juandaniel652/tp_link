@@ -117,7 +117,7 @@ export default class UIHandler {
         .map(h => `${diasSemana[h.dia_semana]} ${h.hora_inicio.slice(0,5)}-${h.hora_fin.slice(0,5)}`)
         .join("<br>");
       
-        console.log("Dia Seleccionado: ", diasSemana[h.dia_semana])
+        console.log("Dia Seleccionado: ", horariosTexto)
     
       tr.innerHTML = `
         <td>${r.imagen_url ? `<img src="${r.imagen_url}" class="foto-tecnico">` : "—"}</td>
