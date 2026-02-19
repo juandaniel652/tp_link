@@ -235,6 +235,7 @@ main {
   color: #fff;
   border: none;
   border-radius: 10px;
+  border-color: #fff;
   font-size: 17px;
   font-weight: bold;
   cursor: pointer;
