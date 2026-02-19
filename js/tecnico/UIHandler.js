@@ -107,7 +107,15 @@ export default class UIHandler {
       return;
     }
 
-    const diasSemana = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+    const diasSemana = 
+    { 1: "Lunes", 
+      2: "Martes", 
+      3: "Miércoles", 
+      4: "Jueves", 5: 
+      "Viernes", 6: 
+      "Sábado", 7: 
+      "Domingo" 
+    };
 
     tecnicos.forEach((r) => {
       const tr = document.createElement("tr");
@@ -116,8 +124,6 @@ export default class UIHandler {
       const horariosTexto = (r.horarios || [])
         .map(h => `${diasSemana[h.dia_semana]} ${h.hora_inicio.slice(0,5)}-${h.hora_fin.slice(0,5)}`)
         .join("<br>");
-        //Al volver, verificar que es lo que hace map, para poder mostrarlo en consola y ver que indice devuelve
-      console.log("Dia Seleccionado: ", horariosTexto)
     
       tr.innerHTML = `
         <td>${r.imagen_url ? `<img src="${r.imagen_url}" class="foto-tecnico">` : "—"}</td>
