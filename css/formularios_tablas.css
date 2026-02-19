@@ -302,12 +302,12 @@ main {
 .foto-tecnico {
    width: 48px;
     height: 48px;
-  
+
     object-fit: cover;
     object-position: center;
-  
+
     border-radius: 50%;
-  
+
     display: block;
 } 
 
@@ -652,4 +652,20 @@ main {
   .toast {
     max-width: 100%;
   }
+}
+
+.btn-cancel {
+
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: 10px;
+
+}
+
+.btn-cancel:hover {
+  background: #5a6268;
 }

@@ -186,3 +186,19 @@
 .btn-delete:hover {
   background-color: #c82333;
 }
+
+.btn-cancel {
+
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: 10px;
+
+}
+
+.btn-cancel:hover {
+  background: #5a6268;
+}

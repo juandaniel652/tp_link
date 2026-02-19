@@ -9,6 +9,7 @@ export default class UIHandler {
     this.previewImagen = document.getElementById("previewImagen");
     this.imagenActual = null;
     this.btnSubmit = this.form.querySelector("#btnSubmit");
+    this.btnCancel = this.form.querySelector("#btnCancel");
 
 
     if (!this.form || !this.contenedor) {
@@ -44,6 +45,11 @@ export default class UIHandler {
       e.preventDefault();
       this._guardarTecnico();
     });
+
+    this.btnCancel.addEventListener("click", () => {
+      this.limpiarFormulario();
+    });
+
 
     this.btnAddHorario.addEventListener("click", () => {
       this._agregarFilaHorario();
@@ -236,6 +242,8 @@ export default class UIHandler {
     });
 
     this.btnSubmit.textContent = "Actualizar";
+    this.btnCancel.style.display = "inline-block";
+
 
 
   }
@@ -271,24 +279,22 @@ export default class UIHandler {
 
   limpiarFormulario() {
 
-    // reset inputs HTML
     this.form.reset();
-
-    // limpiar horarios UI
+    
     this.horariosContainer.innerHTML = "";
-
-    // salir de modo edición
+    
     this.indiceEdicion = null;
-
-    // limpiar imagen actual en memoria
+    
     this.imagenActual = null;
-
-    // limpiar preview visual
+    
     this.previewImagen.src = "";
     this.previewImagen.style.display = "none";
-
+    
     this.btnSubmit.textContent = "Guardar";
-
+    
+    this.btnCancel.style.display = "none";
+    
   }
+
 
 }
