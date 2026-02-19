@@ -35,17 +35,50 @@ export default class TecnicoService {
   }
 
   static crear(data) {
+
+    const formData = new FormData();
+    
+    formData.append("nombre", data.nombre);
+    formData.append("apellido", data.apellido);
+    
+    if (data.telefono)
+      formData.append("telefono", data.telefono);
+  
+    if (data.email)
+      formData.append("email", data.email);
+  
+    formData.append("duracion_turno_min", data.duracion_turno_min);
+  
+    if (data.imagen instanceof File)
+      formData.append("imagen", data.imagen);
+  
     return apiRequest("/tecnicos", {
       method: "POST",
-      body: JSON.stringify(this.toApiPayload(data))
+      body: formData
     });
   }
 
+
+
   static actualizar(id, data) {
+
+    const formData = new FormData();
+    
+    formData.append("nombre", data.nombre);
+    formData.append("apellido", data.apellido);
+    formData.append("telefono", data.telefono);
+    formData.append("email", data.email);
+    formData.append("duracion_turno_min", data.duracion_turno_min);
+    
+    if (data.imagen instanceof File) {
+      formData.append("imagen", data.imagen);
+    }
+  
     return apiRequest(`/tecnicos/${id}`, {
       method: "PUT",
-      body: JSON.stringify(this.toApiPayload(data, true))
+      body: formData
     });
+  
   }
 
   static eliminar(id) {
