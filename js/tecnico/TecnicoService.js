@@ -52,10 +52,14 @@ export default class TecnicoService {
     if (data.imagen instanceof File)
       formData.append("imagen", data.imagen);
   
+    if (Array.isArray(data.horarios))
+      formData.append("horarios", JSON.stringify(data.horarios));
+  
     return apiRequest("/tecnicos", {
       method: "POST",
       body: formData
     });
+  
   }
 
 
@@ -63,23 +67,40 @@ export default class TecnicoService {
   static actualizar(id, data) {
 
     const formData = new FormData();
-    
+
     formData.append("nombre", data.nombre);
     formData.append("apellido", data.apellido);
-    formData.append("telefono", data.telefono);
-    formData.append("email", data.email);
+
+    if (data.telefono)
+      formData.append("telefono", data.telefono);
+
+    if (data.email)
+      formData.append("email", data.email);
+
     formData.append("duracion_turno_min", data.duracion_turno_min);
-    
+
+    // caso 1: nueva imagen
     if (data.imagen instanceof File) {
       formData.append("imagen", data.imagen);
     }
-  
+
+    // caso 2: mantener imagen existente (url string)
+    else if (typeof data.imagen === "string" && data.imagen.length > 0) {
+      formData.append("imagen_url", data.imagen);
+    }
+
+    // horarios si existen
+    if (Array.isArray(data.horarios)) {
+      formData.append("horarios", JSON.stringify(data.horarios));
+    }
+
     return apiRequest(`/tecnicos/${id}`, {
       method: "PUT",
       body: formData
     });
-  
+
   }
+
 
   static eliminar(id) {
     return apiRequest(`/tecnicos/${id}`, { method: "DELETE" });
