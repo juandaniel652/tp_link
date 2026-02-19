@@ -56,32 +56,35 @@
 
           <div class="form-group">
             <label for="nombre">Nombre</label>
-            <input type="text" id="nombre" required>
+            <input type="text" id="nombre" placeholder="Ingrese nombre" required>
           </div>
 
           <div class="form-group">
             <label for="apellido">Apellido</label>
-            <input type="text" id="apellido" required>
+            <input type="text" id="apellido" placeholder="Ingrese apellido" required>
           </div>
 
           <div class="form-group">
             <label for="duracionEmail">Email</label>
-            <input type="email" id="duracionEmail" required>
+            <input type="email" id="duracionEmail" placeholder="ejemplo@gmail.com" required>
           </div>
 
           <div class="form-group">
             <label for="telefono">Teléfono</label>
-            <input type="text" id="telefono" maxlength="12" required>
+            <input type="text" id="telefono" maxlength="12" placeholder="Ingrese teléfono" required>
           </div>
 
+          <!-- Campo nuevo para imagen -->
           <div class="form-group">
             <label for="imagen">Imagen (opcional)</label>
             <input type="file" id="imagen" accept="image/*">
+            <img id="previewImagen" src="" alt="Preview" style="display:none;width:80px;height:80px;border-radius:8px;margin-top:5px;">
           </div>
-
+    
+          
           <div class="form-group">
-            <label for="duracionTurno">Duración habitual del turno (min)</label>
-            <input type="number" id="duracionTurno" required>
+            <label for="duracionTurno">Duración Habitual del Turno en Minutos</label>
+            <input type="number" id="duracionTurno" placeholder="Ej: 15" required>
           </div>
 
           <!-- HORARIOS DINÁMICOS -->
