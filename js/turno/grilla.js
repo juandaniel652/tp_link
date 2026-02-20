@@ -123,6 +123,7 @@ export async function obtenerClienteYValidar(clientes, clienteId, tecnico) {
       if (!response.ok) throw new Error(`Error ${response.status}`);
 
       const data = await response.json();
+      console.log(data);
 
       // Adaptamos la estructura a la de tu sistema
       cliente = {
