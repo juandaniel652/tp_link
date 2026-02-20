@@ -1,99 +1,93 @@
 import { T_VALUES, RANGOS } from "./constantes.js";
-import { getData, saveData } from "./storage.js"; // 👈 IMPORT saveData
+import { obtenerTurnosBackend, eliminarTurnoBackend } from "./historial.js";
+import { enviarTurno } from "./envioTicketPOST.js";
 import { renderSelectClientes, renderSelectTecnicos, renderSelectGen } from "./render_selects.js";
 import { renderHistorialTurnos } from "./historial.js";
 import { renderGrillaTurnos } from "./grilla.js";
-import { clienteYaTieneTurno, hayConflicto } from "./validaciones.js"; // 👈 IMPORT
-import { enviarTicket } from "./envioTicketPOST.js";
+import { clienteYaTieneTurno, hayConflicto } from "./validaciones.js";
 import Tecnico from "../tecnico/Tecnico.js";
+import { obtenerClientesBackend } from "../cliente/clienteApi.js";
+import { obtenerTecnicosBackend } from "../tecnico/tecnicoApi.js";
 
-document.addEventListener("DOMContentLoaded", () => {
-  const clientes = getData("clientes") || [];
-  const tecnicosData = getData("tecnicos") || [];
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+  const clientes = await obtenerClientesBackend();
+  const tecnicosData = await obtenerTecnicosBackend();
   const tecnicos = tecnicosData.map(t => new Tecnico(t));
-  let turnos = getData("turnos") || [];
 
-  const selectTicket = document.getElementById("selectTicket");
+  let turnos = [];
+
   const selectCliente = document.getElementById("selectCliente");
   const selectTecnico = document.getElementById("selectTecnico");
   const selectT = document.getElementById("selectT");
   const selectRango = document.getElementById("selectRango");
-  const turnosContainer = document.getElementById("turnosContainer");
-  const btnMostrarTurnos = document.getElementById("btnMostrarTurnos");
   const selectEstadoTicket = document.getElementById("selectEstadoTicket");
 
-  // RENDER inicial (clientes pasan turnos para deshabilitar los que ya tienen)
-  renderSelectGen(selectTicket, [], "Seleccionar Ticket", "");
-  renderSelectClientes(selectCliente, clientes, turnos);
-  renderSelectTecnicos(selectTecnico, tecnicos);
-  renderSelectGen(selectT, T_VALUES, "Seleccionar T", "T");
-  renderSelectGen(selectRango, RANGOS, "Seleccionar Rango", "");
-  renderSelectGen(selectEstadoTicket, ["Abierto"], "Seleccionar Estado", "");
+  const turnosContainer = document.getElementById("turnosContainer");
+  const btnMostrarTurnos = document.getElementById("btnMostrarTurnos");
 
-  // ==============================
-  // FUNCION GUARDAR TURNO
-  // ==============================
-  function guardarTurno(nuevoTurno) {
+  // ============================
+  // CARGAR TURNOS DESDE BACKEND
+  // ============================
 
-    if (hayConflicto(turnos, nuevoTurno.fecha, nuevoTurno.hora, nuevoTurno.tecnico, nuevoTurno.id_cliente)) {
-    alert(`Conflicto: el técnico ${nuevoTurno.tecnico} ya tiene un turno en ese horario.`);
-    return;
+  async function cargarTurnosIniciales() {
+
+    try {
+
+      turnos = await obtenerTurnosBackend();
+
+      renderHistorialTurnos(turnos, turnosContainer);
+
+    } catch (error) {
+
+      console.error(error);
+      alert("Error cargando turnos");
+
     }
-    // Agregar al array
-    turnos.push(nuevoTurno);
 
-    // Guardar en localStorage
-    saveData("turnos", turnos);
-
-    // Refrescar historial con callback para actualizar select de clientes
-    renderHistorialTurnos(turnos, turnosContainer, (turnosActualizados) => {
-      renderSelectClientes(selectCliente, clientes, turnosActualizados);
-    });
-
-    // Refrescar selects técnicos y genéricos
-    renderSelectGen(selectTicket, [], "Seleccionar Ticket", "");
-    renderSelectTecnicos(selectTecnico, tecnicos);
-    renderSelectGen(selectT, T_VALUES, "Seleccionar T", "T");
-    renderSelectGen(selectRango, RANGOS, "Seleccionar Rango", "");
-    renderSelectGen(selectEstadoTicket, ["Abierto", "Cerrado"], "Seleccionar Estado", "");
-
-    // 🔄 Resetear selección (placeholder activo)
-    selectCliente.value = "";
-    selectTecnico.value = "";
-    selectT.value = "";
-    selectRango.value = "";
-    selectEstadoTicket.value = "";
   }
 
-  // Evento principal
+  async function guardarTurnoBackend(turno) {
+
+    const turnoCreado = await enviarTurno(turno);
+
+    turnos.push(turnoCreado);
+
+    renderHistorialTurnos(turnos, turnosContainer);
+
+  }
+
+
+  function actualizarSelectClientes(turnosActualizados) {
+
+    renderSelectClientes(selectCliente, clientes, turnosActualizados);
+
+  }
+
+  // ============================
+  // EVENTO PRINCIPAL
+  // ============================
+
   btnMostrarTurnos.addEventListener("click", () => {
+
     const clienteId = selectCliente.value;
-    const tecnicoIndex = selectTecnico.value;
+    const tecnicoId = selectTecnico.value;
     const tSeleccionado = selectT.value;
     const rangoSeleccionado = selectRango.value;
     const estadoTicket = selectEstadoTicket.value;
 
-    if (!clienteId || !tecnicoIndex || !tSeleccionado || !rangoSeleccionado || !estadoTicket)
-      return alert("Debe seleccionar Cliente, Técnico, T, Rango y Estado.");
+    if (!clienteId || !tecnicoId || !tSeleccionado || !rangoSeleccionado || !estadoTicket)
 
-    // DOBLE VERIFICACIÓN
-    if (clienteYaTieneTurno(clienteId, turnos)) {
-      return alert("El cliente seleccionado ya tiene un turno asignado.");
-    }
+      return alert("Complete todos los campos");
 
-    const tecnico = tecnicos[tecnicoIndex];
-    const tecnicoNombre = `${tecnico.nombre} ${tecnico.apellido}`;
-    const fechaISO = new Date().toISOString().split("T")[0]; // o la fecha que uses
-    const hora = rangoSeleccionado; // si el rango es el bloque horario elegido
+    if (clienteYaTieneTurno(clienteId, turnos))
+      return alert("Cliente ya tiene turno");
 
-    //     🔍 Verifica si el técnico ya tiene un turno en ese rango horario
-    if (hayConflicto(turnos, fechaISO, hora, tecnicoNombre, clienteId)) {
-      return alert(`El técnico ${tecnicoNombre} ya tiene un turno en ese horario.`);
-    }
+    const tecnico = tecnicos.find(t => t.id === tecnicoId);
 
-
-    // Llamada a la grilla
     renderGrillaTurnos({
+
       clienteId,
       tecnico,
       tSeleccionado,
@@ -101,14 +95,30 @@ document.addEventListener("DOMContentLoaded", () => {
       clientes,
       turnos,
       turnosContainer,
-      guardarTurno, // 👈 pasamos la función para que grilla pueda guardar
-      estadoTicket,  // 👈 pasamos el estado del ticket
-      enviarTicket
+      estadoTicket,
+      guardarTurno: guardarTurnoBackend
+
     });
+
   });
 
-  // Mostrar historial inicial con callback para actualizar select de clientes
-  renderHistorialTurnos(turnos, turnosContainer, (turnosActualizados) => {
-    renderSelectClientes(selectCliente, clientes, turnosActualizados);
-  });
+  // ============================
+  // RENDER SELECTS
+  // ============================
+
+  renderSelectClientes(selectCliente, clientes, turnos);
+
+  renderSelectTecnicos(selectTecnico, tecnicos);
+
+  renderSelectGen(selectT, T_VALUES, "Seleccionar T", "T");
+
+  renderSelectGen(selectRango, RANGOS, "Seleccionar rango", "");
+
+  renderSelectGen(selectEstadoTicket, ["Abierto"], "Seleccionar estado", "");
+
+  // ============================
+
+  await cargarTurnosIniciales();
+
+  renderHistorialTurnos(turnos, turnosContainer);
 });
