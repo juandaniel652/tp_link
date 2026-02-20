@@ -13,7 +13,7 @@ export function renderSelectClientes(selectCliente, clientes, turnos = []) {
     option.value = c.id;
 
     // mostrar nombre correctamente
-    option.textContent = `${c.nombre} ${c.apellido}`;
+    option.textContent = `${c.numero_cliente}  ${c.nombre} ${c.apellido}`;
 
     // verificar usando ID
     if (clienteYaTieneTurno(c.id, turnos)) {
