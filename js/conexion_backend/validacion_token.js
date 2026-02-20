@@ -1,3 +1,6 @@
+import { getToken, setToken, removeToken } from "./tokenStorage.js";
+
+
 document.addEventListener("DOMContentLoaded", async () => {
   const LOGIN_URL = "https://loginagenda.netlify.app/";  // tu frontend de login
   const API_ME = "https://agenda-1-zomu.onrender.com/api/v1/auth/me"; // tu backend Render
@@ -7,11 +10,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   const tokenFromUrl = params.get("token");
 
   if (tokenFromUrl) {
-    localStorage.setItem("access_token", tokenFromUrl);
+    setToken(tokenFromUrl);
     window.history.replaceState({}, document.title, window.location.pathname);
   }
 
-  const token = localStorage.getItem("access_token");
+  const token = getToken();
 
   if (!token) {
     window.location.replace(LOGIN_URL);
@@ -31,7 +34,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.log("Usuario autenticado:", user);
 
   } catch (error) {
-    localStorage.removeItem("access_token");
+  removeToken();s
     window.location.replace(LOGIN_URL);
   }
 });

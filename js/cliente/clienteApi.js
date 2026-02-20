@@ -1,4 +1,5 @@
-import { getToken } from "../conexion_backend/validacion_token.js";
+import { getToken } from "../conexion_backend/tokenStorage.js";
+
 
 const API_BASE = "https://agenda-1-zomu.onrender.com/api/v1";
 
