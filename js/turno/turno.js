@@ -16,6 +16,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   const tecnicosData = await obtenerTecnicosBackend();
   const tecnicos = tecnicosData.map(t => new Tecnico(t));
 
+  renderSelectClientes(selectCliente, clientes, turnos);
+  renderSelectTecnicos(selectTecnico, tecnicos);
+
+  console.log("Clientes:", clientes);
+  console.log("Técnicos:", tecnicos);
+
   let turnos = [];
 
   const selectCliente = document.getElementById("selectCliente");
