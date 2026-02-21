@@ -228,7 +228,7 @@ function crearCardTurno({
 
   card.innerHTML = `
     <h3>${NOMBRES_DIAS[opcion.diaNombre]} ${opcion.fecha.toLocaleDateString("es-ES",{day:"numeric", month:"long"})}</h3>
-    <p><strong>Cliente:</strong> ${cliente.numeroCliente} - ${cliente.nombre} ${cliente.apellido}</p>
+    <p><strong>Cliente:</strong> ${cliente.numero_cliente} - ${cliente.nombre} ${cliente.apellido}</p>
     <p><strong>Técnico:</strong> ${tecnico.nombre} ${tecnico.apellido}</p>
     <p><strong>T:</strong> ${NumeroT}</p>
     <p><strong>Rango:</strong> ${rangoSeleccionado}</p>

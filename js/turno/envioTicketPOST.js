@@ -1,6 +1,9 @@
 import { TURNOS_URL } from "./apiTurnos.js";
+import { getToken } from "../conexion_backend/tokenStorage.js";
 
 export async function enviarTurno(turno) {
+
+    const token = getToken();
 
     const turnoBackend = {
 
@@ -22,12 +25,15 @@ export async function enviarTurno(turno) {
 
     };
 
+    console.log("ENVIANDO TURNO:", turnoBackend);
+
     const response = await fetch(TURNOS_URL, {
 
         method: "POST",
 
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
         },
 
         body: JSON.stringify(turnoBackend)
