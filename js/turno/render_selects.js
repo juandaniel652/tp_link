@@ -13,7 +13,7 @@ export function renderSelectClientes(selectCliente, clientes, turnos = []) {
     option.value = c.id;
 
     // mostrar nombre correctamente
-    option.textContent = `${c.numero_cliente}  ${c.nombre} ${c.apellido}`;
+    option.textContent = `${c.nombre} ${c.apellido} — ID: ${c.numero_cliente}`;
 
     // verificar usando ID
     if (clienteYaTieneTurno(c.id, turnos)) {
@@ -35,7 +35,7 @@ export function renderSelectTecnicos(select, tecnicos) {
   select.innerHTML = "<option value=''>Seleccionar Técnico</option>";
   tecnicos.forEach((tecnico, index) => {
     const option = document.createElement("option");
-    option.value = index;
+    option.value = tecnico.id;
     option.textContent = `${tecnico.nombre} ${tecnico.apellido}`;
     select.appendChild(option);
   });
