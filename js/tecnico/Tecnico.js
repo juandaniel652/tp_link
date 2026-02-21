@@ -37,9 +37,7 @@ export default class Tecnico {
         const diaRaw = h.dia ?? h.dia_semana;
     
         const diaNombre =
-          typeof diaRaw === "number"
-            ? DIAS_MAP[diaRaw]
-            : diaRaw?.toString().toLowerCase();
+          DIAS_MAP[String(diaRaw)] ?? String(diaRaw).toLowerCase();
     
         return {
           dia: diaNombre,
@@ -52,7 +50,7 @@ export default class Tecnico {
 
     console.log("duracion:", this.duracionTurnoMinutos);
     console.log("horarios:", this.horarios);
-    
+
     }
 
   getDiasDisponibles() {
