@@ -1,24 +1,34 @@
 export default class Tecnico {
-  constructor({id, nombre, apellido, telefono, duracionTurnoMinutos, horarios = [], imagen = "", email = "" }) {
+  constructor({id, nombre, apellido, telefono, duracionTurnoMinutos, duracion_turno_minutos, horarios = [], imagen = "", email = "" }) {
     this.id = id; // 🔥 obligatorio
     this.nombre = nombre.trim();
     this.apellido = apellido.trim();
     this.telefono = telefono.trim();
-    this.duracionTurnoMinutos = parseInt(duracionTurnoMinutos, 10);
+    this.duracionTurnoMinutos =
+      parseInt(duracionTurnoMinutos ?? duracion_turno_minutos, 10);
     this.imagen = imagen; // 🔹 Guardamos la imagen en base64 o vacío
     this.email = email.trim(); // 🔹 Nuevo atributo
 
+    console.log("duracion:", this.duracionTurnoMinutos);
+    console.log("horarios:", this.horarios);
+
     this.horarios = Array.isArray(horarios)
-    ? horarios
-        .filter(h => h && (h.dia || h.dia_semana))
-        .map(h => ({
-          dia: (h.dia ?? h.dia_semana).toString().toLowerCase(),
-          inicio: (h.inicio ?? h.hora_inicio).slice(0,5),
-          fin: (h.fin ?? h.hora_fin).slice(0,5)
-        }))
-    : [];
+      ? horarios
+          .filter(h => h && (h.dia || h.dia_semana))
+          .map(h => ({
+            dia: (h.dia ?? h.dia_semana).toString().toLowerCase(),
+            inicio: (h.inicio ?? h.hora_inicio).slice(0,5),
+            fin: (h.fin ?? h.hora_fin).slice(0,5)
+          }))
+      : [];
 
   }
+
+  getDiasDisponibles() {
+    return this.horarios.map(h => h.dia);
+  }
+
+
 
   // ======================
   // VALIDACIONES
