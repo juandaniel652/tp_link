@@ -21,18 +21,39 @@ export default class Tecnico {
 
     this.email = data.email?.trim() || "";
 
+    const DIAS_MAP = {
+      0: "domingo",
+      1: "lunes",
+      2: "martes",
+      3: "miercoles",
+      4: "jueves",
+      5: "viernes",
+      6: "sabado"
+    };     
+  
     this.horarios = Array.isArray(data.horarios)
-      ? data.horarios.map(h => ({
-          dia: (h.dia ?? h.dia_semana)?.toString().toLowerCase(),
+    ? data.horarios.map(h => {
+    
+        const diaRaw = h.dia ?? h.dia_semana;
+    
+        const diaNombre =
+          typeof diaRaw === "number"
+            ? DIAS_MAP[diaRaw]
+            : diaRaw?.toString().toLowerCase();
+    
+        return {
+          dia: diaNombre,
           inicio: (h.inicio ?? h.hora_inicio)?.slice(0,5),
           fin: (h.fin ?? h.hora_fin)?.slice(0,5)
-        }))
-      : [];
+        };
+      
+      })
+    : [];
 
-      console.log("duracion:", this.duracionTurnoMinutos);
-      console.log("horarios:", this.horarios);
-
-  }
+    console.log("duracion:", this.duracionTurnoMinutos);
+    console.log("horarios:", this.horarios);
+    
+    }
 
   getDiasDisponibles() {
     return this.horarios.map(h => h.dia);
