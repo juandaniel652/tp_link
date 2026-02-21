@@ -3,26 +3,24 @@ export default class Tecnico {
   constructor(data) {
 
     console.log("DATA RAW:", data);
-
+    
     this.id = data.id;
-
+    
     this.nombre = data.nombre?.trim() || "";
     this.apellido = data.apellido?.trim() || "";
     this.telefono = data.telefono?.trim() || "";
-
-    // ✅ TU BACKEND USA ESTE NOMBRE:
+    
     this.duracionTurnoMinutos = parseInt(
       data.duracionTurnoMinutos ??
       data.duracion_turno_minutos ??
-      data.duracion_turno_min,   // ← ESTE ES EL TUYO
+      data.duracion_turno_min,
       10
     );
-
+  
     this.imagen = data.imagen ?? data.imagen_url ?? "";
-
+  
     this.email = data.email?.trim() || "";
-
-    // ✅ TU BACKEND SÍ ENVÍA horarios, pero aseguremos mapping correcto
+  
     this.horarios = Array.isArray(data.horarios)
       ? data.horarios.map(h => ({
           dia: (h.dia ?? h.dia_semana)?.toString().toLowerCase(),
@@ -30,21 +28,21 @@ export default class Tecnico {
           fin: (h.fin ?? h.hora_fin)?.slice(0,5)
         }))
       : [];
-
-    console.log("duracion:", this.duracionTurnoMinutos);
-    console.log("horarios:", this.horarios);
-
-
-    this.horarios = Array.isArray(horarios)
-      ? horarios
-          .filter(h => h && (h.dia || h.dia_semana))
-          .map(h => ({
-            dia: (h.dia ?? h.dia_semana).toString().toLowerCase(),
-            inicio: (h.inicio ?? h.hora_inicio).slice(0,5),
-            fin: (h.fin ?? h.hora_fin).slice(0,5)
-          }))
-      : [];
-
+      
+      console.log("duracion:", this.duracionTurnoMinutos);
+      console.log("horarios:", this.horarios);
+      
+      
+      this.horarios = Array.isArray(horarios)
+        ? horarios
+            .filter(h => h && (h.dia || h.dia_semana))
+            .map(h => ({
+              dia: (h.dia ?? h.dia_semana).toString().toLowerCase(),
+              inicio: (h.inicio ?? h.hora_inicio).slice(0,5),
+              fin: (h.fin ?? h.hora_fin).slice(0,5)
+            }))
+        : [];
+          
   }
 
   getDiasDisponibles() {
