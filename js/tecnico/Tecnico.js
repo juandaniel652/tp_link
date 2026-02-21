@@ -1,5 +1,6 @@
 export default class Tecnico {
   constructor({ nombre, apellido, telefono, duracionTurnoMinutos, horarios = [], imagen = "", email = "" }) {
+    this.id = id; // 🔥 obligatorio
     this.nombre = nombre.trim();
     this.apellido = apellido.trim();
     this.telefono = telefono.trim();

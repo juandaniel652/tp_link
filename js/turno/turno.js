@@ -85,6 +85,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       return alert("Cliente ya tiene turno");
 
     const tecnico = tecnicos.find(t => t.id === tecnicoId);
+    console.log("tecnico encontrado:", tecnico);
+
+    console.log("tecnicoId seleccionado:", tecnicoId);
+    console.log("lista tecnicos:", tecnicos);
 
     renderGrillaTurnos({
 
