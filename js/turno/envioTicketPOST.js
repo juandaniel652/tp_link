@@ -4,11 +4,20 @@ import { getToken } from "../conexion_backend/tokenStorage.js";
 export async function enviarTurno(turno) {
 
     const token = getToken();
+
     const TipoTurnoEnum = {
     CONSULTA: "consulta",
     CONTROL: "control",
     URGENCIA: "urgencia"
     };
+
+    const EstadoTurnoEnum = {
+    PENDIENTE: "pendiente",
+    CONFIRMADO: "confirmado",
+    CANCELADO: "cancelado",
+    COMPLETADO: "completado"
+    };
+
 
     const turnoBackend = {
 
@@ -26,7 +35,7 @@ export async function enviarTurno(turno) {
 
         hora_fin: turno.hora_fin + ":00",
 
-        estado: turno.estado.toUpperCase()
+        estado: EstadoTurnoEnum.PENDIENTE
 
     };
 
