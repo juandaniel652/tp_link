@@ -4,6 +4,11 @@ import { getToken } from "../conexion_backend/tokenStorage.js";
 export async function enviarTurno(turno) {
 
     const token = getToken();
+    const TipoTurnoEnum = {
+    CONSULTA: "consulta",
+    CONTROL: "control",
+    URGENCIA: "urgencia"
+    };
 
     const turnoBackend = {
 
@@ -13,7 +18,7 @@ export async function enviarTurno(turno) {
 
         tecnico_id: turno.tecnico_id,
 
-        tipo_turno: turno.tipo_turno,
+        tipo_turno: TipoTurnoEnum.CONSULTA,
 
         fecha: turno.fecha,
 
