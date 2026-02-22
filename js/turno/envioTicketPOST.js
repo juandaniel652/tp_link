@@ -21,7 +21,7 @@ export async function enviarTurno(turno) {
 
         hora_fin: turno.hora_fin + ":00",
 
-        estado: turno.estado.toUperCase()
+        estado: turno.estado.toUpperCase()
 
     };
 
