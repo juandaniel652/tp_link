@@ -62,7 +62,7 @@ export function renderHistorialTurnos(turnos, turnosContainer) {
     card.innerHTML = `
       <p><strong>Ticket:</strong> ${t.numero_ticket}</p>
 
-     <p><strong>Cliente:</strong> ${t.cliente.numero_cliente} - ${t.cliente.nombre}</p>
+      <p><strong>Cliente:</strong> ${t.cliente.numero_cliente} - ${t.cliente.nombre}</p>
 
       <p><strong>Técnico:</strong> ${t.tecnico.nombre}</p>
 
