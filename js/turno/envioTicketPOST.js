@@ -27,7 +27,7 @@ export async function enviarTurno(turno) {
 
         tecnico_id: turno.tecnico_id,
 
-        tipo_turno: "regular",
+        tipo_turno: TipoTurnoEnum.CONSULTA,
 
         fecha: turno.fecha,
 
