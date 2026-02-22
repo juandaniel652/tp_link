@@ -56,6 +56,7 @@ export function renderHistorialTurnos(turnos, turnosContainer) {
   turnos.forEach(t => {
 
     const card = document.createElement("div");
+    console.log(t.cliente.numero_cliente)
 
     card.className = "card-turno";
 
