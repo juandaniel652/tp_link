@@ -60,12 +60,11 @@ export function renderHistorialTurnos(turnos, turnosContainer) {
     card.className = "card-turno";
 
     card.innerHTML = `
-
       <p><strong>Ticket:</strong> ${t.numero_ticket}</p>
 
-      <p><strong>Cliente ID:</strong> ${t.cliente_id}</p>
+      <p><strong>Cliente:</strong> ${t.cliente_nombre}</p>
 
-      <p><strong>Técnico ID:</strong> ${t.tecnico_id}</p>
+      <p><strong>Técnico:</strong> ${t.tecnico_nombre}</p>
 
       <p><strong>Fecha:</strong> ${t.fecha}</p>
 
@@ -76,7 +75,6 @@ export function renderHistorialTurnos(turnos, turnosContainer) {
       <button class="btnEliminarTurno" data-id="${t.id}">
         Eliminar
       </button>
-
     `;
 
     historial.appendChild(card);
