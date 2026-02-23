@@ -57,7 +57,7 @@ export async function eliminarTurnoBackend(id) {
     const response = await fetch(`${TURNOS_URL}${id}`, {
 
 
-        method: "DELETE"
+        method: "PATCH"
     });
 
     if (!response.ok)
@@ -154,6 +154,17 @@ export function renderHistorialTurnos(turnos, container){
 
     container.appendChild(card);
 
+    const btnEliminar = card.querySelector(".btnEliminarTurno");
+
+    btnEliminar.addEventListener("click", async () => {
+
+    const id = btnEliminar.dataset.id;
+
+    await eliminarTurnoBackend(id);
+
+    card.remove();
+
+  });
   });
 
 }
