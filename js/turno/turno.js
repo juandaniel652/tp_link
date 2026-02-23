@@ -129,6 +129,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     turnos.push(turnoCreado);
 
+    return turnoCreado; 
+
+  
+
   // ============================
   // RESET SELECTS
   // ============================

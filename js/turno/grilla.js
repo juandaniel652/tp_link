@@ -129,7 +129,8 @@ export async function obtenerClienteYValidar(clientes, clienteId, tecnico) {
       // Adaptamos la estructura a la de tu sistema
       cliente = {
         id: data.id || clienteId,
-        numeroCliente: data.id || clienteId,
+        numero_cliente: data.id || clienteId,
+        numeroCliente: data.id || clienteId, // compatibilidad
         nombre: data.nombre || "Sin nombre",
         apellido: data.apellido || "",
         direccion: data.direccion || "",
@@ -231,6 +232,7 @@ function crearCardTurno({
   opcion.fecha.toLocaleDateString(
     "es-ES",
     {
+      weekday: "long",
       day: "numeric",
       month: "long",
       year: "numeric"
@@ -241,21 +243,21 @@ function crearCardTurno({
     <h3 class="card-fecha-turno">
       Fecha: ${fechaFormateada}
     </h3>
-  
+
     <p><strong>Cliente:</strong> ${cliente.numero_cliente} - ${cliente.nombre} ${cliente.apellido}</p>
-  
+
     <p><strong>Técnico:</strong> ${tecnico.nombre} ${tecnico.apellido}</p>
-  
+
     <p><strong>T:</strong> ${NumeroT}</p>
-  
+
     <p><strong>Rango:</strong> ${rangoSeleccionado}</p>
-  
+
     <p><strong>Horario General:</strong> ${
       rangoSeleccionado == "AM"
         ? "09:00 - 13:00"
         : "14:00 - 18:00"
     }</p>
-  
+
     <p><strong>Horario Sugerido:</strong>
       ${
         horaStr !== "Sin horario"
@@ -263,18 +265,18 @@ function crearCardTurno({
           : "Sin horario disponible"
       }
     </p>
-    
+
     <p><strong>Estado del Ticket:</strong> ${estadoTicket}</p>
-    
+
     <button class="btnSeleccionarTurno"
       ${horaStr === "Sin horario" ? "disabled" : ""}>
       Selección automática
     </button>
-    
+
     <button class="btnEditarTurno">
       Selección Manual
     </button>
-    
+
     <div class="editorHorario"
       style="display:none; margin-top:8px;">
     </div>
@@ -352,8 +354,20 @@ function configurarSeleccionAutomatica(
       const nuevoTurno =
         await guardarTurno(turnoBackend);
 
+      // agregar historial
+      if(historialContainer){
+      
+        agregarTurnoAlHistorial(
+          nuevoTurno,
+          historialContainer
+        );
+      
+      }
+
+      // limpiar grilla
       turnosContainer.innerHTML = "";
 
+      // mostrar mensaje
       mostrarMensaje(card, "✅ Turno creado", "ok");
 
 
@@ -458,14 +472,23 @@ function configurarSeleccionManual(
           estadoTicket
         });
 
-        const historialContainer =
-          document.getElementById("historialTurnos");
-
         const nuevoTurno =
           await guardarTurno(turnoBackend);
 
+        // agregar historial
+        if(historialContainer){
+        
+          agregarTurnoAlHistorial(
+            nuevoTurno,
+            historialContainer
+          );
+        
+        }
+
+        // limpiar grilla
         turnosContainer.innerHTML = "";
 
+        // mostrar mensaje
         mostrarMensaje(card, "✅ Turno creado", "ok");
 
 
