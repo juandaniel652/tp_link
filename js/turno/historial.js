@@ -45,75 +45,94 @@ export async function eliminarTurnoBackend(id) {
 
 export function renderHistorialTurnos(turnos, turnosContainer) {
 
-  let historial = turnosContainer;
-
-  if (!historial) {
-
-    historial = document.createElement("div");
-
-    historial.id = "historialTurnos";
-
-    turnosContainer.appendChild(historial);
-
+  // VALIDACIÓN DEFENSIVA
+  if (!turnosContainer) {
+    console.error("turnosContainer no existe");
+    return;
   }
 
+  // LIMPIAR SIEMPRE (clave del UI state correcto)
+  turnosContainer.innerHTML = "";
 
-  if (!turnos.length) {
+  // SIN TURNOS
+  if (!turnos || turnos.length === 0) {
 
-    historial.innerHTML += "<p>No hay turnos registrados</p>";
+    turnosContainer.innerHTML = `
+      <p class="historial-vacio">
+        No hay turnos para esta fecha
+      </p>
+    `;
 
     return;
-
   }
 
-
+  // RENDER
   turnos.forEach(t => {
 
     const card = document.createElement("div");
-    console.log(t.cliente.numero_cliente)
 
     card.className = "card-turno";
 
     card.innerHTML = `
       <p><strong>Ticket:</strong> ${t.numero_ticket}</p>
 
-      <p><strong>Cliente:</strong> ${t.cliente.numero_cliente} - ${t.cliente.nombre}</p>
+      <p><strong>Cliente:</strong>
+        ${t.cliente.numero_cliente} - ${t.cliente.nombre}
+      </p>
 
-      <p><strong>Técnico:</strong> ${t.tecnico.nombre}</p>
+      <p><strong>Técnico:</strong>
+        ${t.tecnico.nombre}
+      </p>
 
-      <p><strong>Fecha:</strong> ${t.fecha}</p>
+      <p><strong>Fecha:</strong>
+        ${t.fecha}
+      </p>
 
-      <p><strong>Horario:</strong> ${t.hora_inicio} - ${t.hora_fin}</p>
+      <p><strong>Horario:</strong>
+        ${t.hora_inicio} - ${t.hora_fin}
+      </p>
 
-      <p><strong>Estado:</strong> ${t.estado}</p>
+      <p><strong>Estado:</strong>
+        ${t.estado}
+      </p>
 
-      <button class="btnEliminarTurno" data-id="${t.id}">
+      <button
+        class="btnEliminarTurno"
+        data-id="${t.id}">
         Eliminar
       </button>
     `;
 
-    historial.appendChild(card);
+    turnosContainer.appendChild(card);
 
   });
 
+  // EVENTOS
+  turnosContainer
+    .querySelectorAll(".btnEliminarTurno")
+    .forEach(btn => {
 
-  document.querySelectorAll(".btnEliminarTurno")
+      btn.onclick = async () => {
 
-  .forEach(btn => {
+        const id = btn.dataset.id;
 
-    btn.onclick = async () => {
+        await eliminarTurnoBackend(id);
 
-      const id = btn.dataset.id;
+        const selector =
+          document.getElementById("selectorFecha");
 
-      await eliminarTurnoBackend(id);
+        const fecha = selector.value;
 
-      const nuevos = await obtenerTurnosBackend();
+        const nuevos =
+          await obtenerTurnosPorFecha(fecha);
 
-      renderHistorialTurnos(nuevos, turnosContainer);
+        renderHistorialTurnos(
+          nuevos,
+          turnosContainer
+        );
 
-    };
+      };
 
-  });
+    });
 
 }
-
