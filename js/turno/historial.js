@@ -100,19 +100,6 @@ export function renderHistorialTurnos(turnos, container){
     );
 
 
-  const titulo =
-    document.createElement("h3");
-
-  titulo.className =
-    "historial-fecha-titulo";
-
-  titulo.textContent =
-    fechaFormateada;
-
-
-  container.appendChild(titulo);
-
-
   // ============================
   // CARDS
   // ============================
@@ -127,6 +114,10 @@ export function renderHistorialTurnos(turnos, container){
 
 
     card.innerHTML = `
+      <h3 class="card-fecha-turno">
+      ${fechaFormateada}
+      </h3>
+
       <p><strong>Ticket:</strong>
         ${t.numero_ticket}
       </p>
