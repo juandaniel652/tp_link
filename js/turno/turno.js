@@ -1,5 +1,6 @@
 import { T_VALUES, RANGOS } from "./constantes.js";
 import { obtenerTurnosBackend, eliminarTurnoBackend } from "./historial.js";
+import { obtenerTurnosPorFecha } from "./apiTurnos.js";
 import { enviarTurno } from "./envioTicketPOST.js";
 import { renderSelectClientes, renderSelectTecnicos, renderSelectGen } from "./render_selects.js";
 import { renderHistorialTurnos } from "./historial.js";
@@ -8,7 +9,6 @@ import { clienteYaTieneTurno, hayConflicto } from "./validaciones.js";
 import Tecnico from "../tecnico/Tecnico.js";
 import { obtenerClientesBackend } from "../cliente/clienteApi.js";
 import { obtenerTecnicosBackend } from "../tecnico/tecnicoApi.js";
-
 
 document.addEventListener("DOMContentLoaded", async () => {
 
