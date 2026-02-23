@@ -3,6 +3,7 @@ import { formatearRango } from "./formateo.js";
 import { hayConflicto, obtenerHorariosDisponibles } from "./validaciones.js";
 import { enviarTurno } from "./envioTicketPOST.js";
 import { obtenerTurnosBackend } from "./historial.js"
+import { agregarTurnoAlHistorial } from "./historial.js";
 
 
 
@@ -226,19 +227,59 @@ function crearCardTurno({
 
   const horaStr = horariosDisponibles.length ? horariosDisponibles[0] : "Sin horario";
 
+  const fechaFormateada =
+  opcion.fecha.toLocaleDateString(
+    "es-ES",
+    {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    }
+  );
+
   card.innerHTML = `
-    <h3>${NOMBRES_DIAS[opcion.diaNombre]} ${opcion.fecha.toLocaleDateString("es-ES",{day:"numeric", month:"long"})}</h3>
+    <h3 class="card-fecha-turno">
+      Fecha: ${fechaFormateada}
+    </h3>
+  
     <p><strong>Cliente:</strong> ${cliente.numero_cliente} - ${cliente.nombre} ${cliente.apellido}</p>
+  
     <p><strong>Técnico:</strong> ${tecnico.nombre} ${tecnico.apellido}</p>
+  
     <p><strong>T:</strong> ${NumeroT}</p>
+  
     <p><strong>Rango:</strong> ${rangoSeleccionado}</p>
-    <p><strong>Horario General:</strong> ${rangoSeleccionado == "AM" ? "09:00 - 13:00" : "14:00 - 18:00"}</p>
-    <p><strong>Horario Sugerido:</strong> ${horaStr !== "Sin horario" ? formatearRango(horaStr, NumeroT) : "Sin horario disponible"}</p>
+  
+    <p><strong>Horario General:</strong> ${
+      rangoSeleccionado == "AM"
+        ? "09:00 - 13:00"
+        : "14:00 - 18:00"
+    }</p>
+  
+    <p><strong>Horario Sugerido:</strong>
+      ${
+        horaStr !== "Sin horario"
+          ? formatearRango(horaStr, NumeroT)
+          : "Sin horario disponible"
+      }
+    </p>
+    
     <p><strong>Estado del Ticket:</strong> ${estadoTicket}</p>
-    <button class="btnSeleccionarTurno" ${horaStr === "Sin horario" ? "disabled" : ""}>Selección automática</button>
-    <button class="btnEditarTurno">Selección Manual</button>
-    <div class="editorHorario" style="display:none; margin-top:8px;"></div>
+    
+    <button class="btnSeleccionarTurno"
+      ${horaStr === "Sin horario" ? "disabled" : ""}>
+      Selección automática
+    </button>
+    
+    <button class="btnEditarTurno">
+      Selección Manual
+    </button>
+    
+    <div class="editorHorario"
+      style="display:none; margin-top:8px;">
+    </div>
   `;
+
 
   configurarSeleccionAutomatica(card, horaStr, opcion, cliente, tecnico, NumeroT, rangoSeleccionado, estadoTicket, guardarTurno, turnos, turnosContainer, enviarTurno
 );
@@ -305,7 +346,26 @@ function configurarSeleccionAutomatica(
 
         });
 
-      await guardarTurno(turnoBackend);
+      const historialContainer =
+        document.getElementById("historialTurnos");
+
+      const nuevoTurno =
+        await guardarTurno(turnoBackend);
+
+      turnosContainer.innerHTML = "";
+
+      mostrarMensaje(card, "✅ Turno creado", "ok");
+
+
+      // ✅ agregar al historial inmediatamente
+      if(historialContainer){
+      
+        agregarTurnoAlHistorial(
+          nuevoTurno,
+          historialContainer
+        );
+      
+      }
 
       turnosContainer.innerHTML = "";
 
@@ -398,7 +458,26 @@ function configurarSeleccionManual(
           estadoTicket
         });
 
-        await guardarTurno(turnoBackend);
+        const historialContainer =
+          document.getElementById("historialTurnos");
+
+        const nuevoTurno =
+          await guardarTurno(turnoBackend);
+
+        turnosContainer.innerHTML = "";
+
+        mostrarMensaje(card, "✅ Turno creado", "ok");
+
+
+        // ✅ agregar al historial inmediatamente
+        if(historialContainer){
+        
+          agregarTurnoAlHistorial(
+            nuevoTurno,
+            historialContainer
+          );
+        
+        }
 
         turnosContainer.innerHTML = "";
         mostrarMensaje(card, "✅ Turno creado", "ok");

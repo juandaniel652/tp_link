@@ -162,3 +162,47 @@ export function renderHistorialTurnos(turnos, container){
   });
 
 }
+
+export function agregarTurnoAlHistorial(turno, container){
+
+  const card =
+    document.createElement("div");
+
+  card.className =
+    "card-turno";
+
+  card.innerHTML = `
+    <p><strong>Ticket:</strong>
+      ${turno.numero_ticket}
+    </p>
+
+    <p><strong>Cliente:</strong>
+      ${turno.cliente.numero_cliente}
+      - ${turno.cliente.nombre}
+    </p>
+
+    <p><strong>Técnico:</strong>
+      ${turno.tecnico.nombre}
+    </p>
+
+    <p><strong>Horario:</strong>
+      ${turno.hora_inicio}
+      - ${turno.hora_fin}
+    </p>
+
+    <p><strong>Estado:</strong>
+      ${turno.estado}
+    </p>
+
+    <button
+      class="btnEliminarTurno"
+      data-id="${turno.id}">
+      Eliminar
+    </button>
+  `;
+
+
+  // insertar arriba
+  container.appendChild(card);
+
+}
