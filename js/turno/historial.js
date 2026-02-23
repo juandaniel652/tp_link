@@ -57,8 +57,6 @@ export function renderHistorialTurnos(turnos, turnosContainer) {
 
   }
 
-  historial.innerHTML = "<h2>Historial de Turnos</h2>";
-
 
   if (!turnos.length) {
 
