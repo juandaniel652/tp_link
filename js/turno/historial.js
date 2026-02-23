@@ -59,35 +59,47 @@ export async function eliminarTurnoBackend(id) {
 }
 
 
-export function renderHistorialTurnos(turnos, turnosContainer) {
+export function renderHistorialTurnos(turnos, container){
 
-  // VALIDACIÓN DEFENSIVA
-  if (!turnosContainer) {
-    console.error("turnosContainer no existe");
+  // VALIDACIÓN
+  if(!container){
+    console.error("container no definido");
     return;
   }
 
-  // LIMPIAR SIEMPRE (clave del UI state correcto)
-  turnosContainer.innerHTML = "";
+  // LIMPIAR CONTENEDOR
+  container.innerHTML = "";
+
 
   // SIN TURNOS
-  if (!turnos || turnos.length === 0) {
+  if(!turnos || turnos.length === 0){
 
-    turnosContainer.innerHTML = `
-      <p class="historial-vacio">
-        No hay turnos para esta fecha
-      </p>
-    `;
+    container.innerHTML =
+      "<p>No hay turnos para esta fecha</p>";
 
     return;
+
   }
 
-  // OBTENER FECHA DEL PRIMER TURNO
-  const fechaTitulo =
-    formatearFechaLarga(turnos[0].fecha);
+
+  // ============================
+  // TITULO FECHA
+  // ============================
+
+  const fecha =
+    new Date(turnos[0].fecha);
+
+  const fechaFormateada =
+    fecha.toLocaleDateString(
+      "es-AR",
+      {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      }
+    );
 
 
-  // CREAR TITULO
   const titulo =
     document.createElement("h3");
 
@@ -95,34 +107,42 @@ export function renderHistorialTurnos(turnos, turnosContainer) {
     "historial-fecha-titulo";
 
   titulo.textContent =
-    fechaTitulo;
+    fechaFormateada;
+
 
   container.appendChild(titulo);
 
-  // RENDER
+
+  // ============================
+  // CARDS
+  // ============================
+
   turnos.forEach(t => {
 
-    const card = document.createElement("div");
+    const card =
+      document.createElement("div");
 
-    card.className = "card-turno";
+    card.className =
+      "card-turno";
+
 
     card.innerHTML = `
-      <p><strong>Ticket:</strong> ${t.numero_ticket}</p>
+      <p><strong>Ticket:</strong>
+        ${t.numero_ticket}
+      </p>
 
       <p><strong>Cliente:</strong>
-        ${t.cliente.numero_cliente} - ${t.cliente.nombre}
+        ${t.cliente.numero_cliente}
+        - ${t.cliente.nombre}
       </p>
 
       <p><strong>Técnico:</strong>
         ${t.tecnico.nombre}
       </p>
 
-      <p><strong>Fecha:</strong>
-        ${t.fecha}
-      </p>
-
       <p><strong>Horario:</strong>
-        ${t.hora_inicio} - ${t.hora_fin}
+        ${t.hora_inicio}
+        - ${t.hora_fin}
       </p>
 
       <p><strong>Estado:</strong>
@@ -136,36 +156,9 @@ export function renderHistorialTurnos(turnos, turnosContainer) {
       </button>
     `;
 
-    turnosContainer.appendChild(card);
+
+    container.appendChild(card);
 
   });
-
-  // EVENTOS
-  turnosContainer
-    .querySelectorAll(".btnEliminarTurno")
-    .forEach(btn => {
-
-      btn.onclick = async () => {
-
-        const id = btn.dataset.id;
-
-        await eliminarTurnoBackend(id);
-
-        const selector =
-          document.getElementById("selectorFecha");
-
-        const fecha = selector.value;
-
-        const nuevos =
-          await obtenerTurnosPorFecha(fecha);
-
-        renderHistorialTurnos(
-          nuevos,
-          turnosContainer
-        );
-
-      };
-
-    });
 
 }
