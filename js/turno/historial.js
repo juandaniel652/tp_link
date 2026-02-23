@@ -91,28 +91,25 @@ export function renderHistorialTurnos(turnos, container){
 
 
   // ============================
-  // TITULO FECHA
-  // ============================
-
-  const fecha =
-    crearFechaLocalDesdeISO(turno.fecha);
-
-  const fechaFormateada =
-    fecha.toLocaleDateString(
-      "es-AR",
-      {
-        day: "numeric",
-        month: "long",
-        year: "numeric"
-      }
-    );
-
-
-  // ============================
   // CARDS
   // ============================
 
   turnos.forEach(t => {
+
+    // crear fecha LOCAL correcta
+    const fecha =
+      crearFechaLocalDesdeISO(t.fecha);
+
+    const fechaFormateada =
+      fecha.toLocaleDateString(
+        "es-AR",
+        {
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        }
+      );
+
 
     const card =
       document.createElement("div");
@@ -123,7 +120,7 @@ export function renderHistorialTurnos(turnos, container){
 
     card.innerHTML = `
       <h3 class="card-fecha-turno">
-      ${fechaFormateada}
+        ${fechaFormateada}
       </h3>
 
       <p><strong>Ticket:</strong>
@@ -154,7 +151,6 @@ export function renderHistorialTurnos(turnos, container){
         Eliminar
       </button>
     `;
-
 
     container.appendChild(card);
 
