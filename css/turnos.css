@@ -598,3 +598,88 @@ button, .btn-primary, .btnSeleccionarTurno, .btnEliminarTurno {
   width: 100%;
 
 }
+
+/* ================================
+   HEADER HISTORIAL: botón y fecha
+================================ */
+.historial-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* botón Historial */
+.btn-secundario.btn-historial {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 2px solid #2A5298;
+  background: white;
+  color: #1E3C72;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.btn-secundario.btn-historial:hover {
+  background: #eef6ff;
+  transform: translateY(-2px);
+}
+.btn-secundario.btn-historial.active {
+  background: linear-gradient(135deg, #1E3C72, #2A5298);
+  color: #fff;
+  border-color: transparent;
+}
+
+/* input fecha historial */
+.input-fecha-historial {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 2px solid #ccc;
+  background: #fafafa;
+  outline: none;
+  font-size: 14px;
+}
+.input-fecha-historial:focus {
+  border-color: #1E3C72;
+  box-shadow: 0 0 8px rgba(30,60,114,0.12);
+}
+
+/* select manual dentro del editor */
+.select-horarios-manual {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 8px;
+  border-radius: 8px;
+  border: 2px solid #ccc;
+  background: #fff;
+  font-size: 14px;
+  outline: none;
+}
+.select-horarios-manual:focus {
+  border-color: #1E3C72;
+  box-shadow: 0 0 8px rgba(30,60,114,0.12);
+}
+
+/* botón confirmar manual */
+.btnConfirmarManual {
+  margin-top: 8px;
+  padding: 12px;
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #1E3C72, #2A5298);
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btnConfirmarManual:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.14);
+}
+
+/* mensaje dentro de card */
+.mensaje-turno {
+  margin-top: 8px;
+  font-weight: 700;
+}

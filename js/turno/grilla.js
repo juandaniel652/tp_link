@@ -343,195 +343,73 @@ function configurarSeleccionManual(
   card.querySelector(".btnEditarTurno")
   .addEventListener("click", () => {
 
-    const editor =
-      card.querySelector(".editorHorario");
+    const editor = card.querySelector(".editorHorario");
 
     editor.style.display =
-      editor.style.display === "none"
-      ? "block"
-      : "none";
+      editor.style.display === "none" ? "block" : "none";
 
     editor.innerHTML = "";
 
-    if (editor.style.display !== "block")
-      return;
+    if (editor.style.display !== "block") return;
 
     if (!horariosDisponibles.length) {
-
-      editor.innerHTML =
-        "<p>No hay horarios disponibles</p>";
-
+      editor.innerHTML = "<p>No hay horarios disponibles</p>";
       return;
-
     }
 
-    // ===================================
-    // CONTENEDOR DE SLOTS
-    // ===================================
+    // select con opciones
+    const select = document.createElement("select");
+    select.className = "select-horarios-manual";
 
-    const contenedorSlots =
-      document.createElement("div");
-
-    contenedorSlots.className =
-      "contenedor-slots";
-
-    let slotSeleccionado = null;
-
-    // ===================================
-    // CREAR CADA SLOT VISUAL
-    // ===================================
-
-    horariosDisponibles.forEach(horaInicio => {
-
-      const slot =
-        document.createElement("div");
-
-      slot.className =
-        "slot-manual";
-
-      slot.dataset.hora =
-        horaInicio;
-
-      slot.innerHTML = `
-        <strong>
-          ${formatearRango(
-            horaInicio,
-            NumeroT
-          )}
-        </strong>
-      `;
-
-      slot.onclick = () => {
-
-        contenedorSlots
-          .querySelectorAll(".slot-seleccionado")
-          .forEach(el =>
-            el.classList.remove(
-              "slot-seleccionado"
-            )
-          );
-
-        slot.classList.add(
-          "slot-seleccionado"
-        );
-
-        slotSeleccionado =
-          horaInicio;
-
-        mostrarBotonConfirmarManual();
-
-      };
-
-      contenedorSlots.appendChild(
-        slot
-      );
-
+    generarOpcionesHorarios(NumeroT, horariosDisponibles)
+    .forEach(opt => {
+      const option = document.createElement("option");
+      option.value = opt.split(" ")[0]; // horaInicio
+      option.textContent = opt; // muestra "09:00 (09:00 - 09:15)" o similar
+      select.appendChild(option);
     });
 
-    editor.appendChild(
-      contenedorSlots
-    );
+    const btnAceptar = document.createElement("button");
+    btnAceptar.textContent = "Confirmar";
+    btnAceptar.className = "btnConfirmarManual";
 
-    // ===================================
-    // BOTON CONFIRMAR
-    // ===================================
+    btnAceptar.onclick = async () => {
+      const horaInicio = select.value;
 
-    function mostrarBotonConfirmarManual(){
-
-      let btn =
-        editor.querySelector(
-          ".btnConfirmarManual"
-        );
-
-      if (!btn){
-
-        btn =
-          document.createElement(
-            "button"
-          );
-
-        btn.className =
-          "btnConfirmarManual";
-
-        btn.textContent =
-          "Confirmar Turno";
-
-        editor.appendChild(btn);
-
+      if (hayConflicto(
+        turnos,
+        opcion.fechaISO,
+        horaInicio,
+        `${tecnico.nombre} ${tecnico.apellido}`,
+        cliente.numero_cliente || cliente.numeroCliente || cliente.id,
+        NumeroT
+      )) {
+        mostrarMensaje(card, "⚠️ Horario ocupado");
+        return;
       }
 
-      btn.onclick =
-        async () => {
+      try {
+        const turnoBackend = construirTurnoBackend({
+          cliente,
+          tecnico,
+          fechaISO: opcion.fechaISO,
+          horaInicio,
+          NumeroT,
+          estadoTicket
+        });
 
-          if (!slotSeleccionado)
-            return;
+        await guardarTurno(turnoBackend);
 
-          if (
-            hayConflicto(
-              turnos,
-              opcion.fechaISO,
-              slotSeleccionado,
-              `${tecnico.nombre} ${tecnico.apellido}`,
-              cliente.numeroCliente,
-              NumeroT
-            )
-          ) {
+        turnosContainer.innerHTML = "";
+        mostrarMensaje(card, "✅ Turno creado", "ok");
 
-            mostrarMensaje(
-              card,
-              "⚠️ Horario ocupado"
-            );
+      } catch (error) {
+        mostrarMensaje(card, error.message);
+      }
+    };
 
-            return;
-
-          }
-
-          try {
-
-            const turnoBackend =
-              construirTurnoBackend({
-
-                cliente,
-                tecnico,
-
-                fechaISO:
-                  opcion.fechaISO,
-
-                horaInicio:
-                  slotSeleccionado,
-
-                NumeroT,
-
-                estadoTicket
-
-              });
-
-            await guardarTurno(
-              turnoBackend
-            );
-
-            turnosContainer
-              .innerHTML = "";
-
-            mostrarMensaje(
-              card,
-              "✅ Turno creado",
-              "ok"
-            );
-
-          }
-          catch(error){
-
-            mostrarMensaje(
-              card,
-              error.message
-            );
-
-          }
-
-        };
-
-    }
+    editor.appendChild(select);
+    editor.appendChild(btnAceptar);
 
   });
 
