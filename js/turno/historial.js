@@ -17,6 +17,14 @@ function formatearFechaLarga(fechaISO){
 
 }
 
+export function crearFechaLocalDesdeISO(fechaISO){
+
+  const [year, month, day] = fechaISO.split("-").map(Number);
+
+  return new Date(year, month - 1, day);
+
+}
+
 export async function inicializarHistorial(turnosContainer){
 
     const selector = document.getElementById("selectorFecha");
@@ -87,7 +95,7 @@ export function renderHistorialTurnos(turnos, container){
   // ============================
 
   const fecha =
-    new Date(turnos[0].fecha);
+    crearFechaLocalDesdeISO(turno.fecha);
 
   const fechaFormateada =
     fecha.toLocaleDateString(
