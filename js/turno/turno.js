@@ -1,19 +1,41 @@
 import { T_VALUES, RANGOS } from "./constantes.js";
-import { obtenerTurnosBackend, eliminarTurnoBackend } from "./historial.js";
-import { obtenerTurnosPorFecha } from "./apiTurnos.js";
+
+import {
+  obtenerTurnosBackend,
+  renderHistorialTurnos
+} from "./historial.js";
+
+import {
+  obtenerTurnosPorFecha
+} from "./apiTurnos.js";
+
 import { enviarTurno } from "./envioTicketPOST.js";
-import { renderSelectClientes, renderSelectTecnicos, renderSelectGen } from "./render_selects.js";
-import { renderHistorialTurnos } from "./historial.js";
+
+import {
+  renderSelectClientes,
+  renderSelectTecnicos,
+  renderSelectGen
+} from "./render_selects.js";
+
 import { renderGrillaTurnos } from "./grilla.js";
-import { clienteYaTieneTurno, hayConflicto } from "./validaciones.js";
+
+import { clienteYaTieneTurno } from "./validaciones.js";
+
 import Tecnico from "../tecnico/Tecnico.js";
-import { obtenerClientesBackend } from "../cliente/clienteApi.js";
-import { obtenerTecnicosBackend } from "../tecnico/tecnicoApi.js";
+
+import {
+  obtenerClientesBackend
+} from "../cliente/clienteApi.js";
+
+import {
+  obtenerTecnicosBackend
+} from "../tecnico/tecnicoApi.js";
+
 
 document.addEventListener("DOMContentLoaded", async () => {
 
   // ============================
-  // ESTADO UI
+  // UI STATE
   // ============================
 
   const UI_STATE = {
@@ -24,103 +46,72 @@ document.addEventListener("DOMContentLoaded", async () => {
   let currentMode = UI_STATE.DISPONIBILIDAD;
 
   // ============================
-  // ELEMENTOS DOM
+  // DOM
   // ============================
 
-  const tituloSeccion = document.getElementById("tituloSeccion");
+  const tituloSeccion =
+    document.getElementById("tituloSeccion");
 
-  const turnosContainer = document.getElementById("turnosContainer");
-  const historialContainer = document.getElementById("historialTurnos");
+  const turnosContainer =
+    document.getElementById("turnosContainer");
 
-  const btnModoDisponibles = document.getElementById("btnModoDisponibles");
-  const btnModoHistorial = document.getElementById("btnModoHistorial");
+  const historialContainer =
+    document.getElementById("historialTurnos");
 
-  const selectorFecha = document.getElementById("selectorFechaHistorial");
+  const btnModoDisponibles =
+    document.getElementById("btnModoDisponibles");
 
-  const btnMostrarTurnos = document.getElementById("btnMostrarTurnos");
+  const btnModoHistorial =
+    document.getElementById("btnModoHistorial");
 
-  // selects
-  const selectCliente = document.getElementById("selectCliente");
-  const selectTecnico = document.getElementById("selectTecnico");
-  const selectT = document.getElementById("selectT");
-  const selectRango = document.getElementById("selectRango");
-  const selectEstadoTicket = document.getElementById("selectEstadoTicket");
+  const selectorFecha =
+    document.getElementById("selectorFechaHistorial");
+
+  const btnMostrarTurnos =
+    document.getElementById("btnMostrarTurnos");
+
+  const selectCliente =
+    document.getElementById("selectCliente");
+
+  const selectTecnico =
+    document.getElementById("selectTecnico");
+
+  const selectT =
+    document.getElementById("selectT");
+
+  const selectRango =
+    document.getElementById("selectRango");
+
+  const selectEstadoTicket =
+    document.getElementById("selectEstadoTicket");
 
   // ============================
   // DATA
   // ============================
 
-  const clientes = await obtenerClientesBackend();
-  const tecnicosData = await obtenerTecnicosBackend();
-  const tecnicos = tecnicosData.map(t => new Tecnico(t));
+  const clientes =
+    await obtenerClientesBackend();
+
+  const tecnicosData =
+    await obtenerTecnicosBackend();
+
+  const tecnicos =
+    tecnicosData.map(t => new Tecnico(t));
 
   let turnos = [];
 
   // ============================
-  // FUNCIONES DE MODO
+  // CARGAR TURNOS INICIALES
   // ============================
 
-  function cambiarModo(modo){
-
-    currentMode = modo;
-
-    if(modo === UI_STATE.DISPONIBILIDAD){
-
-      tituloSeccion.textContent = "Turnos Disponibles";
-
-      turnosContainer.style.display = "grid";
-      historialContainer.style.display = "none";
-
-      selectorFecha.style.display = "none";
-
-      btnModoDisponibles.classList.add("active");
-      btnModoHistorial.classList.remove("active");
-
-    }
-
-    if(modo === UI_STATE.HISTORIAL){
-
-      tituloSeccion.textContent = "Historial de Turnos";
-
-      turnosContainer.style.display = "none";
-      historialContainer.style.display = "block";
-
-      selectorFecha.style.display = "block";
-
-      btnModoHistorial.classList.add("active");
-      btnModoDisponibles.classList.remove("active");
-
-    }
-
-  }
-
-  // ============================
-  // EVENTOS MODO
-  // ============================
-
-  btnModoDisponibles.onclick = () =>
-    cambiarModo(UI_STATE.DISPONIBILIDAD);
-
-  btnModoHistorial.onclick = () =>
-    cambiarModo(UI_STATE.HISTORIAL);
-
-  // ============================
-  // EVENTO HISTORIAL POR FECHA
-  // ============================
-
-  selectorFecha.onchange = async () => {
-
-    const fecha = selectorFecha.value;
-
-    if(!fecha) return;
+  async function cargarTurnosIniciales(){
 
     try{
 
-      const turnosFecha =
-        await obtenerTurnosPorFecha(fecha);
+      turnos = await obtenerTurnosBackend();
 
       renderHistorialTurnos(
-        turnosFecha,
+        turnos,
         historialContainer
       );
 
@@ -131,76 +122,234 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
-  };
+  }
 
   // ============================
-  // EVENTO DISPONIBILIDAD
+  // GUARDAR TURNO
   // ============================
 
-  btnMostrarTurnos.onclick = () => {
+  async function guardarTurnoBackend(turno){
 
-    cambiarModo(UI_STATE.DISPONIBILIDAD);
+    const turnoCreado =
+      await enviarTurno(turno);
 
-    const clienteId = selectCliente.value;
-    const tecnicoId = selectTecnico.value;
-    const tSeleccionado = selectT.value;
-    const rangoSeleccionado = selectRango.value;
-    const estadoTicket = selectEstadoTicket.value;
+    turnos.push(turnoCreado);
 
-    if (!clienteId || !tecnicoId ||
-        !tSeleccionado || !rangoSeleccionado ||
-        !estadoTicket)
+  }
 
-      return alert("Complete todos los campos");
+  // ============================
+  // CAMBIO DE MODO
+  // ============================
 
-    if(clienteYaTieneTurno(clienteId, turnos))
-      return alert("Cliente ya tiene turno");
+  function cambiarModo(modo){
 
-    const tecnico =
-      tecnicos.find(t => t.id === tecnicoId);
+    currentMode = modo;
 
-    renderGrillaTurnos({
+    if(modo === UI_STATE.DISPONIBILIDAD){
 
-      clienteId,
-      tecnico,
-      tSeleccionado,
-      rangoSeleccionado,
-      clientes,
-      turnos,
-      turnosContainer,
-      estadoTicket,
+      tituloSeccion.textContent =
+        "Turnos Disponibles";
 
-      guardarTurno: async (turno) => {
+      turnosContainer.style.display =
+        "grid";
 
-        const turnoCreado =
-          await enviarTurno(turno);
+      historialContainer.style.display =
+        "none";
 
-        turnos.push(turnoCreado);
+      selectorFecha.style.display =
+        "none";
+
+      btnModoDisponibles.classList.add("active");
+
+      btnModoHistorial.classList.remove("active");
+
+    }
+
+    if(modo === UI_STATE.HISTORIAL){
+
+      tituloSeccion.textContent =
+        "Historial de Turnos";
+
+      turnosContainer.style.display =
+        "none";
+
+      historialContainer.style.display =
+        "block";
+
+      selectorFecha.style.display =
+        "block";
+
+      btnModoHistorial.classList.add("active");
+
+      btnModoDisponibles.classList.remove("active");
+
+    }
+
+  }
+
+  // ============================
+  // EVENTO HISTORIAL POR FECHA
+  // ============================
+
+  selectorFecha.onchange =
+    async () => {
+
+      const fecha =
+        selectorFecha.value;
+
+      if(!fecha)
+        return;
+
+      try{
+
+        const turnosFecha =
+          await obtenerTurnosPorFecha(fecha);
+
+        renderHistorialTurnos(
+          turnosFecha,
+          historialContainer
+        );
+
+      }
+      catch(e){
+
+        console.error(e);
 
       }
 
-    });
+    };
 
-  };
+  // ============================
+  // EVENTO MOSTRAR DISPONIBLES
+  // ============================
+
+  btnMostrarTurnos.onclick =
+    async () => {
+
+      cambiarModo(
+        UI_STATE.DISPONIBILIDAD
+      );
+
+      const clienteId =
+        selectCliente.value;
+
+      const tecnicoId =
+        selectTecnico.value;
+
+      const tSeleccionado =
+        selectT.value;
+
+      const rangoSeleccionado =
+        selectRango.value;
+
+      const estadoTicket =
+        selectEstadoTicket.value;
+
+      if(
+        !clienteId ||
+        !tecnicoId ||
+        !tSeleccionado ||
+        !rangoSeleccionado ||
+        !estadoTicket
+      ){
+
+        alert("Complete todos los campos");
+        return;
+
+      }
+
+      if(
+        clienteYaTieneTurno(
+          clienteId,
+          turnos
+        )
+      ){
+
+        alert("Cliente ya tiene turno");
+        return;
+
+      }
+
+      const tecnico =
+        tecnicos.find(
+          t => t.id === tecnicoId
+        );
+
+      await renderGrillaTurnos({
+
+        clienteId,
+        tecnico,
+        tSeleccionado,
+        rangoSeleccionado,
+        clientes,
+        turnos,
+        turnosContainer,
+        estadoTicket,
+        guardarTurno:
+          guardarTurnoBackend
+
+      });
+
+    };
+
+  // ============================
+  // EVENTOS BOTONES MODO
+  // ============================
+
+  btnModoDisponibles.onclick =
+    () => cambiarModo(
+      UI_STATE.DISPONIBILIDAD
+    );
+
+  btnModoHistorial.onclick =
+    () => cambiarModo(
+      UI_STATE.HISTORIAL
+    );
 
   // ============================
   // INIT SELECTS
   // ============================
 
-  renderSelectClientes(selectCliente, clientes, turnos);
+  renderSelectClientes(
+    selectCliente,
+    clientes,
+    turnos
+  );
 
-  renderSelectTecnicos(selectTecnico, tecnicos);
+  renderSelectTecnicos(
+    selectTecnico,
+    tecnicos
+  );
 
-  renderSelectGen(selectT, T_VALUES, "Seleccionar T", "T");
+  renderSelectGen(
+    selectT,
+    T_VALUES,
+    "Seleccionar T",
+    "T"
+  );
 
-  renderSelectGen(selectRango, RANGOS, "Seleccionar rango", "");
+  renderSelectGen(
+    selectRango,
+    RANGOS,
+    "Seleccionar rango",
+    ""
+  );
 
-  renderSelectGen(selectEstadoTicket, ["Abierto"], "Seleccionar estado", "");
+  renderSelectGen(
+    selectEstadoTicket,
+    ["Abierto"],
+    "Seleccionar estado",
+    ""
+  );
 
   // ============================
-  // MODO INICIAL
+  // INIT
   // ============================
 
-  cambiarModo(UI_STATE.DISPONIBILIDAD);
+  await cargarTurnosIniciales();
+
+  cambiarModo(
+    UI_STATE.DISPONIBILIDAD
+  );
 
 });
