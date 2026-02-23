@@ -1,5 +1,21 @@
 import { formatearRango } from "./formateo.js";
-import { TURNOS_URL } from "./apiTurnos.js";
+import { TURNOS_URL, obtenerTurnosPorFecha } from "./apiTurnos.js";
+
+export async function inicializarHistorial(turnosContainer){
+
+    const selector = document.getElementById("selectorFecha");
+
+    selector.addEventListener("change", async () => {
+
+        const fecha = selector.value;
+
+        const turnos = await obtenerTurnosPorFecha(fecha);
+
+        renderHistorialTurnos(turnos, turnosContainer);
+
+    });
+
+}
 
 export async function obtenerTurnosBackend() {
 
@@ -29,7 +45,7 @@ export async function eliminarTurnoBackend(id) {
 
 export function renderHistorialTurnos(turnos, turnosContainer) {
 
-  let historial = document.getElementById("historialTurnos");
+  let historial = turnosContainer;
 
   if (!historial) {
 

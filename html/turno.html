@@ -77,10 +77,27 @@
 
   <!-- Panel derecho -->
   <section class="content">
-    <h2>Turnos Disponibles</h2>
-    <div id="turnosContainer" class="grilla-turnos"></div>
 
-    <div id="historialTurnos" class="historial-turnos"></div>
+    <div class="historial-header">
+    
+      <button id="btnModoDisponibles" class="btn-secundario active">
+        Disponibilidad
+      </button>
+    
+      <button id="btnModoHistorial" class="btn-secundario">
+        Historial
+      </button>
+    
+      <input type="date" id="selectorFechaHistorial" style="display:none">
+    
+    </div>
+  
+    <h2 id="tituloSeccion">Turnos Disponibles</h2>
+  
+    <div id="turnosContainer" class="grilla-turnos"></div>
+  
+    <div id="historialTurnos" class="historial-turnos" style="display:none"></div>
+  
   </section>
 </main>
 
