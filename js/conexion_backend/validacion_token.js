@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.log("Usuario autenticado:", user);
 
   } catch (error) {
-  removeToken();s
+  removeToken();
     window.location.replace(LOGIN_URL);
   }
 });
