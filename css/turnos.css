@@ -683,3 +683,18 @@ button, .btn-primary, .btnSeleccionarTurno, .btnEliminarTurno {
   margin-top: 8px;
   font-weight: 700;
 }
+
+.historial-fecha-titulo{
+
+  color: #1976d2;
+
+  font-size: 20px;
+
+  font-weight: 600;
+
+  margin:
+
+    20px 0
+    10px 0;
+
+}

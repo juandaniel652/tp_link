@@ -129,6 +129,21 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     turnos.push(turnoCreado);
 
+  // ============================
+  // RESET SELECTS
+  // ============================
+
+  
+
+    selectCliente.selectedIndex = 0;
+    selectTecnico.selectedIndex = 0;
+    selectT.selectedIndex = 0;
+    selectRango.selectedIndex = 0;
+    selectEstadoTicket.selectedIndex = 0;
+
+    // opcional: limpiar grilla
+    turnosContainer.innerHTML = "";
+
   }
 
 

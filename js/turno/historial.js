@@ -1,6 +1,22 @@
 import { formatearRango } from "./formateo.js";
 import { TURNOS_URL, obtenerTurnosPorFecha } from "./apiTurnos.js";
 
+function formatearFechaLarga(fechaISO){
+
+  const fecha =
+    new Date(fechaISO);
+
+  return fecha.toLocaleDateString(
+    "es-AR",
+    {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    }
+  );
+
+}
+
 export async function inicializarHistorial(turnosContainer){
 
     const selector = document.getElementById("selectorFecha");
@@ -65,6 +81,23 @@ export function renderHistorialTurnos(turnos, turnosContainer) {
 
     return;
   }
+
+  // OBTENER FECHA DEL PRIMER TURNO
+  const fechaTitulo =
+    formatearFechaLarga(turnos[0].fecha);
+
+
+  // CREAR TITULO
+  const titulo =
+    document.createElement("h3");
+
+  titulo.className =
+    "historial-fecha-titulo";
+
+  titulo.textContent =
+    fechaTitulo;
+
+  container.appendChild(titulo);
 
   // RENDER
   turnos.forEach(t => {
