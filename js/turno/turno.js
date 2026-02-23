@@ -191,9 +191,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   renderSelectTecnicos(selectTecnico, tecnicos);
 
-  renderSelectGen(selectT, T_VALUES);
-  renderSelectGen(selectRango, RANGOS);
-  renderSelectGen(selectEstadoTicket, ["Abierto"]);
+  renderSelectGen(selectT, T_VALUES, "Seleccionar T", "T");
+
+  renderSelectGen(selectRango, RANGOS, "Seleccionar rango", "");
+
+  renderSelectGen(selectEstadoTicket, ["Abierto"], "Seleccionar estado", "");
 
   // ============================
   // MODO INICIAL
