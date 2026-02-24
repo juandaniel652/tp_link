@@ -1,6 +1,6 @@
 import { TurnoService } from '../agenda/turnoService.js';
 import { ClienteService } from '../service/clienteService.js';
-import { TecnicoService } from '../tecnico/TecnicoService.js';
+import TecnicoService from '../tecnico/TecnicoService.js';
 import { AgendaUI } from './AgendaUI.js';
 import { AgendaNav } from './AgendaNav.js';
 import { getFechaLunes, formatHora, pad } from './utils.js';
@@ -12,7 +12,7 @@ export class Agenda {
     // servicios conectados al backend
     this.turnoService = new TurnoService();
     this.clienteService = new ClienteService();
-    this.tecnicoService = new TecnicoService();
+    this.tecnicoService = TecnicoService;
 
     this.rangoSeleccionado = "AM";
     this.horaInicio = 9;
@@ -66,15 +66,15 @@ export class Agenda {
   async generarTabla() {
 
     await this.initPromise;
-    
+
     this.container.innerHTML = '';
     this.container.appendChild(this.nav.crearNavegacion());
-    
+
     const table = document.createElement('table');
     table.appendChild(this.ui.crearEncabezado());
     table.appendChild(this.ui.crearCuerpo());
     this.container.appendChild(table);
-    
+
     this.cargarClientesPorTecnico(this.tecnicoFiltro);
   }
 
