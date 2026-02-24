@@ -54,7 +54,7 @@ export async function obtenerTurnosBackend() {
 
 export async function eliminarTurnoBackend(id) {
 
-    const response = await fetch(`${TURNOS_URL}${id}`, {
+    const response = await fetch(`${TURNOS_URL}${id}/cancelar`, {
 
 
         method: "PATCH"
