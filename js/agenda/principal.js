@@ -31,7 +31,7 @@ export class Agenda {
     this.ui = new AgendaUI(this);
 
     // 🔹 inicialización async
-    this.init();
+    this.initPromise = this.init();
   }
 
   async init() {
@@ -63,15 +63,18 @@ export class Agenda {
 
   }
 
-  generarTabla() {
+  async generarTabla() {
+
+    await this.initPromise;
+    
     this.container.innerHTML = '';
     this.container.appendChild(this.nav.crearNavegacion());
-
+    
     const table = document.createElement('table');
     table.appendChild(this.ui.crearEncabezado());
     table.appendChild(this.ui.crearCuerpo());
     this.container.appendChild(table);
-
+    
     this.cargarClientesPorTecnico(this.tecnicoFiltro);
   }
 
