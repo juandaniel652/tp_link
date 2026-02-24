@@ -78,19 +78,29 @@ export function obtenerHorariosDisponibles(turnos, fechaISO, tecnico, diaNombre,
 
 // Mide los T ocupados en agenda, de esa manera no muestra turnos ocupados ya por el mismo técnico
 function expandirTurno(turno) {
-  const [h, m] = turno.hora.split(":").map(Number);
-  const bloques = [];
-  let hora = h;
-  let minuto = m;
-  const duracion = turno.duracion || 15; // siempre 15 min si no hay otro valor
 
-  for (let i = 0; i < turno.t; i++) {
-    bloques.push(`${String(hora).padStart(2,"0")}:${String(minuto).padStart(2,"0")}`);
-    minuto += duracion;
-    if (minuto >= 60) {
-      hora += Math.floor(minuto / 60);
-      minuto = minuto % 60;
-    }
+  if (!turno.hora_inicio || !turno.hora_fin)
+    return [];
+
+  const bloques = [];
+
+  let actual = turno.hora_inicio.slice(0,5);
+  const fin = turno.hora_fin.slice(0,5);
+
+  while (actual < fin) {
+
+    bloques.push(actual);
+
+    const [h, m] = actual.split(":").map(Number);
+
+    const fecha = new Date();
+    fecha.setHours(h);
+    fecha.setMinutes(m + 15);
+
+    actual = fecha.toTimeString().slice(0,5);
+
   }
+
   return bloques;
+
 }
