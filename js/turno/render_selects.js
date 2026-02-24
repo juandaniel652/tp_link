@@ -51,3 +51,24 @@ export function renderSelectGen(selectEl, items, placeholder, prefix = "") {
     selectEl.appendChild(option);
   });
 }
+
+export function limpiarSelects({
+  selectCliente,
+  selectTecnico,
+  selectTipoTurno,
+  selectRango
+}) {
+
+  if (selectCliente)
+    selectCliente.selectedIndex = 0;
+
+  if (selectTecnico)
+    selectTecnico.selectedIndex = 0;
+
+  if (selectTipoTurno)
+    selectTipoTurno.selectedIndex = 0;
+
+  if (selectRango)
+    selectRango.selectedIndex = 0;
+
+}
