@@ -149,6 +149,8 @@ export function renderHistorialTurnos(turnos, container){
 
     container.appendChild(card);
 
+    const btnEliminar = card.querySelector(".btnEliminarTurno");
+
     btnEliminar.addEventListener("click", async () => {
 
     const id = btnEliminar.dataset.id;
