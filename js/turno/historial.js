@@ -1,21 +1,6 @@
-import { formatearRango } from "./formateo.js";
 import { TURNOS_URL, obtenerTurnosPorFecha } from "./apiTurnos.js";
+import { adaptarListaTurnos } from "./adaptadores.js";
 
-function formatearFechaLarga(fechaISO){
-
-  const fecha =
-    new Date(fechaISO);
-
-  return fecha.toLocaleDateString(
-    "es-AR",
-    {
-      day: "numeric",
-      month: "long",
-      year: "numeric"
-    }
-  );
-
-}
 
 export function crearFechaLocalDesdeISO(fechaISO){
 
@@ -33,7 +18,9 @@ export async function inicializarHistorial(turnosContainer){
 
         const fecha = selector.value;
 
-        const turnos = await obtenerTurnosPorFecha(fecha);
+        const turnosBackend = await obtenerTurnosPorFecha(fecha);
+
+        const turnos = adaptarListaTurnos(turnosBackend);
 
         renderHistorialTurnos(turnos, turnosContainer);
 

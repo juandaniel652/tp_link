@@ -4,7 +4,7 @@
 
 // Verifica si un cliente ya tiene un turno asignado
 export function clienteYaTieneTurno(clienteId, turnos) {
-  return turnos.some(turno => String(turno.id_cliente) === String(clienteId));
+  return turnos.some(turno => String(turno.cliente?.id) === String(clienteId));
 }
 
 // Helper: expande un horario inicial + cantidad de bloques t -> array de "HH:MM"
@@ -35,8 +35,8 @@ export function hayConflicto(turnos, fechaISO, hora, tecnicoNombre, clienteId = 
     if (turno.fecha !== fechaISO) return false;
 
     const bloquesExistente = expandirTurno(turno); // usa turno.t del turno guardado (cantidad de bloques)
-    const tecnicoIgual = turno.tecnico === tecnicoNombre;
-    const clienteIgual = clienteId ? String(turno.id_cliente) === String(clienteId) : false;
+    const tecnicoIgual = turno.tecnico?.nombre === tecnicoNombre;
+const clienteIgual = clienteId ? String(turno.cliente?.id) === String(clienteId) : false;
 
     // Si cualquiera de los bloques candidatos está en los bloques existentes => conflicto
     const hayInterseccion = bloquesCandidato.some(b => bloquesExistente.includes(b));
@@ -79,8 +79,10 @@ export function obtenerHorariosDisponibles(turnos, fechaISO, tecnico, diaNombre,
 // Mide los T ocupados en agenda, de esa manera no muestra turnos ocupados ya por el mismo técnico
 function expandirTurno(turno) {
 
-  if (!turno.hora_inicio || !turno.hora_fin)
+  if (!turno || !turno.hora_inicio || !turno.hora_fin) {
+    console.warn("Turno inválido recibido:", turno);
     return [];
+  }
 
   const bloques = [];
 
@@ -96,11 +98,10 @@ function expandirTurno(turno) {
     const fecha = new Date();
     fecha.setHours(h);
     fecha.setMinutes(m + 15);
+    fecha.setSeconds(0);
 
     actual = fecha.toTimeString().slice(0,5);
-
   }
 
   return bloques;
-
 }
