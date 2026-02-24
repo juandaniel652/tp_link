@@ -22,6 +22,8 @@ export async function inicializarHistorial(turnosContainer){
 
         const turnos = adaptarListaTurnos(turnosBackend);
 
+        turnos = await obtenerTurnosBackend();
+        
         renderHistorialTurnos(turnos, turnosContainer);
 
     });
@@ -158,12 +160,13 @@ export function renderHistorialTurnos(turnos, container){
     await eliminarTurnoBackend(id);
       
     // volver a pedir datos reales al backend
-    const selector = document.getElementById("selectorFecha");
+    const selector = document.getElementById("selectorFechaHistorial");
     const fecha = selector.value;
       
     const turnosBackend = await obtenerTurnosPorFecha(fecha);
     const turnos = adaptarListaTurnos(turnosBackend);
-      
+    
+    turnos = await obtenerTurnosBackend();
     renderHistorialTurnos(turnos, container);
       
   });
