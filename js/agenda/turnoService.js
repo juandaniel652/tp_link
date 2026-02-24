@@ -1,76 +1,92 @@
 import { apiRequest } from "../api/apiRequest.js";
 
-function parseFechaISOToLocal(fechaISO) {
-  if (!fechaISO) return null;
-  const [y, m, d] = fechaISO.split("-").map(Number);
-  return new Date(y, m - 1, d);
-}
-
-export class TurnoService {
-
-  async obtenerTodos() {
-    const arr = await apiRequest("/turnos");
-
-    return arr.map(t => ({
-      ...t,
-      fechaObj: parseFechaISOToLocal(
-        t.fecha_hora?.split("T")[0]
-      )
-    }));
-  }
-
-  async crear(turno) {
-    return apiRequest("/turnos", {
-      method: "POST",
-      body: JSON.stringify(turno)
-    });
-  }
-
-  async actualizar(id, turno) {
-    return apiRequest(`/turnos/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(turno)
-    });
-  }
-
-  async eliminar(id) {
-    return apiRequest(`/turnos/${id}`, {
-      method: "DELETE"
-    });
-  }
-
-}
-
 export class TurnoService {
 
   async obtenerTodos() {
 
     const turnos = await apiRequest("/turnos");
 
-    return turnos.map(t => ({
+    return turnos.map(t => {
 
-      id: t.id,
+      const horaInicio = t.hora_inicio.slice(0,5);
+      const horaFin = t.hora_fin.slice(0,5);
 
-      fecha: t.fecha,
+      // calcular bloques de 15 min
+      const [h1,m1] = horaInicio.split(":").map(Number);
+      const [h2,m2] = horaFin.split(":").map(Number);
 
-      hora_inicio: t.hora_inicio.slice(0,5),
+      const bloques = ((h2*60 + m2) - (h1*60 + m1)) / 15;
 
-      hora_fin: t.hora_fin.slice(0,5),
+      const clienteNombre =
+        t.cliente
+          ? `${t.cliente.nombre} ${t.cliente.apellido}`
+          : "Sin cliente";
 
-      tecnico_id: t.tecnico.id,
+      const tecnicoNombre =
+        t.tecnico
+          ? `${t.tecnico.nombre} ${t.tecnico.apellido}`
+          : "Sin técnico";
 
-      tecnico_nombre: `${t.tecnico.nombre} ${t.tecnico.apellido}`,
+      return {
 
-      cliente_id: t.cliente.id,
+        // internos
+        id: t.id,
+        numero_ticket: t.numero_ticket,
 
-      cliente_nombre: `${t.cliente.nombre} ${t.cliente.apellido}`,
+        // necesarios para AgendaUI
+        fecha: t.fecha,
 
-      estado: t.estado,
+        hora: horaInicio,
 
-      numero_ticket: t.numero_ticket
+        t: bloques,
 
-    }));
+        rango: `${horaInicio} - ${horaFin}`,
 
+        cliente: clienteNombre,
+
+        tecnico: tecnicoNombre,
+
+        estadoTicket: t.estado,
+
+        color: this.obtenerColorEstado(t.estado),
+
+        // útiles para futuras operaciones
+        cliente_id: t.cliente?.id,
+        tecnico_id: t.tecnico?.id
+
+      };
+
+    });
+
+  }
+
+  obtenerColorEstado(estado){
+
+    switch(estado){
+
+      case "pendiente":
+        return "#f39c12";
+
+      case "confirmado":
+        return "#1E90FF";
+
+      case "cancelado":
+        return "#e74c3c";
+
+      case "completado":
+        return "#27ae60";
+
+      default:
+        return "#7f8c8d";
+    }
+
+  }
+
+  async crear(turno){
+    return apiRequest("/turnos",{
+      method:"POST",
+      body:JSON.stringify(turno)
+    });
   }
 
 }
