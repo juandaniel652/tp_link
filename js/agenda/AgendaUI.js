@@ -92,18 +92,15 @@ export class AgendaUI {
     wrapper.classList.add('bloque-turno');
 
     const btn = document.createElement('button');
-    btn.textContent = turno.cliente?.nombre + " " + turno.cliente?.apellido;
+    btn.textContent = this.formatearPersona(turno.cliente);
     btn.disabled = true;
     btn.classList.add('btn-ocupado');
     btn.style.backgroundColor = turno.color || '#1E90FF';
 
     // Tooltip
     btn.addEventListener('mouseenter', () => {
-      const clienteStr =
-      turno.cliente?.nombre + " " + turno.cliente?.apellido;
-
-    const tecnicoStr =
-      turno.tecnico?.nombre + " " + turno.tecnico?.apellido;
+    const clienteStr = this.formatearPersona(turno.cliente);
+    const tecnicoStr = this.formatearPersona(turno.tecnico);
 
     const contenido = `
       <strong>Cliente:</strong> ${clienteStr}<br>
@@ -134,13 +131,13 @@ export class AgendaUI {
     (this.agenda.turnos || []).forEach(turno => {
       const fStr = turno.fecha.replace(/\//g, '-');
       const [horaTurno, minTurno] = turno.hora_inicio.split(':').map(Number);
-        
+
       const inicio = new Date(`2000-01-01T${turno.hora_inicio}`);
       const fin = new Date(`2000-01-01T${turno.hora_fin}`);
-        
+
       const bloquesTurno =
         (fin - inicio) / (this.agenda.minutosBloque * 60000);
-        
+
       for (let b = 0; b < bloquesTurno; b++) {
         const totalMin = horaTurno * 60 + minTurno + b * this.agenda.minutosBloque;
         const hh = Math.floor(totalMin / 60);
@@ -226,5 +223,18 @@ export class AgendaUI {
     table.appendChild(this.crearEncabezado());
     table.appendChild(this.crearCuerpo());
     container.appendChild(table);
+  }
+
+  /* ==========================
+   * OTRAS FUNCIONES AUXILIARES
+  * ========================== */
+
+  formatearPersona(persona) {
+    if (!persona) return '';
+
+    const nombre = persona.nombre || '';
+    const apellido = persona.apellido || '';
+
+    return `${nombre} ${apellido}`.trim();
   }
 }
