@@ -34,8 +34,9 @@ export class ClienteController {
       this.tablaBody,
       (index) => this.editarCliente(index),
       (index) => this.eliminarCliente(index)
-    );
+    );  
 
+    this.service = new ClienteService(); 
     this.configurarEventos();
     this.cargarClientes();
   }
@@ -70,7 +71,7 @@ export class ClienteController {
   // ==============================
   async cargarClientes() {
     try {
-      this.clientes = await ClienteService.obtenerTodos();
+      this.clientes = await this.service.obtenerTodos();
       this.tabla.renderizar(this.clientes);
     } catch (error) {
       console.error(error);
@@ -96,12 +97,12 @@ export class ClienteController {
     try {
       if (this.indiceEdicion === null) {
         // CREAR
-        await ClienteService.crear(cliente);
+        await this.service.crear(cliente);
         ToastService.success("Cliente creado correctamente");
       } else {
         // EDITAR
         const clienteEditado = this.clientes[this.indiceEdicion];
-        await ClienteService.actualizar(clienteEditado.id, cliente);
+        await this.service.actualizar(clienteEditado.id, cliente);
         ToastService.success("Cliente creado correctamente");
         this.indiceEdicion = null;
       }
@@ -140,7 +141,7 @@ export class ClienteController {
       if (!confirmar) return;
     
       try {
-        await ClienteService.eliminar(cliente.id);
+        await this.service.eliminar(cliente.id);
         await this.cargarClientes();
         ToastService.success("Cliente eliminado");
       } catch (error) {
