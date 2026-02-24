@@ -104,10 +104,10 @@ export class Agenda {
       const clientesConTurno = this.turnos
         .filter(t => {
           if (typeof t.tecnico === "string") return t.tecnico.trim() === tecnico.trim();
-          else if (t.tecnico?.nombre && t.tecnico?.apellido) return `${t.tecnico.nombre} ${t.tecnico.apellido}`.trim() === tecnico.trim();
+          else if (t.tecnico?.nombre && t.tecnico?.apellido) return `${t.tecnico.nombre}`.trim() === tecnico.trim();
           return false;
         })
-        .map(t => typeof t.cliente === "string" ? t.cliente.trim() : `${t.cliente.nombre} ${t.cliente.apellido}`.trim());
+        .map(t => typeof t.cliente === "string" ? t.cliente.trim() : `${t.cliente.numero_cliente} ${t.cliente.nombre}`.trim());
 
       clientesFiltrados = this.clientes.filter(c => {
         const nombreCompleto = `${c.nombre} ${c.apellido}`.trim();
