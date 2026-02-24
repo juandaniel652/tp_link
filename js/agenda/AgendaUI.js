@@ -131,22 +131,24 @@ export class AgendaUI {
 
     // Indexar turnos por fecha y hora
     const turnosIndex = {};
-    (this.agenda.turnos || []).forEach(t => {
+    (this.agenda.turnos || []).forEach(turno => {
       const fStr = turno.fecha.replace(/\//g, '-');
       const [horaTurno, minTurno] = turno.hora_inicio.split(':').map(Number);
-
+        
       const inicio = new Date(`2000-01-01T${turno.hora_inicio}`);
       const fin = new Date(`2000-01-01T${turno.hora_fin}`);
-
+        
       const bloquesTurno =
         (fin - inicio) / (this.agenda.minutosBloque * 60000);
-
+        
       for (let b = 0; b < bloquesTurno; b++) {
-        const totalMin = horaTurno * 60 + minTurno + b * 15;
+        const totalMin = horaTurno * 60 + minTurno + b * this.agenda.minutosBloque;
         const hh = Math.floor(totalMin / 60);
         const mm = totalMin % 60;
-        const bloqueHora = `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
-
+      
+        const bloqueHora =
+          `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
+      
         if (!turnosIndex[fStr]) turnosIndex[fStr] = {};
         if (!turnosIndex[fStr][bloqueHora]) turnosIndex[fStr][bloqueHora] = [];
         turnosIndex[fStr][bloqueHora].push(turno);
