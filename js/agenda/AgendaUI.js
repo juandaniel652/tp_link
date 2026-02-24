@@ -131,7 +131,7 @@ export class AgendaUI {
 
     // Indexar turnos por fecha y hora
     const turnosIndex = {};
-    this.agenda.turnos.forEach(turno => {
+    (this.agenda.turnos || []).forEach(t => {
       const fStr = turno.fecha.replace(/\//g, '-');
       const [horaTurno, minTurno] = turno.hora_inicio.split(':').map(Number);
 

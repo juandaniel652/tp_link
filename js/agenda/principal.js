@@ -14,6 +14,10 @@ export class Agenda {
     this.clienteService = new ClienteService();
     this.tecnicoService = TecnicoService;
 
+    this.turnos = [];
+    this.clientes = [];
+    this.tecnicos = [];
+
     this.rangoSeleccionado = "AM";
     this.horaInicio = 9;
     this.horaFin = 13;
