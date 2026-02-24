@@ -5,20 +5,6 @@ export async function enviarTurno(turno) {
 
     const token = getToken();
 
-    const TipoTurnoEnum = {
-    CONSULTA: "consulta",
-    CONTROL: "control",
-    URGENCIA: "urgencia"
-    };
-
-    const EstadoTurnoEnum = {
-    PENDIENTE: "pendiente",
-    CONFIRMADO: "confirmado",
-    CANCELADO: "cancelado",
-    COMPLETADO: "completado"
-    };
-
-
     const turnoBackend = {
 
         numero_ticket: turno.numero_ticket,
@@ -27,7 +13,11 @@ export async function enviarTurno(turno) {
 
         tecnico_id: turno.tecnico_id,
 
-        tipo_turno: TipoTurnoEnum.CONSULTA,
+        // ✅ ahora integer directo desde frontend
+        tipo_turno: turno.tipo_turno,
+
+        // ✅ nueva propiedad
+        rango_horario: turno.rango_horario,
 
         fecha: turno.fecha,
 
@@ -35,8 +25,7 @@ export async function enviarTurno(turno) {
 
         hora_fin: turno.hora_fin + ":00",
 
-        estado: EstadoTurnoEnum.PENDIENTE
-
+        estado: "pendiente"
     };
 
     console.log("ENVIANDO TURNO:", turnoBackend);

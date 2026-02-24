@@ -26,12 +26,15 @@ export function formatearEstado(estado) {
 export function formatearTipo(tipo) {
 
     const mapa = {
-        consulta: "Consulta técnica",
-        control: "Control",
-        urgencia: "Urgencia"
+        1: "Instalación",
+        2: "Soporte técnico",
+        3: "Mantenimiento",
+        4: "Retiro",
+        5: "Revisión",
+        6: "Otro"
     };
 
-    return mapa[tipo] || tipo;
+    return mapa[tipo] || `Tipo ${tipo}`;
 
 }
 

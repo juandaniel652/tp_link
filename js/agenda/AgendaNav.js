@@ -23,7 +23,7 @@ export class AgendaNav {
 
     select.appendChild(new Option('Agenda Unificada', ''));
 
-    this.agenda.tecnicoService.getAll().forEach(t => {
+    this.agenda.tecnicos.forEach(t => {
       const nombreCompleto = `${t.nombre} ${t.apellido}`.trim();
       select.appendChild(new Option(nombreCompleto, nombreCompleto));
     });

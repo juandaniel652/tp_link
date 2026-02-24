@@ -26,6 +26,7 @@ function construirTurnoBackend({
   fechaISO,
   horaInicio,
   NumeroT,
+  rangoSeleccionado,
   estadoTicket
 }) {
 
@@ -36,23 +37,26 @@ function construirTurnoBackend({
     throw new Error("tecnico.id faltante");
 
   return {
-  
+
     cliente_id: cliente.id,
-  
+
     tecnico_id: tecnico.id,
-  
+
     fecha: fechaISO,
-  
+
     hora_inicio: horaInicio,
-  
+
     hora_fin: calcularHoraFin(horaInicio, NumeroT),
-  
-    estado: estadoTicket,
-  
-    tipo_turno: "regular",
-  
+
+    estado: "pendiente",
+
+    // ✅ ahora INTEGER correcto
+    tipo_turno: Number(NumeroT),
+
+    // ✅ NUEVO CAMPO OBLIGATORIO
+    rango_horario: rangoSeleccionado,
+
     numero_ticket: `${cliente.id}_${Date.now()}`
-  
   };
 
 }
@@ -334,19 +338,16 @@ function configurarSeleccionAutomatica(
 
       const turnoBackend =
         construirTurnoBackend({
-
+        
           cliente,
           tecnico,
-
           fechaISO: opcion.fechaISO,
-
           horaInicio: horaStr,
-
           NumeroT,
-
+          rangoSeleccionado, // ✅ AGREGAR
           estadoTicket
-
-        });
+        
+      });
 
       const historialContainer =
         document.getElementById("historialTurnos");
@@ -469,6 +470,7 @@ function configurarSeleccionManual(
           fechaISO: opcion.fechaISO,
           horaInicio,
           NumeroT,
+          rangoSeleccionado, // ✅ AGREGAR
           estadoTicket
         });
 
