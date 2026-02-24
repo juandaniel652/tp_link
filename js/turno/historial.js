@@ -137,8 +137,7 @@ export function renderHistorialTurnos(turnos, container){
       </p>
 
       <p><strong>Tipo Turno:</strong>
-        ${t.tipo_turno}
-        
+        T${t.tipo_turno}
       </p>
 
       <p><strong>Rango Horario:</strong>

@@ -25,7 +25,7 @@ export async function enviarTurno(turno) {
 
         hora_fin: turno.hora_fin + ":00",
 
-        estado: "pendiente"
+        estado: "Abierto"
     };
 
     console.log("ENVIANDO TURNO:", turnoBackend);

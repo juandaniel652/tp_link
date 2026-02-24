@@ -4,6 +4,7 @@ import { hayConflicto, obtenerHorariosDisponibles } from "./validaciones.js";
 import { enviarTurno } from "./envioTicketPOST.js";
 import { obtenerTurnosBackend } from "./historial.js"
 import { agregarTurnoAlHistorial } from "./historial.js";
+import { limpiarSelects } from "./render_selects.js";
 
 
 
@@ -48,7 +49,7 @@ function construirTurnoBackend({
 
     hora_fin: calcularHoraFin(horaInicio, NumeroT),
 
-    estado: "pendiente",
+    estado: "Abierto",
 
     // ✅ ahora INTEGER correcto
     tipo_turno: Number(NumeroT),
@@ -225,7 +226,8 @@ function crearCardTurno({
   estadoTicket,
   guardarTurno,
   turnos,
-  turnosContainer
+  turnosContainer,
+  selects
 }) {
   const card = document.createElement("div");
   card.className = "card-turno";
@@ -287,9 +289,34 @@ function crearCardTurno({
   `;
 
 
-  configurarSeleccionAutomatica(card, horaStr, opcion, cliente, tecnico, NumeroT, rangoSeleccionado, estadoTicket, guardarTurno, turnos, turnosContainer, enviarTurno
+  configurarSeleccionAutomatica(
+  card,
+  horaStr,
+  opcion,
+  cliente,
+  tecnico,
+  NumeroT,
+  rangoSeleccionado,
+  estadoTicket,
+  guardarTurno,
+  turnos,
+  turnosContainer,
+  selects   // ✅ AGREGAR
 );
-  configurarSeleccionManual(card, horariosDisponibles, NumeroT, opcion, cliente, tecnico, rangoSeleccionado, estadoTicket, guardarTurno, turnos, turnosContainer, enviarTurno
+
+  configurarSeleccionManual(
+  card,
+  horariosDisponibles,
+  NumeroT,
+  opcion,
+  cliente,
+  tecnico,
+  rangoSeleccionado,
+  estadoTicket,
+  guardarTurno,
+  turnos,
+  turnosContainer,
+  selects   // ✅ AGREGAR
 );
 
   return card;
@@ -309,7 +336,8 @@ function configurarSeleccionAutomatica(
   estadoTicket,
   guardarTurno,
   turnos,
-  turnosContainer
+  turnosContainer,
+  selects
 ) {
 
   card.querySelector(".btnSeleccionarTurno")
@@ -371,6 +399,8 @@ function configurarSeleccionAutomatica(
       // mostrar mensaje
       mostrarMensaje(card, "✅ Turno creado", "ok");
 
+      limpiarSelects(selects);
+
 
       // ✅ agregar al historial inmediatamente
       if(historialContainer){
@@ -385,6 +415,8 @@ function configurarSeleccionAutomatica(
       turnosContainer.innerHTML = "";
 
       mostrarMensaje(card, "✅ Turno creado", "ok");
+
+      limpiarSelects(selects);
 
     }
     catch (error) {
@@ -412,7 +444,8 @@ function configurarSeleccionManual(
   estadoTicket,
   guardarTurno,
   turnos,
-  turnosContainer
+  turnosContainer,
+  selects
 ) {
 
   card.querySelector(".btnEditarTurno")
@@ -493,6 +526,8 @@ function configurarSeleccionManual(
         // mostrar mensaje
         mostrarMensaje(card, "✅ Turno creado", "ok");
 
+        limpiarSelects(selects);
+
 
         // ✅ agregar al historial inmediatamente
         if(historialContainer){
@@ -506,6 +541,8 @@ function configurarSeleccionManual(
 
         turnosContainer.innerHTML = "";
         mostrarMensaje(card, "✅ Turno creado", "ok");
+
+        limpiarSelects(selects);
 
       } catch (error) {
         mostrarMensaje(card, error.message);
@@ -523,7 +560,7 @@ function configurarSeleccionManual(
 // ========================================
 // Render de grilla
 // ========================================
-export async function renderGrillaTurnos({
+renderGrillaTurnos({
   clienteId,
   tecnico,
   tSeleccionado,
@@ -533,9 +570,16 @@ export async function renderGrillaTurnos({
   turnosContainer,
   guardarTurno,
   estadoTicket,
-  enviarTurno
+  enviarTurno,
 
-}) {
+  // NUEVO
+  selects: {
+    selectCliente,
+    selectTecnico,
+    selectTipoTurno,
+    selectRango
+  }
+}); {
   turnosContainer.innerHTML = "";
 
   const cliente = await obtenerClienteYValidar(clientes, clienteId, tecnico);
@@ -563,10 +607,28 @@ export async function renderGrillaTurnos({
       guardarTurno,
       turnos,
       turnosContainer,
-      enviarTurno
+      enviarTurno,
+      selects
 
     });
 
     turnosContainer.appendChild(card);
   });
+}
+
+export function limpiarSelects({
+  selectCliente,
+  selectTecnico,
+  selectTipoTurno,
+  selectRango
+}) {
+
+  if (selectCliente) selectCliente.selectedIndex = 0;
+
+  if (selectTecnico) selectTecnico.selectedIndex = 0;
+
+  if (selectTipoTurno) selectTipoTurno.selectedIndex = 0;
+
+  if (selectRango) selectRango.selectedIndex = 0;
+
 }

@@ -126,28 +126,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const turnoCreado =
       await enviarTurno(turno);
-
+    
     turnos.push(turnoCreado);
-
-    return turnoCreado; 
-
-  
-
-  // ============================
-  // RESET SELECTS
-  // ============================
-
-  
-
+    
+    // reset selects
     selectCliente.selectedIndex = 0;
     selectTecnico.selectedIndex = 0;
     selectT.selectedIndex = 0;
     selectRango.selectedIndex = 0;
     selectEstadoTicket.selectedIndex = 0;
-
-    // opcional: limpiar grilla
+    
     turnosContainer.innerHTML = "";
-
+    
+    return turnoCreado;
   }
 
 
