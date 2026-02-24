@@ -126,18 +126,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const turnoCreado =
       await enviarTurno(turno);
-    
+
     turnos.push(turnoCreado);
-    
+
     // reset selects
     selectCliente.selectedIndex = 0;
     selectTecnico.selectedIndex = 0;
     selectT.selectedIndex = 0;
     selectRango.selectedIndex = 0;
     selectEstadoTicket.selectedIndex = 0;
-    
+
     turnosContainer.innerHTML = "";
-    
+
     return turnoCreado;
   }
 
@@ -283,24 +283,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     await renderGrillaTurnos({
 
       clienteId,
-
       tecnico,
-
       tSeleccionado,
-
       rangoSeleccionado,
-
+        
       clientes,
-
       turnos,
-
+        
       turnosContainer,
-
+        
       estadoTicket,
-
-      guardarTurno:
-        guardarTurnoBackend
-
+        
+      guardarTurno: guardarTurnoBackend,
+        
+      selects: {
+      
+        selectCliente,
+        selectTecnico,
+        selectTipoTurno: selectT,
+        selectRango
+      
+      }
+    
     });
 
   };

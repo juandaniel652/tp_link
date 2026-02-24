@@ -1,11 +1,7 @@
-import { DAYS, NOMBRES_DIAS } from "./constantes.js";
 import { formatearRango } from "./formateo.js";
 import { hayConflicto, obtenerHorariosDisponibles } from "./validaciones.js";
-import { enviarTurno } from "./envioTicketPOST.js";
-import { obtenerTurnosBackend } from "./historial.js"
 import { agregarTurnoAlHistorial } from "./historial.js";
 import { limpiarSelects } from "./render_selects.js";
-
 
 
 function calcularHoraFin(horaInicio, T) {
@@ -343,8 +339,10 @@ function configurarSeleccionAutomatica(
   card.querySelector(".btnSeleccionarTurno")
   .addEventListener("click", async () => {
 
-    if (horaStr === "Sin horario")
-      return alert("No hay horarios disponibles");
+    if (horaStr === "Sin horario") {
+      alert("No hay horarios disponibles");
+      return;
+    }
 
     if (
       hayConflicto(
@@ -352,30 +350,28 @@ function configurarSeleccionAutomatica(
         opcion.fechaISO,
         horaStr,
         `${tecnico.nombre} ${tecnico.apellido}`,
-        cliente.numeroCliente,
+        cliente.numeroCliente || cliente.numero_cliente || cliente.id,
         NumeroT
       )
     ) {
-
       mostrarMensaje(card, "⚠️ Horario ocupado");
       return;
-
     }
 
     try {
 
       const turnoBackend =
         construirTurnoBackend({
-        
+
           cliente,
           tecnico,
           fechaISO: opcion.fechaISO,
           horaInicio: horaStr,
           NumeroT,
-          rangoSeleccionado, // ✅ AGREGAR
+          rangoSeleccionado,
           estadoTicket
-        
-      });
+
+        });
 
       const historialContainer =
         document.getElementById("historialTurnos");
@@ -383,45 +379,32 @@ function configurarSeleccionAutomatica(
       const nuevoTurno =
         await guardarTurno(turnoBackend);
 
-      // agregar historial
-      if(historialContainer){
-      
+      if (historialContainer) {
+
         agregarTurnoAlHistorial(
           nuevoTurno,
           historialContainer
         );
-      
-      }
 
-      // limpiar grilla
-      turnosContainer.innerHTML = "";
-
-      // mostrar mensaje
-      mostrarMensaje(card, "✅ Turno creado", "ok");
-
-      limpiarSelects(selects);
-
-
-      // ✅ agregar al historial inmediatamente
-      if(historialContainer){
-      
-        agregarTurnoAlHistorial(
-          nuevoTurno,
-          historialContainer
-        );
-      
       }
 
       turnosContainer.innerHTML = "";
 
-      mostrarMensaje(card, "✅ Turno creado", "ok");
+      mostrarMensaje(
+        card,
+        "✅ Turno creado",
+        "ok"
+      );
 
       limpiarSelects(selects);
 
     }
     catch (error) {
 
-      mostrarMensaje(card, error.message);
+      mostrarMensaje(
+        card,
+        error.message
+      );
 
     }
 
@@ -451,103 +434,139 @@ function configurarSeleccionManual(
   card.querySelector(".btnEditarTurno")
   .addEventListener("click", () => {
 
-    const editor = card.querySelector(".editorHorario");
+    const editor =
+      card.querySelector(".editorHorario");
 
     editor.style.display =
-      editor.style.display === "none" ? "block" : "none";
+      editor.style.display === "none"
+        ? "block"
+        : "none";
 
     editor.innerHTML = "";
 
-    if (editor.style.display !== "block") return;
+    if (editor.style.display !== "block")
+      return;
 
     if (!horariosDisponibles.length) {
-      editor.innerHTML = "<p>No hay horarios disponibles</p>";
+
+      editor.innerHTML =
+        "<p>No hay horarios disponibles</p>";
+
       return;
+
     }
 
-    // select con opciones
-    const select = document.createElement("select");
-    select.className = "select-horarios-manual";
+    const select =
+      document.createElement("select");
 
-    generarOpcionesHorarios(NumeroT, horariosDisponibles)
+    select.className =
+      "select-horarios-manual";
+
+    generarOpcionesHorarios(
+      NumeroT,
+      horariosDisponibles
+    )
     .forEach(opt => {
-      const option = document.createElement("option");
-      option.value = opt.split(" ")[0]; // horaInicio
-      option.textContent = opt; // muestra "09:00 (09:00 - 09:15)" o similar
+
+      const option =
+        document.createElement("option");
+
+      option.value =
+        opt.split(" ")[0];
+
+      option.textContent =
+        opt;
+
       select.appendChild(option);
+
     });
 
-    const btnAceptar = document.createElement("button");
-    btnAceptar.textContent = "Confirmar";
-    btnAceptar.className = "btnConfirmarManual";
+    const btnAceptar =
+      document.createElement("button");
 
-    btnAceptar.onclick = async () => {
-      const horaInicio = select.value;
+    btnAceptar.textContent =
+      "Confirmar";
 
-      if (hayConflicto(
-        turnos,
-        opcion.fechaISO,
-        horaInicio,
-        `${tecnico.nombre} ${tecnico.apellido}`,
-        cliente.numero_cliente || cliente.numeroCliente || cliente.id,
-        NumeroT
-      )) {
-        mostrarMensaje(card, "⚠️ Horario ocupado");
-        return;
-      }
+    btnAceptar.className =
+      "btnConfirmarManual";
 
-      try {
-        const turnoBackend = construirTurnoBackend({
-          cliente,
-          tecnico,
-          fechaISO: opcion.fechaISO,
-          horaInicio,
-          NumeroT,
-          rangoSeleccionado, // ✅ AGREGAR
-          estadoTicket
-        });
+    btnAceptar.onclick =
+      async () => {
 
-        const nuevoTurno =
-          await guardarTurno(turnoBackend);
+        const horaInicio =
+          select.value;
 
-        // agregar historial
-        if(historialContainer){
-        
-          agregarTurnoAlHistorial(
-            nuevoTurno,
-            historialContainer
+        if (
+          hayConflicto(
+            turnos,
+            opcion.fechaISO,
+            horaInicio,
+            `${tecnico.nombre} ${tecnico.apellido}`,
+            cliente.numeroCliente || cliente.numero_cliente || cliente.id,
+            NumeroT
+          )
+        ) {
+
+          mostrarMensaje(
+            card,
+            "⚠️ Horario ocupado"
           );
-        
+
+          return;
+
         }
 
-        // limpiar grilla
-        turnosContainer.innerHTML = "";
+        try {
 
-        // mostrar mensaje
-        mostrarMensaje(card, "✅ Turno creado", "ok");
+          const turnoBackend =
+            construirTurnoBackend({
 
-        limpiarSelects(selects);
+              cliente,
+              tecnico,
+              fechaISO: opcion.fechaISO,
+              horaInicio,
+              NumeroT,
+              rangoSeleccionado,
+              estadoTicket
 
+            });
 
-        // ✅ agregar al historial inmediatamente
-        if(historialContainer){
-        
-          agregarTurnoAlHistorial(
-            nuevoTurno,
-            historialContainer
+          const historialContainer =
+            document.getElementById("historialTurnos");
+
+          const nuevoTurno =
+            await guardarTurno(turnoBackend);
+
+          if (historialContainer) {
+
+            agregarTurnoAlHistorial(
+              nuevoTurno,
+              historialContainer
+            );
+
+          }
+
+          turnosContainer.innerHTML = "";
+
+          mostrarMensaje(
+            card,
+            "✅ Turno creado",
+            "ok"
           );
-        
+
+          limpiarSelects(selects);
+
+        }
+        catch (error) {
+
+          mostrarMensaje(
+            card,
+            error.message
+          );
+
         }
 
-        turnosContainer.innerHTML = "";
-        mostrarMensaje(card, "✅ Turno creado", "ok");
-
-        limpiarSelects(selects);
-
-      } catch (error) {
-        mostrarMensaje(card, error.message);
-      }
-    };
+      };
 
     editor.appendChild(select);
     editor.appendChild(btnAceptar);
@@ -558,9 +577,9 @@ function configurarSeleccionManual(
 
 
 // ========================================
-// Render de grilla
+// Render de grilla (FUNCIÓN EXPORTADA)
 // ========================================
-renderGrillaTurnos({
+export async function renderGrillaTurnos({
   clienteId,
   tecnico,
   tSeleccionado,
@@ -570,65 +589,78 @@ renderGrillaTurnos({
   turnosContainer,
   guardarTurno,
   estadoTicket,
-  enviarTurno,
+  selects
+}) {
 
-  // NUEVO
-  selects: {
-    selectCliente,
-    selectTecnico,
-    selectTipoTurno,
-    selectRango
-  }
-}); {
   turnosContainer.innerHTML = "";
 
-  const cliente = await obtenerClienteYValidar(clientes, clienteId, tecnico);
+  const cliente =
+    await obtenerClienteYValidar(
+      clientes,
+      clienteId,
+      tecnico
+    );
+
   if (!cliente) return;
 
-  const NumeroT = Number(tSeleccionado);
-  const fechasOpciones = obtenerFechasDisponibles(tecnico, turnos, cliente.numeroCliente);
+  const NumeroT =
+    Number(tSeleccionado);
+
+  const fechasOpciones =
+    obtenerFechasDisponibles(
+      tecnico,
+      turnos,
+      cliente.numeroCliente || cliente.numero_cliente || cliente.id
+    );
 
   if (!fechasOpciones.length) {
-    return alert("No hay fechas disponibles según el técnico en los próximos 30 días");
+
+    alert(
+      "No hay fechas disponibles según el técnico en los próximos 30 días"
+    );
+
+    return;
+
   }
 
   fechasOpciones.forEach(opcion => {
-    let horariosDisponibles = obtenerHorariosDisponibles(turnos, opcion.fechaISO, tecnico, opcion.diaNombre, cliente.numeroCliente, NumeroT);
-    horariosDisponibles = filtrarPorRango(horariosDisponibles, rangoSeleccionado, NumeroT);
 
-    const card = crearCardTurno({
-      cliente,
-      tecnico,
-      NumeroT,
-      rangoSeleccionado,
-      opcion,
-      horariosDisponibles,
-      estadoTicket,
-      guardarTurno,
-      turnos,
-      turnosContainer,
-      enviarTurno,
-      selects
+    let horariosDisponibles =
+      obtenerHorariosDisponibles(
+        turnos,
+        opcion.fechaISO,
+        tecnico,
+        opcion.diaNombre,
+        cliente.numeroCliente || cliente.numero_cliente || cliente.id,
+        NumeroT
+      );
 
-    });
+    horariosDisponibles =
+      filtrarPorRango(
+        horariosDisponibles,
+        rangoSeleccionado,
+        NumeroT
+      );
+
+    const card =
+      crearCardTurno({
+
+        cliente,
+        tecnico,
+        NumeroT,
+        rangoSeleccionado,
+        opcion,
+        horariosDisponibles,
+        estadoTicket,
+        guardarTurno,
+        turnos,
+        turnosContainer,
+        selects
+
+      });
 
     turnosContainer.appendChild(card);
+
   });
-}
-
-export function limpiarSelects({
-  selectCliente,
-  selectTecnico,
-  selectTipoTurno,
-  selectRango
-}) {
-
-  if (selectCliente) selectCliente.selectedIndex = 0;
-
-  if (selectTecnico) selectTecnico.selectedIndex = 0;
-
-  if (selectTipoTurno) selectTipoTurno.selectedIndex = 0;
-
-  if (selectRango) selectRango.selectedIndex = 0;
 
 }
