@@ -149,16 +149,21 @@ export function renderHistorialTurnos(turnos, container){
 
     container.appendChild(card);
 
-    const btnEliminar = card.querySelector(".btnEliminarTurno");
-
     btnEliminar.addEventListener("click", async () => {
 
     const id = btnEliminar.dataset.id;
-
+      
     await eliminarTurnoBackend(id);
-
-    card.remove();
-
+      
+    // volver a pedir datos reales al backend
+    const selector = document.getElementById("selectorFecha");
+    const fecha = selector.value;
+      
+    const turnosBackend = await obtenerTurnosPorFecha(fecha);
+    const turnos = adaptarListaTurnos(turnosBackend);
+      
+    renderHistorialTurnos(turnos, container);
+      
   });
   });
 
