@@ -1,6 +1,6 @@
 import { TurnoService } from '../agenda/turnoService.js';
 import { ClienteService } from '../service/clienteService.js';
-import { TecnicoService } from './TecnicoService.js';
+import { TecnicoService } from '../tecnico/TecnicoService.js';
 import { AgendaUI } from './AgendaUI.js';
 import { AgendaNav } from './AgendaNav.js';
 import { getFechaLunes, formatHora, pad } from './utils.js';
@@ -37,6 +37,9 @@ export class Agenda {
   async init() {
 
     try {
+
+      console.log("ClienteService class:", ClienteService);
+      console.log("TecnicoService class:", TecnicoService);
 
       this.turnos = await this.turnoService.obtenerTodos();
 
