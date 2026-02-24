@@ -100,51 +100,85 @@ export class Agenda {
     });
   }
 
-  async asignarTurno(fStr, hStr) {
+  async asignarTurno(fecha, horaInicioStr) {
+    
     if (!this.tecnicoFiltro) {
-      alert('Debe seleccionar un técnico');
+      alert("Seleccione técnico");
       return;
     }
   
-    // 🔹 Seleccionar cliente
-    const clienteNombre = prompt(
-      'Seleccione cliente para el turno:',
-      this.clientes.length ? `${this.clientes[0].nombre} ${this.clientes[0].apellido}` : ''
+    const tecnicoObj = this.tecnicos.find(t =>
+      `${t.nombre}` === this.tecnicoFiltro ||
+      `${t.nombre} ${t.apellido ?? ""}`.trim() === this.tecnicoFiltro
     );
   
-    if (!clienteNombre) return; // usuario canceló
-  
-    // Buscar cliente en la lista para obtener id real (si es que tu backend lo requiere)
-    const clienteSeleccionado = this.clientes.find(c => `${c.nombre} ${c.apellido}`.trim() === clienteNombre.trim());
-    if (!clienteSeleccionado) {
-      alert('Cliente no encontrado');
+    if (!tecnicoObj) {
+      alert("Técnico no encontrado");
       return;
     }
   
-    // 🔹 Construir objeto turno
-    const turnoNuevo = {
-      fecha: fStr,
-      hora: hStr,
-      tecnico: this.tecnicoFiltro,
-      cliente: clienteSeleccionado.nombre + ' ' + clienteSeleccionado.apellido,
-      t: 1, // cantidad de bloques (puede ajustarse)
-      rango: `${hStr} - ${this.formatHora(parseInt(hStr.split(':')[0]), parseInt(hStr.split(':')[1]) + 15)}`,
-      estadoTicket: 'Confirmado', // inicial
-      color: '#1E90FF' // opcional
+    const clienteNombre = prompt("Nombre cliente:");
+  
+    if (!clienteNombre) return;
+  
+    const clienteObj = this.clientes.find(c =>
+      `${c.nombre}` === clienteNombre ||
+      `${c.nombre} ${c.apellido ?? ""}`.trim() === clienteNombre
+    );
+  
+    if (!clienteObj) {
+      alert("Cliente no encontrado");
+      return;
+    }
+  
+    // calcular hora_fin (+15min)
+    const [h, m] = horaInicioStr.split(":").map(Number);
+  
+    const dateTemp = new Date();
+    dateTemp.setHours(h);
+    dateTemp.setMinutes(m + this.minutosBloque);
+  
+    const horaFinStr =
+      this.pad(dateTemp.getHours()) +
+      ":" +
+      this.pad(dateTemp.getMinutes()) +
+      ":00";
+  
+    const turnoBackend = {
+    
+      cliente_id: clienteObj.id,
+    
+      tecnico_id: tecnicoObj.id,
+    
+      tipo_turno: 1,
+    
+      rango_horario: `${horaInicioStr} - ${horaFinStr}`,
+    
+      estado: "confirmado",
+    
+      fecha: fecha,
+    
+      hora_inicio: horaInicioStr + ":00",
+    
+      hora_fin: horaFinStr
+    
     };
   
     try {
-      // 🔹 Crear turno en backend
-      await this.turnoService.crear(turnoNuevo);
     
-      // 🔹 Refrescar tabla con el nuevo turno
+      await this.turnoService.crear(turnoBackend);
+    
       await this.refrescarCuerpo();
     
-      alert('Turno creado correctamente!');
-    } catch (err) {
-      console.error('Error al crear turno:', err);
-      alert('No se pudo crear el turno.');
     }
+    catch(e){
+    
+      console.error(e);
+    
+      alert(e.message || "Error");
+    
+    }
+  
   }
 
 }

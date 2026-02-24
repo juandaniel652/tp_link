@@ -92,21 +92,26 @@ export class AgendaUI {
     wrapper.classList.add('bloque-turno');
 
     const btn = document.createElement('button');
-    btn.textContent = turno.cliente;
+    btn.textContent = turno.cliente?.nombre + " " + turno.cliente?.apellido;
     btn.disabled = true;
     btn.classList.add('btn-ocupado');
     btn.style.backgroundColor = turno.color || '#1E90FF';
 
     // Tooltip
     btn.addEventListener('mouseenter', () => {
-      const tecnicoStr = turno.tecnico || '';
-      const contenido = `
-        <strong>Cliente:</strong> ${turno.cliente}<br>
-        <strong>Técnico:</strong> ${tecnicoStr}<br>
-        <strong>T:</strong> ${turno.t}<br>
-        <strong>Rango:</strong> ${turno.rango}<br>
-        <strong>Estado:</strong> ${turno.estadoTicket}
-      `;
+      const clienteStr =
+      turno.cliente?.nombre + " " + turno.cliente?.apellido;
+
+    const tecnicoStr =
+      turno.tecnico?.nombre + " " + turno.tecnico?.apellido;
+
+    const contenido = `
+      <strong>Cliente:</strong> ${clienteStr}<br>
+      <strong>Técnico:</strong> ${tecnicoStr}<br>
+      <strong>Inicio:</strong> ${turno.hora_inicio}<br>
+      <strong>Fin:</strong> ${turno.hora_fin}<br>
+      <strong>Estado:</strong> ${turno.estado}
+    `;
       this.mostrarTooltip(btn, contenido);
     });
 
@@ -128,8 +133,13 @@ export class AgendaUI {
     const turnosIndex = {};
     this.agenda.turnos.forEach(turno => {
       const fStr = turno.fecha.replace(/\//g, '-');
-      const [horaTurno, minTurno] = turno.hora.split(':').map(Number);
-      const bloquesTurno = Number(turno.t || 1);
+      const [horaTurno, minTurno] = turno.hora_inicio.split(':').map(Number);
+
+      const inicio = new Date(`2000-01-01T${turno.hora_inicio}`);
+      const fin = new Date(`2000-01-01T${turno.hora_fin}`);
+
+      const bloquesTurno =
+        (fin - inicio) / (this.agenda.minutosBloque * 60000);
 
       for (let b = 0; b < bloquesTurno; b++) {
         const totalMin = horaTurno * 60 + minTurno + b * 15;
@@ -171,7 +181,12 @@ export class AgendaUI {
 
           const hStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
           const turnosBloque = (turnosIndex[fStr]?.[hStr] || []).filter(
-            turno => !filtroTec || turno.tecnico === filtroTec
+            turno =>
+            !filtroTec ||
+            (
+              turno.tecnico?.nombre + " " +
+              turno.tecnico?.apellido
+            ) === filtroTec
           );
 
           turnosBloque.forEach(turno => {

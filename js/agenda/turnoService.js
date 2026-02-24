@@ -11,48 +11,23 @@ export class TurnoService {
       const horaInicio = t.hora_inicio.slice(0,5);
       const horaFin = t.hora_fin.slice(0,5);
 
-      // calcular bloques de 15 min
-      const [h1,m1] = horaInicio.split(":").map(Number);
-      const [h2,m2] = horaFin.split(":").map(Number);
-
-      const bloques = ((h2*60 + m2) - (h1*60 + m1)) / 15;
-
-      const clienteNombre =
-        t.cliente
-          ? `${t.cliente.nombre} ${t.cliente.apellido}`
-          : "Sin cliente";
-
-      const tecnicoNombre =
-        t.tecnico
-          ? `${t.tecnico.nombre} ${t.tecnico.apellido}`
-          : "Sin técnico";
-
       return {
 
-        // internos
         id: t.id,
         numero_ticket: t.numero_ticket,
 
-        // necesarios para AgendaUI
         fecha: t.fecha,
 
-        hora: horaInicio,
+        hora_inicio: horaInicio,
+        hora_fin: horaFin,
 
-        t: bloques,
+        cliente: t.cliente || null,
 
-        rango: `${horaInicio} - ${horaFin}`,
+        tecnico: t.tecnico || null,
 
-        cliente: clienteNombre,
+        estado: t.estado,
 
-        tecnico: tecnicoNombre,
-
-        estadoTicket: t.estado,
-
-        color: this.obtenerColorEstado(t.estado),
-
-        // útiles para futuras operaciones
-        cliente_id: t.cliente?.id,
-        tecnico_id: t.tecnico?.id
+        color: this.obtenerColorEstado(t.estado)
 
       };
 
@@ -83,10 +58,38 @@ export class TurnoService {
   }
 
   async crear(turno){
+
+    // generar numero_ticket único
+    const numero_ticket =
+      turno.cliente_id + "_" + Date.now();
+
+    const payload = {
+
+      numero_ticket: numero_ticket,
+
+      cliente_id: turno.cliente_id,
+
+      tecnico_id: turno.tecnico_id,
+
+      tipo_turno: turno.tipo_turno ?? 1,
+
+      rango_horario: turno.rango_horario,
+
+      estado: turno.estado ?? "confirmado",
+
+      fecha: turno.fecha,
+
+      hora_inicio: turno.hora_inicio,
+
+      hora_fin: turno.hora_fin
+
+    };
+
     return apiRequest("/turnos",{
       method:"POST",
-      body:JSON.stringify(turno)
+      body:JSON.stringify(payload)
     });
+
   }
 
 }
