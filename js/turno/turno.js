@@ -1,3 +1,5 @@
+//Fue reemplazado, por ende puede cambiarse sin problemas, aunque se mantuvo para no romper la estructura actual del proyecto. La idea es que este archivo sea el punto de entrada de la app, y que luego se vayan importando los módulos necesarios (renderizado, api, validaciones, etc).
+
 import { T_VALUES, RANGOS } from "./constantes.js";
 
 import {
