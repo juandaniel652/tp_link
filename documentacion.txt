@@ -12,3 +12,20 @@ HECHO
     3. Probar turnos
     4. Con todos los datos listos de estos ir a agenda y listo, con eso terminamos
 ----------------------------------------------------------
+
+25/02/2026
+
+- Se precisa:
+
+    1. Ordenas estructura a una profesional y adaptada. ¿Cuàles?
+
+        a. CSS: Entender còmo estàn ordenados los archivos y con cuàles estàn relacionados y ver si tiene
+        clases duplicadas o inùtiles.
+
+        b. JS: Reestructurar archivos y su ubicacion de a poco (por secciones), cuidar importaciones.
+        Contenido debe ser igual, solamente adaptado a esa estructura nueva.
+
+    2. Mejorar lògica de turnos y su muestra en frontend.
+
+    3. Pasarle a Darìo el enlace con mi API de turnos para trabajarlo con el backend y coordinarlo con la base
+    de datos (tema de ticket)
