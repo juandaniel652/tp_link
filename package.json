@@ -1,0 +1,28 @@
+{
+  "name": "clansis_web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+  "dev": "vite",
+  "test": "vitest",
+  "test:watch": "vitest --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/juandaniel652/tp_link.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/juandaniel652/tp_link/issues"
+  },
+  "homepage": "https://github.com/juandaniel652/tp_link#readme",
+  "devDependencies": {
+    "vite": "^7.3.1",
+    "vitest": "^4.0.18"
+  }
+
+}
