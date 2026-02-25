@@ -2,6 +2,9 @@
 
 import { T_VALUES, RANGOS } from "./constantes.js";
 
+import { TurnosService } 
+  from "../src/modules/turnos/service/turnos.service.js";
+
 import {
   cambiarEstado,
   UI_STATE
@@ -126,12 +129,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function guardarTurnoBackend(turno){
 
+    try {
+
+      // 🔥 VALIDACIÓN DE DOMINIO
+      TurnosService.crearTurno(turnos, turno);
+
+    } catch (e) {
+
+      alert(e.message);
+      return;
+
+    }
+
     const turnoCreado =
       await enviarTurno(turno);
 
     turnos.push(turnoCreado);
 
-    // reset selects
     selectCliente.selectedIndex = 0;
     selectTecnico.selectedIndex = 0;
     selectT.selectedIndex = 0;
@@ -253,22 +267,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       alert(
         "Complete todos los campos"
-      );
-
-      return;
-
-    }
-
-
-    if(
-      clienteYaTieneTurno(
-        clienteId,
-        turnos
-      )
-    ){
-
-      alert(
-        "Cliente ya tiene turno"
       );
 
       return;
