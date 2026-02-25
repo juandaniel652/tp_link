@@ -1,0 +1,1885 @@
+-----------------------------------
+A1.
+
+js/turno/adaptadores.js:
+
+// Convierte TurnoResponse del backend → formato que usa el frontend
+
+export function adaptarTurnoBackend(turnoBackend) {
+
+  return {
+
+    id: turnoBackend.id,
+
+    numero_ticket: turnoBackend.numero_ticket,
+
+    fecha: turnoBackend.fecha,
+
+    hora_inicio: turnoBackend.hora_inicio,
+    hora_fin: turnoBackend.hora_fin,
+
+    // formato que usa validaciones.js
+    id_cliente: turnoBackend.cliente?.id,
+
+    tecnico: turnoBackend.tecnico?.nombre,
+
+    cliente_nombre: turnoBackend.cliente?.nombre,
+
+    tecnico_id: turnoBackend.tecnico?.id,
+
+    estado: turnoBackend.estado,
+
+    tipo_turno: turnoBackend.tipo_turno,
+
+    rango_horario: turnoBackend.rango_horario
+  };
+
+}
+
+
+// adapta lista completa
+export function adaptarListaTurnos(listaBackend) {
+
+  return listaBackend.map(adaptarTurnoBackend);
+
+}
+
+-----------------------------------
+A2.
+
+js/turno/apiTurnos.js:
+
+import { getToken } from "../conexion_backend/tokenStorage.js";
+
+const API_BASE = "https://agenda-1-zomu.onrender.com/api/v1";
+const BASE_URL = "https://agenda-1-zomu.onrender.com/api/v1/turnos";
+
+export const TURNOS_URL = `${API_BASE}/turnos/`;
+
+export async function obtenerTurnosPorFecha(fecha){
+
+    const token = getToken();
+
+    const response = await fetch(
+        `${BASE_URL}?fecha=${fecha}`,
+        {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        }
+    );
+
+    if(!response.ok)
+        throw new Error("Error obteniendo turnos");
+
+    return await response.json();
+
+}
+
+Opinion: Este gestiona la conexion a la api, pero con turno, osea se estaria mezclando o usando aparte, 
+siendo que se podria unificar
+
+
+-----------------------------------
+A3.
+
+js/turno/constantes.js:
+
+// constantes.js
+export const T_VALUES = [1, 2, 3, 4, 5, 6];
+export const RANGOS = ["AM", "PM"];
+
+export const NOMBRES_DIAS = {
+    domingo: 'Domingo',
+    lunes: 'Lunes',
+    martes: 'Martes',
+    miercoles: 'Miércoles',
+    jueves: 'Jueves',
+    viernes: 'Viernes',
+    sabado: 'Sábado'
+};
+
+// Las claves (sin tilde) son consistentes con NOMBRES_DIAS
+export const DAYS = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
+
+opinion: Se utiliza en js/turno/turno.js
+
+-----------------------------------
+A4.
+
+js/turno/envioTicketPOST.js:
+
+import { TURNOS_URL } from "./apiTurnos.js";
+import { getToken } from "../conexion_backend/tokenStorage.js";
+
+export async function enviarTurno(turno) {
+
+    const token = getToken();
+
+    const turnoBackend = {
+
+        numero_ticket: turno.numero_ticket,
+
+        cliente_id: turno.cliente_id,
+
+        tecnico_id: turno.tecnico_id,
+
+        // ✅ ahora integer directo desde frontend
+        tipo_turno: turno.tipo_turno,
+
+        // ✅ nueva propiedad
+        rango_horario: turno.rango_horario,
+
+        fecha: turno.fecha,
+
+        hora_inicio: turno.hora_inicio + ":00",
+
+        hora_fin: turno.hora_fin + ":00",
+
+        estado: "Abierto"
+    };
+
+    console.log("ENVIANDO TURNO:", turnoBackend);
+
+    const response = await fetch(TURNOS_URL, {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+
+        body: JSON.stringify(turnoBackend)
+
+    });
+
+    if (!response.ok) {
+
+        const error = await response.json();
+
+        throw new Error(error.detail || "Error creando turno");
+
+    }
+
+    return await response.json();
+
+}
+
+opinion: Envia el turno al backend para que se guarde en la base de datos
+
+-----------------------------------
+A5.
+
+js/turno/formateo.js:
+
+// Funciones utilitarias de formateo (horas, fechas)
+// Permita observar el horario con su rango y el tiempo que abarca el T (T1 = 15 minutos, T2 = 30 minutos, etc.)
+
+// Devuelve string "09:00 - 09:30 (30 Minutos)"
+// Formatea un rango horario según T
+
+export function formatearRango(horaBase, tNum) {
+  const [h, m] = horaBase.split(":").map(Number);
+
+  const inicio = new Date();
+  inicio.setHours(h, m);
+
+  const fin = new Date(inicio);
+  fin.setMinutes(inicio.getMinutes() + tNum * 15);
+
+  const pad = (n) => n.toString().padStart(2,"0");
+  const inicioStr = `${pad(inicio.getHours())}:${pad(inicio.getMinutes())}`;
+  const finStr = `${pad(fin.getHours())}:${pad(fin.getMinutes())}`;
+
+  const duracion = tNum * 15;
+  return `${inicioStr} - ${finStr} (${duracion} Minutos)`;
+}
+
+
+opinion: Formatea los horarios segun los T, que se dividen de a 15, se importa en grilla.js
+
+-----------------------------------
+A6.
+
+js/turno/formatoTurno.js:
+
+export function formatearFecha(fechaISO) {
+
+    const fecha = new Date(fechaISO);
+
+    return fecha.toLocaleDateString("es-AR", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+    });
+
+}
+
+export function formatearHora(hora) {
+
+    return hora.slice(0,5);
+
+}
+
+export function formatearEstado(estado) {
+
+    return estado.charAt(0).toUpperCase() + estado.slice(1);
+
+}
+
+export function formatearTipo(tipo) {
+
+    const mapa = {
+        1: "Instalación",
+        2: "Soporte técnico",
+        3: "Mantenimiento",
+        4: "Retiro",
+        5: "Revisión",
+        6: "Otro"
+    };
+
+    return mapa[tipo] || `Tipo ${tipo}`;
+
+}
+
+export function formatearTicket(numero_ticket){
+
+    return numero_ticket.split("_")[1];
+
+}
+
+opinion: No se importa al parecer pero deja todo arreglado para trabajar con los datos que vienen del
+backend en el frontend
+
+
+-----------------------------------
+A7.
+
+js/turno/grilla.js:
+
+import { formatearRango } from "./formateo.js";
+import { hayConflicto, obtenerHorariosDisponibles } from "./validaciones.js";
+import { agregarTurnoAlHistorial } from "./historial.js";
+import { limpiarSelects } from "./render_selects.js";
+
+
+function calcularHoraFin(horaInicio, T) {
+
+  const [h, m] = horaInicio.split(":").map(Number);
+
+  const fecha = new Date();
+
+  fecha.setHours(h);
+  fecha.setMinutes(m + T * 15);
+
+  return fecha.toTimeString().slice(0,5);
+
+}
+
+function construirTurnoBackend({
+  cliente,
+  tecnico,
+  fechaISO,
+  horaInicio,
+  NumeroT,
+  rangoSeleccionado,
+  estadoTicket
+}) {
+
+  if (!cliente?.id)
+    throw new Error("cliente.id faltante");
+
+  if (!tecnico?.id)
+    throw new Error("tecnico.id faltante");
+
+  return {
+
+    cliente_id: cliente.id,
+
+    tecnico_id: tecnico.id,
+
+    fecha: fechaISO,
+
+    hora_inicio: horaInicio,
+
+    hora_fin: calcularHoraFin(horaInicio, NumeroT),
+
+    estado: "Abierto",
+
+    // ✅ ahora INTEGER correcto
+    tipo_turno: Number(NumeroT),
+
+    // ✅ NUEVO CAMPO OBLIGATORIO
+    rango_horario: rangoSeleccionado,
+
+    numero_ticket: `${cliente.id}_${Date.now()}`
+  };
+
+}
+
+
+// ========================================
+// Genera opciones de horario según T y bloques
+// ========================================
+function generarOpcionesHorarios(NumeroT, bloques) {
+  return bloques.map(bloque => formatearRango(bloque, NumeroT));
+}
+
+// ========================================
+// Filtra horarios por rango AM/PM
+// ========================================
+function filtrarPorRango(horarios, rango, tNum = 1) {
+  const limites = {
+    AM: { inicio: 9 * 60, fin: 13 * 60 },
+    PM: { inicio: 14 * 60, fin: 18 * 60 },
+  };
+  if (!limites[rango]) return horarios;
+
+  return horarios.filter(hora => {
+    const [h, m] = hora.split(":").map(Number);
+    const inicio = h * 60 + m;
+    const fin = inicio + tNum * 15;
+    return inicio >= limites[rango].inicio && fin <= limites[rango].fin;
+  });
+}
+
+// ========================================
+// Muestra mensajes dentro de la card
+// ========================================
+function mostrarMensaje(card, texto, tipo = "error") {
+  let mensaje = card.querySelector(".mensaje-turno");
+  if (!mensaje) {
+    mensaje = document.createElement("div");
+    mensaje.className = "mensaje-turno";
+    card.appendChild(mensaje);
+  }
+  mensaje.textContent = texto;
+  mensaje.style.color = tipo === "error" ? "red" : "green";
+  mensaje.style.fontWeight = "bold";
+  mensaje.style.marginTop = "6px";
+}
+
+// ========================================
+// Validación de existencia de cliente y técnico
+// ========================================
+// 🧩 Función que obtiene los datos del cliente, ya sea local o desde Andros
+export async function obtenerClienteYValidar(clientes, clienteId, tecnico) {
+  if (!clienteId) {
+    alert("❌ Falta el ID de cliente.");
+    return null;
+  }
+
+  // Buscar cliente localmente
+  let cliente = clientes.find(c => String(c.id) === String(clienteId));
+
+
+  // Si no está en tu base local, consultamos a Andros
+  if (!cliente) {
+    console.log(`🔎 Cliente ${clienteId} no encontrado localmente. Consultando a Andros...`);
+
+    const API_ANDROS = "https://andros-api.ejemplo.com/api/clientes/";
+
+    try {
+      const response = await fetch(`${API_ANDROS}${clienteId}`);
+      if (!response.ok) throw new Error(`Error ${response.status}`);
+
+      const data = await response.json();
+      console.log(data);
+
+      // Adaptamos la estructura a la de tu sistema
+      cliente = {
+        id: data.id || clienteId,
+        numero_cliente: data.id || clienteId,
+        numeroCliente: data.id || clienteId, // compatibilidad
+        nombre: data.nombre || "Sin nombre",
+        apellido: data.apellido || "",
+        direccion: data.direccion || "",
+        telefono: data.telefono || "",
+        fuente: "Andros"
+      };
+
+      console.log("✅ Cliente recuperado desde Andros:", cliente);
+
+      // Agregamos el cliente al arreglo local (para reutilizar)
+      clientes.push(cliente);
+    } catch (error) {
+      console.warn("⚠️ No se pudo obtener cliente desde Andros:", error);
+      cliente = {
+        numeroCliente: clienteId,
+        nombre: "Cliente externo",
+        apellido: "(sin datos)",
+        fuente: "Andros"
+      };
+    }
+  }
+
+  // Validar técnico
+  if (!tecnico) {
+    alert("⚠️ No se encontró el técnico.");
+    return null;
+  }
+
+  return cliente;
+}
+
+
+// ========================================
+// Normaliza texto
+// ========================================
+function normalizarTexto(texto) {
+  return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+// ========================================
+// Obtiene fechas disponibles
+// ========================================
+function obtenerFechasDisponibles(tecnico, turnos, clienteId) {
+  const diasDisponibles = tecnico.getDiasDisponibles().map(d => d.toLowerCase());
+  const hoy = new Date();
+  const fechasOpciones = [];
+  let iterFecha = new Date(hoy);
+  let contador = 0;
+
+  while (fechasOpciones.length < 3 && contador < 30) {
+    iterFecha.setDate(iterFecha.getDate() + 1);
+    const fechaLocal = new Date(iterFecha.getFullYear(), iterFecha.getMonth(), iterFecha.getDate());
+    const diaNombre = fechaLocal.toLocaleDateString('es-ES', { weekday: 'long' })
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+    const esDomingo = fechaLocal.getDay() === 0;
+    const estaDisponible = diasDisponibles.some(d => normalizarTexto(d) === normalizarTexto(diaNombre));
+    if (esDomingo || !estaDisponible) {
+      contador++;
+      continue;
+    }
+
+    const fechaISO = `${fechaLocal.getFullYear()}-${String(fechaLocal.getMonth() + 1).padStart(2,"0")}-${String(fechaLocal.getDate()).padStart(2,"0")}`;
+
+    const conflictoCliente = turnos.some(turno =>
+      String(turno.cliente_id) === String(clienteId) &&
+      turno.fecha === fechaISO
+    );
+
+    if (!conflictoCliente) {
+      fechasOpciones.push({ fecha: fechaLocal, fechaISO, diaNombre });
+    }
+    contador++;
+  }
+  return fechasOpciones;
+}
+
+// ========================================
+// Crea la card de turno
+// ========================================
+function crearCardTurno({
+  cliente,
+  tecnico,
+  NumeroT,
+  rangoSeleccionado,
+  opcion,
+  horariosDisponibles,
+  estadoTicket,
+  guardarTurno,
+  turnos,
+  turnosContainer,
+  selects
+}) {
+  const card = document.createElement("div");
+  card.className = "card-turno";
+
+  const horaStr = horariosDisponibles.length ? horariosDisponibles[0] : "Sin horario";
+
+  const fechaFormateada =
+  opcion.fecha.toLocaleDateString(
+    "es-ES",
+    {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    }
+  );
+
+  card.innerHTML = `
+    <h3 class="card-fecha-turno">
+      Fecha: ${fechaFormateada}
+    </h3>
+
+    <p><strong>Cliente:</strong> ${cliente.numero_cliente} - ${cliente.nombre} ${cliente.apellido}</p>
+
+    <p><strong>Técnico:</strong> ${tecnico.nombre} ${tecnico.apellido}</p>
+
+    <p><strong>T:</strong> ${NumeroT}</p>
+
+    <p><strong>Rango:</strong> ${rangoSeleccionado}</p>
+
+    <p><strong>Horario General:</strong> ${
+      rangoSeleccionado == "AM"
+        ? "09:00 - 13:00"
+        : "14:00 - 18:00"
+    }</p>
+
+    <p><strong>Horario Sugerido:</strong>
+      ${
+        horaStr !== "Sin horario"
+          ? formatearRango(horaStr, NumeroT)
+          : "Sin horario disponible"
+      }
+    </p>
+
+    <p><strong>Estado del Ticket:</strong> ${estadoTicket}</p>
+
+    <button class="btnSeleccionarTurno"
+      ${horaStr === "Sin horario" ? "disabled" : ""}>
+      Selección automática
+    </button>
+
+    <button class="btnEditarTurno">
+      Selección Manual
+    </button>
+
+    <div class="editorHorario"
+      style="display:none; margin-top:8px;">
+    </div>
+  `;
+
+
+  configurarSeleccionAutomatica(
+  card,
+  horaStr,
+  opcion,
+  cliente,
+  tecnico,
+  NumeroT,
+  rangoSeleccionado,
+  estadoTicket,
+  guardarTurno,
+  turnos,
+  turnosContainer,
+  selects   // ✅ AGREGAR
+);
+
+  configurarSeleccionManual(
+  card,
+  horariosDisponibles,
+  NumeroT,
+  opcion,
+  cliente,
+  tecnico,
+  rangoSeleccionado,
+  estadoTicket,
+  guardarTurno,
+  turnos,
+  turnosContainer,
+  selects   // ✅ AGREGAR
+);
+
+  return card;
+}
+
+// ========================================
+// Configuración selección automática
+// ========================================
+function configurarSeleccionAutomatica(
+  card,
+  horaStr,
+  opcion,
+  cliente,
+  tecnico,
+  NumeroT,
+  rangoSeleccionado,
+  estadoTicket,
+  guardarTurno,
+  turnos,
+  turnosContainer,
+  selects
+) {
+
+  card.querySelector(".btnSeleccionarTurno")
+  .addEventListener("click", async () => {
+
+    if (horaStr === "Sin horario") {
+      alert("No hay horarios disponibles");
+      return;
+    }
+
+    if (
+      hayConflicto(
+        turnos,
+        opcion.fechaISO,
+        horaStr,
+        `${tecnico.nombre} ${tecnico.apellido}`,
+        cliente.numeroCliente || cliente.numero_cliente || cliente.id,
+        NumeroT
+      )
+    ) {
+      mostrarMensaje(card, "⚠️ Horario ocupado");
+      return;
+    }
+
+    try {
+
+      const turnoBackend =
+        construirTurnoBackend({
+
+          cliente,
+          tecnico,
+          fechaISO: opcion.fechaISO,
+          horaInicio: horaStr,
+          NumeroT,
+          rangoSeleccionado,
+          estadoTicket
+
+        });
+
+      const historialContainer =
+        document.getElementById("historialTurnos");
+
+      const nuevoTurno =
+        await guardarTurno(turnoBackend);
+
+      if (historialContainer) {
+
+        agregarTurnoAlHistorial(
+          nuevoTurno,
+          historialContainer
+        );
+
+      }
+
+      turnosContainer.innerHTML = "";
+
+      mostrarMensaje(
+        card,
+        "✅ Turno creado",
+        "ok"
+      );
+
+      limpiarSelects(selects);
+
+    }
+    catch (error) {
+
+      mostrarMensaje(
+        card,
+        error.message
+      );
+
+    }
+
+  });
+
+}
+
+
+// ========================================
+// Configuración selección manual
+// ========================================
+function configurarSeleccionManual(
+  card,
+  horariosDisponibles,
+  NumeroT,
+  opcion,
+  cliente,
+  tecnico,
+  rangoSeleccionado,
+  estadoTicket,
+  guardarTurno,
+  turnos,
+  turnosContainer,
+  selects
+) {
+
+  card.querySelector(".btnEditarTurno")
+  .addEventListener("click", () => {
+
+    const editor =
+      card.querySelector(".editorHorario");
+
+    editor.style.display =
+      editor.style.display === "none"
+        ? "block"
+        : "none";
+
+    editor.innerHTML = "";
+
+    if (editor.style.display !== "block")
+      return;
+
+    if (!horariosDisponibles.length) {
+
+      editor.innerHTML =
+        "<p>No hay horarios disponibles</p>";
+
+      return;
+
+    }
+
+    const select =
+      document.createElement("select");
+
+    select.className =
+      "select-horarios-manual";
+
+    generarOpcionesHorarios(
+      NumeroT,
+      horariosDisponibles
+    )
+    .forEach(opt => {
+
+      const option =
+        document.createElement("option");
+
+      option.value =
+        opt.split(" ")[0];
+
+      option.textContent =
+        opt;
+
+      select.appendChild(option);
+
+    });
+
+    const btnAceptar =
+      document.createElement("button");
+
+    btnAceptar.textContent =
+      "Confirmar";
+
+    btnAceptar.className =
+      "btnConfirmarManual";
+
+    btnAceptar.onclick =
+      async () => {
+
+        const horaInicio =
+          select.value;
+
+        if (
+          hayConflicto(
+            turnos,
+            opcion.fechaISO,
+            horaInicio,
+            `${tecnico.nombre} ${tecnico.apellido}`,
+            cliente.numeroCliente || cliente.numero_cliente || cliente.id,
+            NumeroT
+          )
+        ) {
+
+          mostrarMensaje(
+            card,
+            "⚠️ Horario ocupado"
+          );
+
+          return;
+
+        }
+
+        try {
+
+          const turnoBackend =
+            construirTurnoBackend({
+
+              cliente,
+              tecnico,
+              fechaISO: opcion.fechaISO,
+              horaInicio,
+              NumeroT,
+              rangoSeleccionado,
+              estadoTicket
+
+            });
+
+          const historialContainer =
+            document.getElementById("historialTurnos");
+
+          const nuevoTurno =
+            await guardarTurno(turnoBackend);
+
+          if (historialContainer) {
+
+            agregarTurnoAlHistorial(
+              nuevoTurno,
+              historialContainer
+            );
+
+          }
+
+          turnosContainer.innerHTML = "";
+
+          mostrarMensaje(
+            card,
+            "✅ Turno creado",
+            "ok"
+          );
+
+          limpiarSelects(selects);
+
+        }
+        catch (error) {
+
+          mostrarMensaje(
+            card,
+            error.message
+          );
+
+        }
+
+      };
+
+    editor.appendChild(select);
+    editor.appendChild(btnAceptar);
+
+  });
+
+}
+
+
+// ========================================
+// Render de grilla (FUNCIÓN EXPORTADA)
+// ========================================
+export async function renderGrillaTurnos({
+  clienteId,
+  tecnico,
+  tSeleccionado,
+  rangoSeleccionado,
+  clientes,
+  turnos,
+  turnosContainer,
+  guardarTurno,
+  estadoTicket,
+  selects
+}) {
+
+  turnosContainer.innerHTML = "";
+
+  const cliente =
+    await obtenerClienteYValidar(
+      clientes,
+      clienteId,
+      tecnico
+    );
+
+  if (!cliente) return;
+
+  const NumeroT =
+    Number(tSeleccionado);
+
+  const fechasOpciones =
+    obtenerFechasDisponibles(
+      tecnico,
+      turnos,
+      cliente.numeroCliente || cliente.numero_cliente || cliente.id
+    );
+
+  if (!fechasOpciones.length) {
+
+    alert(
+      "No hay fechas disponibles según el técnico en los próximos 30 días"
+    );
+
+    return;
+
+  }
+
+  fechasOpciones.forEach(opcion => {
+
+    let horariosDisponibles =
+      obtenerHorariosDisponibles(
+        turnos,
+        opcion.fechaISO,
+        tecnico,
+        opcion.diaNombre,
+        cliente.numeroCliente || cliente.numero_cliente || cliente.id,
+        NumeroT
+      );
+
+    horariosDisponibles =
+      filtrarPorRango(
+        horariosDisponibles,
+        rangoSeleccionado,
+        NumeroT
+      );
+
+    const card =
+      crearCardTurno({
+
+        cliente,
+        tecnico,
+        NumeroT,
+        rangoSeleccionado,
+        opcion,
+        horariosDisponibles,
+        estadoTicket,
+        guardarTurno,
+        turnos,
+        turnosContainer,
+        selects
+
+      });
+
+    turnosContainer.appendChild(card);
+
+  });
+
+}
+
+opinion: Es tema de dividirlo en partes, es el que maneja casi todo.
+
+-----------------------------------
+A8.
+
+js/turno/historial.js:
+
+import { TURNOS_URL, obtenerTurnosPorFecha } from "./apiTurnos.js";
+import { adaptarListaTurnos } from "./adaptadores.js";
+
+
+export function crearFechaLocalDesdeISO(fechaISO){
+
+  const [year, month, day] = fechaISO.split("-").map(Number);
+
+  return new Date(year, month - 1, day);
+
+}
+
+export async function inicializarHistorial(turnosContainer){
+
+    const selector = document.getElementById("selectorFecha");
+
+    selector.addEventListener("change", async () => {
+
+        const fecha = selector.value;
+
+        const turnosBackend = await obtenerTurnosPorFecha(fecha);
+
+        const turnos = adaptarListaTurnos(turnosBackend);
+
+        turnos = await obtenerTurnosBackend();
+        
+        renderHistorialTurnos(turnos, turnosContainer);
+
+    });
+
+}
+
+export async function obtenerTurnosBackend() {
+
+    const response = await fetch(TURNOS_URL);
+
+    if (!response.ok)
+        throw new Error("Error obteniendo turnos");
+
+
+    return await response.json();
+}
+
+export async function eliminarTurnoBackend(id) {
+
+    const response = await fetch(`${TURNOS_URL}${id}/cancelar`, {
+
+
+        method: "PATCH"
+    });
+
+    if (!response.ok)
+        throw new Error("Error eliminando turno");
+
+    return true;
+}
+
+
+export function renderHistorialTurnos(turnos, container){
+
+  // VALIDACIÓN
+  if(!container){
+    console.error("container no definido");
+    return;
+  }
+
+  // LIMPIAR CONTENEDOR
+  container.innerHTML = "";
+
+
+  // SIN TURNOS
+  if(!turnos || turnos.length === 0){
+
+    container.innerHTML =
+      "<p>No hay turnos para esta fecha</p>";
+
+    return;
+
+  }
+
+
+  // ============================
+  // CARDS
+  // ============================
+
+  turnos.forEach(t => {
+
+    // crear fecha LOCAL correcta
+    const fecha =
+      crearFechaLocalDesdeISO(t.fecha);
+
+    const fechaFormateada =
+      fecha.toLocaleDateString(
+        "es-AR",
+        {
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        }
+      );
+
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "card-turno";
+
+
+    card.innerHTML = `
+      <h3 class="card-fecha-turno">
+        ${fechaFormateada}
+      </h3>
+
+      <p><strong>Ticket:</strong>
+        ${t.numero_ticket}
+      </p>
+
+      <p><strong>Cliente:</strong>
+        ${t.cliente.numero_cliente}
+        - ${t.cliente.nombre}
+      </p>
+
+      <p><strong>Técnico:</strong>
+        ${t.tecnico.nombre}
+      </p>
+
+      <p><strong>Tipo Turno:</strong>
+        T${t.tipo_turno}
+      </p>
+
+      <p><strong>Rango Horario:</strong>
+        ${t.rango_horario}
+      </p>
+
+      <p><strong>Horario Seleccionado:</strong>
+        ${t.hora_inicio}
+        - ${t.hora_fin}
+      </p>
+
+      <p><strong>Estado:</strong>
+        ${t.estado}
+      </p>
+
+      <button
+        class="btnEliminarTurno"
+        data-id="${t.id}">
+        Eliminar
+      </button>
+    `;
+
+    container.appendChild(card);
+
+    const btnEliminar = card.querySelector(".btnEliminarTurno");
+
+    btnEliminar.addEventListener("click", async () => {
+
+    const id = btnEliminar.dataset.id;
+      
+    await eliminarTurnoBackend(id);
+      
+    // volver a pedir datos reales al backend
+    const selector = document.getElementById("selectorFechaHistorial");
+    const fecha = selector.value;
+      
+    const turnosBackend = await obtenerTurnosPorFecha(fecha);
+    const turnos = adaptarListaTurnos(turnosBackend);
+    
+    turnos = await obtenerTurnosBackend();
+    renderHistorialTurnos(turnos, container);
+      
+  });
+  });
+
+}
+
+export function agregarTurnoAlHistorial(turno, container){
+
+  const card =
+    document.createElement("div");
+
+  card.className =
+    "card-turno";
+
+  card.innerHTML = `
+    <p><strong>Ticket:</strong>
+      ${turno.numero_ticket}
+    </p>
+
+    <p><strong>Cliente:</strong>
+      ${turno.cliente.numero_cliente}
+      - ${turno.cliente.nombre}
+    </p>
+
+    <p><strong>Técnico:</strong>
+      ${turno.tecnico.nombre}
+    </p>
+
+    <p><strong>Horario:</strong>
+      ${turno.hora_inicio}
+      - ${turno.hora_fin}
+    </p>
+
+    <p><strong>Estado:</strong>
+      ${turno.estado}
+    </p>
+
+    <button
+      class="btnEliminarTurno"
+      data-id="${turno.id}">
+      Eliminar
+    </button>
+  `;
+
+
+  // insertar arriba
+  container.appendChild(card);
+
+}
+
+opinion: Maneja historial completo pero habria que desacoplarlo y manejar unica resposabilidades
+
+
+-----------------------------------
+A9.
+
+js/turno/render_selects.js:
+
+// render_selects.js
+import { clienteYaTieneTurno } from "./validaciones.js";
+
+export function renderSelectClientes(selectCliente, clientes, turnos = []) {
+
+  selectCliente.innerHTML = `<option value="">Seleccionar Cliente</option>`;
+
+  clientes.forEach(c => {
+
+    const option = document.createElement("option");
+
+    // ✅ usar ID del backend
+    option.value = c.id;
+
+    // mostrar nombre correctamente
+    option.textContent = `${c.nombre} ${c.apellido} — ID: ${c.numero_cliente}`;
+
+    // verificar usando ID
+    if (clienteYaTieneTurno(c.id, turnos)) {
+
+      option.disabled = true;
+      option.textContent += " (Ya tiene turno)";
+      option.classList.add("opcion-desactivada");
+
+    }
+
+    selectCliente.appendChild(option);
+
+  });
+
+}
+
+// Render técnicos (igual que antes)
+export function renderSelectTecnicos(select, tecnicos) {
+  select.innerHTML = "<option value=''>Seleccionar Técnico</option>";
+  tecnicos.forEach((tecnico, index) => {
+    const option = document.createElement("option");
+    option.value = tecnico.id;
+    option.textContent = `${tecnico.nombre} ${tecnico.apellido}`;
+    select.appendChild(option);
+  });
+}
+
+// Genérico
+export function renderSelectGen(selectEl, items, placeholder, prefix = "") {
+  selectEl.innerHTML = `<option value="">${placeholder}</option>`;
+  items.forEach(i => {
+    const option = document.createElement("option");
+    option.value = i;
+    option.textContent = prefix + i;
+    selectEl.appendChild(option);
+  });
+}
+
+export function limpiarSelects({
+  selectCliente,
+  selectTecnico,
+  selectTipoTurno,
+  selectRango
+}) {
+
+  if (selectCliente)
+    selectCliente.selectedIndex = 0;
+
+  if (selectTecnico)
+    selectTecnico.selectedIndex = 0;
+
+  if (selectTipoTurno)
+    selectTipoTurno.selectedIndex = 0;
+
+  if (selectRango)
+    selectRango.selectedIndex = 0;
+
+}
+
+-----------------------------------
+A10.
+
+js/storage.js:
+
+const API_URL =
+"https://agenda-1-zomu.onrender.com/api/v1";
+
+
+// =====================
+// GET TURNOS
+// =====================
+
+export async function getTurnos() {
+
+  const res =
+    await fetch(`${API_URL}/turnos`);
+
+  if (!res.ok)
+    throw new Error("Error cargando turnos");
+
+  return await res.json();
+
+}
+
+
+// =====================
+// CREAR TURNO
+// =====================
+
+export async function crearTurno(turno) {
+
+  const res =
+    await fetch(`${API_URL}/turnos`, {
+
+      method: "POST",
+
+      headers: {
+
+        "Content-Type": "application/json",
+
+        "Authorization":
+          "Bearer " +
+          localStorage.getItem("token")
+
+      },
+
+      body:
+        JSON.stringify(turno)
+
+    });
+
+  if (!res.ok) {
+
+    const error =
+      await res.text();
+
+    throw new Error(error);
+
+  }
+
+  return await res.json();
+
+}
+
+
+// =====================
+// DELETE
+// =====================
+
+export async function eliminarTurno(id) {
+
+  const res =
+    await fetch(
+      `${API_URL}/turnos/${id}`,
+      { method: "DELETE" }
+    );
+
+  if (!res.ok)
+    throw new Error("Error eliminando");
+
+}
+
+Opinion: Usa todo lo que viene de los turnos, pero ¿no se encargaba de eso o (deberia) ser 
+apiTurnos o envioTicketPOST o de ultima hacer un submòdulo encargado de esa relacion? 
+
+-----------------------------------
+A11.
+
+js/turno/turno.js:
+
+import { T_VALUES, RANGOS } from "./constantes.js";
+
+import {
+  cambiarEstado,
+  UI_STATE
+} from "./uiState.js";
+
+import {
+  obtenerTurnosBackend,
+  renderHistorialTurnos
+} from "./historial.js";
+
+import {
+  obtenerTurnosPorFecha
+} from "./apiTurnos.js";
+
+import { enviarTurno } from "./envioTicketPOST.js";
+
+import {
+  renderSelectClientes,
+  renderSelectTecnicos,
+  renderSelectGen
+} from "./render_selects.js";
+
+import { renderGrillaTurnos } from "./grilla.js";
+
+import { clienteYaTieneTurno } from "./validaciones.js";
+
+import Tecnico from "../tecnico/Tecnico.js";
+
+import { obtenerClientesBackend } from "../cliente/clienteApi.js";
+import { obtenerTecnicosBackend } from "../tecnico/tecnicoApi.js";
+
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+  // ============================
+  // DOM
+  // ============================
+
+  const tituloSeccion = document.getElementById("tituloSeccion");
+
+  const turnosContainer = document.getElementById("turnosContainer");
+
+  const historialContainer =
+    document.getElementById("historialTurnos");
+
+  const btnModoHistorial =
+    document.getElementById("btnModoHistorial");
+
+  const selectorFecha =
+    document.getElementById("selectorFechaHistorial");
+
+  const btnMostrarTurnos =
+    document.getElementById("btnMostrarTurnos");
+
+  // selects
+
+  const selectCliente =
+    document.getElementById("selectCliente");
+
+  const selectTecnico =
+    document.getElementById("selectTecnico");
+
+  const selectT =
+    document.getElementById("selectT");
+
+  const selectRango =
+    document.getElementById("selectRango");
+
+  const selectEstadoTicket =
+    document.getElementById("selectEstadoTicket");
+
+
+  // ============================
+  // DATA
+  // ============================
+
+  const clientes =
+    await obtenerClientesBackend();
+
+  const tecnicosData =
+    await obtenerTecnicosBackend();
+
+  const tecnicos =
+    tecnicosData.map(t => new Tecnico(t));
+
+  let turnos = [];
+
+
+  // ============================
+  // CARGAR TURNOS INICIALES
+  // ============================
+
+  async function cargarTurnosIniciales(){
+
+    try{
+
+      turnos = await obtenerTurnosBackend();
+
+      // preparar historial (no visible aún)
+
+      renderHistorialTurnos(
+        turnos,
+        historialContainer
+      );
+
+    }
+    catch(e){
+
+      console.error(
+        "Error cargando turnos:",
+        e
+      );
+
+    }
+
+  }
+
+
+  // ============================
+  // GUARDAR TURNO
+  // ============================
+
+  async function guardarTurnoBackend(turno){
+
+    const turnoCreado =
+      await enviarTurno(turno);
+
+    turnos.push(turnoCreado);
+
+    // reset selects
+    selectCliente.selectedIndex = 0;
+    selectTecnico.selectedIndex = 0;
+    selectT.selectedIndex = 0;
+    selectRango.selectedIndex = 0;
+    selectEstadoTicket.selectedIndex = 0;
+
+    turnosContainer.innerHTML = "";
+
+    return turnoCreado;
+  }
+
+
+  // ============================
+  // BOTÓN HISTORIAL
+  // ============================
+
+  btnModoHistorial.onclick = () => {
+
+    cambiarEstado(
+      UI_STATE.HISTORIAL,
+      {
+        turnosContainer,
+        historialContainer,
+        selectorFecha,
+        titulo: tituloSeccion
+      }
+    );
+
+    renderHistorialTurnos(
+      turnos,
+      historialContainer
+    );
+
+  };
+
+
+  // ============================
+  // HISTORIAL POR FECHA
+  // ============================
+
+  selectorFecha.onchange = async () => {
+
+    const fecha = selectorFecha.value;
+
+    if(!fecha) return;
+
+    try{
+
+      const turnosFecha =
+        await obtenerTurnosPorFecha(fecha);
+
+      cambiarEstado(
+        UI_STATE.HISTORIAL,
+        {
+          turnosContainer,
+          historialContainer,
+          selectorFecha,
+          titulo: tituloSeccion
+        }
+      );
+
+      renderHistorialTurnos(
+        turnosFecha,
+        historialContainer
+      );
+
+    }
+    catch(e){
+
+      console.error(
+        "Error cargando historial por fecha:",
+        e
+      );
+
+    }
+
+  };
+
+
+  // ============================
+  // MOSTRAR DISPONIBILIDAD
+  // ============================
+
+  btnMostrarTurnos.onclick = async () => {
+
+    cambiarEstado(
+      UI_STATE.DISPONIBILIDAD,
+      {
+        turnosContainer,
+        historialContainer,
+        selectorFecha,
+        titulo: tituloSeccion
+      }
+    );
+
+    const clienteId =
+      selectCliente.value;
+
+    const tecnicoId =
+      selectTecnico.value;
+
+    const tSeleccionado =
+      selectT.value;
+
+    const rangoSeleccionado =
+      selectRango.value;
+
+    const estadoTicket =
+      selectEstadoTicket.value;
+
+
+    if(
+      !clienteId ||
+      !tecnicoId ||
+      !tSeleccionado ||
+      !rangoSeleccionado ||
+      !estadoTicket
+    ){
+
+      alert(
+        "Complete todos los campos"
+      );
+
+      return;
+
+    }
+
+
+    if(
+      clienteYaTieneTurno(
+        clienteId,
+        turnos
+      )
+    ){
+
+      alert(
+        "Cliente ya tiene turno"
+      );
+
+      return;
+
+    }
+
+
+    const tecnico =
+      tecnicos.find(
+        t => t.id === tecnicoId
+      );
+
+
+    await renderGrillaTurnos({
+
+      clienteId,
+      tecnico,
+      tSeleccionado,
+      rangoSeleccionado,
+        
+      clientes,
+      turnos,
+        
+      turnosContainer,
+        
+      estadoTicket,
+        
+      guardarTurno: guardarTurnoBackend,
+        
+      selects: {
+      
+        selectCliente,
+        selectTecnico,
+        selectTipoTurno: selectT,
+        selectRango
+      
+      }
+    
+    });
+
+  };
+
+
+  // ============================
+  // INIT SELECTS
+  // ============================
+
+  renderSelectClientes(
+    selectCliente,
+    clientes,
+    turnos
+  );
+
+  renderSelectTecnicos(
+    selectTecnico,
+    tecnicos
+  );
+
+  renderSelectGen(
+    selectT,
+    T_VALUES,
+    "Seleccionar T",
+    "T"
+  );
+
+  renderSelectGen(
+    selectRango,
+    RANGOS,
+    "Seleccionar rango",
+    ""
+  );
+
+  renderSelectGen(
+    selectEstadoTicket,
+    ["Abierto"],
+    "Seleccionar estado",
+    ""
+  );
+
+
+  // ============================
+  // INIT APP
+  // ============================
+
+  await cargarTurnosIniciales();
+
+  cambiarEstado(
+    UI_STATE.DISPONIBILIDAD,
+    {
+      turnosContainer,
+      historialContainer,
+      selectorFecha,
+      titulo: tituloSeccion
+    }
+  );
+
+});
+
+opinion: Esta bastante limpio, pero habria que dividirlo o fraccionarlo
+
+-----------------------------------
+A12.
+
+js/turno/uiState.js:
+
+export const UI_STATE = {
+
+  DISPONIBILIDAD: "disponibilidad",
+
+  HISTORIAL: "historial"
+
+};
+
+let currentState = null;
+
+export function cambiarEstado(nuevoEstado, refs){
+
+  if(currentState === nuevoEstado)
+    return;
+
+  currentState = nuevoEstado;
+
+  const {
+    turnosContainer,
+    historialContainer,
+    selectorFecha,
+    titulo
+  } = refs;
+
+  // LIMPIAR SIEMPRE
+  turnosContainer.innerHTML = "";
+  historialContainer.innerHTML = "";
+
+  switch(nuevoEstado){
+
+    case UI_STATE.DISPONIBILIDAD:
+
+      turnosContainer.style.display = "grid";
+
+      historialContainer.style.display = "none";
+
+      selectorFecha.style.display = "none";
+
+      titulo.textContent =
+        "Turnos Disponibles";
+
+      break;
+
+
+    case UI_STATE.HISTORIAL:
+
+      turnosContainer.style.display = "none";
+
+      historialContainer.style.display = "block";
+
+      selectorFecha.style.display = "block";
+
+      titulo.textContent =
+        "Historial de Turnos";
+
+      break;
+
+  }
+
+}
+
+Opinion: Al manejar eventos de ui no deberia ir alli? por ejemplo la ui/ de turno/ esta bien, 
+porque es para toda la app... Conviene hacer como se hace profesionalmente con src/, service/, etc y dejarlo
+limpio, luego usarlo (osea todo el proyecto)
+
+
+-----------------------------------
+A13.
+
+js/turno/validaciones.js:
+
+// ===============================
+// Validaciones de turnos según técnicos
+// ===============================
+
+// Verifica si un cliente ya tiene un turno asignado
+export function clienteYaTieneTurno(clienteId, turnos) {
+  return turnos.some(turno => String(turno.cliente?.id) === String(clienteId));
+}
+
+// Helper: expande un horario inicial + cantidad de bloques t -> array de "HH:MM"
+function expandirBloquesDesde(horaInicio, t, duracion = 15) {
+  const [h, m] = horaInicio.split(":").map(Number);
+  const bloques = [];
+  let hora = h;
+  let minuto = m;
+
+  for (let i = 0; i < t; i++) {
+    bloques.push(`${String(hora).padStart(2,"0")}:${String(minuto).padStart(2,"0")}`);
+    minuto += duracion;
+    if (minuto >= 60) {
+      hora += Math.floor(minuto / 60);
+      minuto = minuto % 60;
+    }
+  }
+  return bloques;
+}
+
+// Verifica si hay conflicto de horario para un técnico y opcionalmente para un cliente
+// Ahora acepta 't' = cantidad de bloques del turno candidato (por defecto 1)
+export function hayConflicto(turnos, fechaISO, hora, tecnicoNombre, clienteId = null, t = 1) {
+  const horaNorm = hora.slice(0,5); // "HH:MM"
+  const bloquesCandidato = expandirBloquesDesde(horaNorm, t);
+
+  return turnos.some(turno => {
+    if (turno.fecha !== fechaISO) return false;
+
+    const bloquesExistente = expandirTurno(turno); // usa turno.t del turno guardado (cantidad de bloques)
+    const tecnicoIgual = turno.tecnico?.nombre === tecnicoNombre;
+const clienteIgual = clienteId ? String(turno.cliente?.id) === String(clienteId) : false;
+
+    // Si cualquiera de los bloques candidatos está en los bloques existentes => conflicto
+    const hayInterseccion = bloquesCandidato.some(b => bloquesExistente.includes(b));
+
+    // conflicto por técnico o por cliente (si se pasa clienteId)
+    return (tecnicoIgual && hayInterseccion) || (clienteIgual && hayInterseccion);
+  });
+}
+
+// Devuelve lista de clientes que aún no tienen turno asignado
+export function filtrarClientesDisponibles(clientes, turnos) {
+  return clientes.filter(c => !clienteYaTieneTurno(c.numeroCliente, turnos));
+}
+
+// Devuelve horarios disponibles para un técnico en una fecha
+// ahora acepta 't' (cantidad de bloques requeridos)
+export function obtenerHorariosDisponibles(turnos, fechaISO, tecnico, diaNombre, clienteId = null, t = 1) {
+
+  // 🔧 Normaliza el nombre del día (quita tildes, minúsculas)
+  const diaNormalizado = diaNombre
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
+  const bloquesPorDia = Object.fromEntries(
+    Object.entries(tecnico.generarBloques()).map(([k, v]) => [
+      k.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(),
+      v
+    ])
+  );
+
+  const bloquesDia = bloquesPorDia[diaNormalizado] || [];
+
+  return bloquesDia.filter(hora =>
+    // pasamos 't' para que se comprueben todos los bloques del candidato
+    !hayConflicto(turnos, fechaISO, hora, `${tecnico.nombre} ${tecnico.apellido}`, clienteId, t)
+  );
+}
+
+// Mide los T ocupados en agenda, de esa manera no muestra turnos ocupados ya por el mismo técnico
+function expandirTurno(turno) {
+
+  if (!turno || !turno.hora_inicio || !turno.hora_fin) {
+    console.warn("Turno inválido recibido:", turno);
+    return [];
+  }
+
+  const bloques = [];
+
+  let actual = turno.hora_inicio.slice(0,5);
+  const fin = turno.hora_fin.slice(0,5);
+
+  while (actual < fin) {
+
+    bloques.push(actual);
+
+    const [h, m] = actual.split(":").map(Number);
+
+    const fecha = new Date();
+    fecha.setHours(h);
+    fecha.setMinutes(m + 15);
+    fecha.setSeconds(0);
+
+    actual = fecha.toTimeString().slice(0,5);
+  }
+
+  return bloques;
+}
+
+opinion: funciona y valida bien
+
+-----------------------------------
