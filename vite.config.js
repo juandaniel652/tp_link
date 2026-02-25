@@ -1,8 +1,14 @@
 import { defineConfig } from 'vite'
+import path from 'path'
 
 export default defineConfig({
-  root: '.',
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'js/src')
+    }
+  },
   test: {
-    environment: 'jsdom'
+    environment: 'jsdom',
+    globals: true
   }
 })

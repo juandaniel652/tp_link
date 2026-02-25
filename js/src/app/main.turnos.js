@@ -1,5 +1,6 @@
-import { initTurnosPage } from "../modules/turnos/controller/turnos.controller.js";
+import { TurnosController } 
+  from '@/modules/turnos/controller/turnos.controller.js'
 
-document.addEventListener("DOMContentLoaded", () => {
-  initTurnosPage();
-});
+document.addEventListener('DOMContentLoaded', () => {
+  new TurnosController().init()
+})

@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "dev": "vite",
-  "test": "vitest",
-  "test:watch": "vitest --watch"
+    "dev": "vite",
+    "test": "vitest",
+    "test:watch": "vitest --watch"
   },
   "repository": {
     "type": "git",
@@ -21,8 +21,8 @@
   },
   "homepage": "https://github.com/juandaniel652/tp_link#readme",
   "devDependencies": {
+    "jsdom": "^28.1.0",
     "vite": "^7.3.1",
     "vitest": "^4.0.18"
   }
-
 }
