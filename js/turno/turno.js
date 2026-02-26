@@ -11,7 +11,7 @@ import {
 } from "./uiState.js";
 
 import { TurnoMapper } 
-  from "../src/modules/turnos/mappers/turno.mapper.js";
+  from "/js/src/modules/turnos/mappers/turno.mapper.js";
 
 import {
   obtenerTurnosBackend,
@@ -136,10 +136,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const turnosDominio =
         turnos.map(t => TurnoMapper.backendToDomain(t));
-        
+
       const nuevoDominio =
         TurnoMapper.backendToDomain(turnoUI);
-        
+
       TurnosService.validarNuevoTurno(
         turnosDominio,
         nuevoDominio
