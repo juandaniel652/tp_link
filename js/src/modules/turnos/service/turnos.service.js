@@ -1,27 +1,34 @@
-import { Turno } from '../model/turno.model.js';
+// turnos.service.js
+// Fachada del módulo Turnos
 
-export class TurnosService {
+import { fetchTurnosPorFecha, postTurno } from "./turnos.api.js";
+import {
+  mapTurnoFromBackend,
+  mapTurnoListFromBackend,
+  mapTurnoToBackend
+} from "../mappers/turnos.mapper.js";
 
-  static validarNuevoTurno(turnos, datos) {
-
-    const nuevo = new Turno(datos);
-
-    if (TurnosService.hayConflicto(turnos, nuevo)) {
-      throw new Error("Conflicto de horario");
-    }
-
-    return true;
+/**
+ * Obtiene turnos por fecha y los devuelve en formato Frontend Model
+ */
+export async function obtenerTurnosPorFecha({ fecha, token }) {
+  try {
+    const data = await fetchTurnosPorFecha({ fecha, token });
+    return mapTurnoListFromBackend(data);
+  } catch (error) {
+    throw new Error(`TurnosService.obtenerTurnosPorFecha → ${error.message}`);
   }
+}
 
-  static hayConflicto(turnos, nuevo) {
-
-    return turnos.some(t =>
-      t.tecnicoId === nuevo.tecnicoId &&
-      t.fecha === nuevo.fecha &&
-      nuevo.inicio < t.fin &&
-      nuevo.fin > t.inicio
-    );
-
+/**
+ * Crea un turno
+ */
+export async function crearTurno({ turno, token }) {
+  try {
+    const turnoBackend = mapTurnoToBackend(turno);
+    const created = await postTurno({ turnoBackend, token });
+    return mapTurnoFromBackend(created);
+  } catch (error) {
+    throw new Error(`TurnosService.crearTurno → ${error.message}`);
   }
-
 }
