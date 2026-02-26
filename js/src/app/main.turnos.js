@@ -1,5 +1,5 @@
-import { TurnoUI } from "../modules/turnos/turno.js";
+import { initTurnos } from "../modules/turnos/index.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  new TurnoUI().init();
+  initTurnos();
 });
