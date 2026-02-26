@@ -10,6 +10,9 @@ import {
   UI_STATE
 } from "./uiState.js";
 
+import { TurnoMapper } 
+  from "../src/modules/turnos/mappers/turno.mapper.js";
+
 import {
   obtenerTurnosBackend,
   renderHistorialTurnos
@@ -130,26 +133,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   async function guardarTurnoBackend(turnoUI){
 
     try {
-    
-      // 🔥 CONVERTIMOS A DOMINIO
-      const datosDominio = {
-        clienteId: turnoUI.cliente_id,
-        tecnicoId: turnoUI.tecnico_id,
-        fecha: turnoUI.fecha,
-        inicio: parseInt(turnoUI.hora_inicio),
-        fin: parseInt(turnoUI.hora_fin)
-      };
-    
-      // 🔥 VALIDAMOS CON DOMINIO
+
+      const turnosDominio =
+        turnos.map(t => TurnoMapper.backendToDomain(t));
+        
+      const nuevoDominio =
+        TurnoMapper.backendToDomain(turnoUI);
+        
       TurnosService.validarNuevoTurno(
-        turnos.map(t => ({
-          clienteId: t.cliente_id,
-          tecnicoId: t.tecnico_id,
-          fecha: t.fecha,
-          inicio: parseInt(t.hora_inicio),
-          fin: parseInt(t.hora_fin)
-        })),
-        datosDominio
+        turnosDominio,
+        nuevoDominio
       );
     
     } catch (e) {
@@ -158,13 +151,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     
     }
-  
+
     // 🔥 RECIÉN AHORA ENVIAMOS AL BACKEND
     const turnoCreado =
       await enviarTurno(turnoUI);
-  
+
     turnos.push(turnoCreado);
-  
+
     return turnoCreado;
   }
 
