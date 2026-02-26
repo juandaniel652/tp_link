@@ -21,4 +21,15 @@ export class TurnosService {
     return nuevoTurno
   }
 
+  static validarNuevoTurno(turnos, datos) {
+
+    const nuevo = new Turno(datos);
+    
+    if (this.hayConflicto(turnos, nuevo)) {
+      throw new Error("Conflicto de horario");
+    }
+  
+    return true;
+  }
+
 }

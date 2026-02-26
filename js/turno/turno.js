@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
 
       // 🔥 VALIDACIÓN DE DOMINIO
-      TurnosService.crearTurno(turnos, turno);
+      TurnosService.validarNuevoTurno(turnos, turno);
 
     } catch (e) {
 
