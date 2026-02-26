@@ -127,33 +127,44 @@ document.addEventListener("DOMContentLoaded", async () => {
   // GUARDAR TURNO
   // ============================
 
-  async function guardarTurnoBackend(turno){
+  async function guardarTurnoBackend(turnoUI){
 
     try {
-
-      // 🔥 VALIDACIÓN DE DOMINIO
-      TurnosService.validarNuevoTurno(turnos, turno);
-
+    
+      // 🔥 CONVERTIMOS A DOMINIO
+      const datosDominio = {
+        clienteId: turnoUI.cliente_id,
+        tecnicoId: turnoUI.tecnico_id,
+        fecha: turnoUI.fecha,
+        inicio: parseInt(turnoUI.hora_inicio),
+        fin: parseInt(turnoUI.hora_fin)
+      };
+    
+      // 🔥 VALIDAMOS CON DOMINIO
+      TurnosService.validarNuevoTurno(
+        turnos.map(t => ({
+          clienteId: t.cliente_id,
+          tecnicoId: t.tecnico_id,
+          fecha: t.fecha,
+          inicio: parseInt(t.hora_inicio),
+          fin: parseInt(t.hora_fin)
+        })),
+        datosDominio
+      );
+    
     } catch (e) {
-
+    
       alert(e.message);
       return;
-
+    
     }
-
+  
+    // 🔥 RECIÉN AHORA ENVIAMOS AL BACKEND
     const turnoCreado =
-      await enviarTurno(turno);
-
+      await enviarTurno(turnoUI);
+  
     turnos.push(turnoCreado);
-
-    selectCliente.selectedIndex = 0;
-    selectTecnico.selectedIndex = 0;
-    selectT.selectedIndex = 0;
-    selectRango.selectedIndex = 0;
-    selectEstadoTicket.selectedIndex = 0;
-
-    turnosContainer.innerHTML = "";
-
+  
     return turnoCreado;
   }
 
