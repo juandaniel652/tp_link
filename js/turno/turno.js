@@ -10,8 +10,7 @@ import {
   UI_STATE
 } from "./uiState.js";
 
-import { TurnoMapper } 
-  from "/js/src/modules/turnos/mappers/turno.mapper.js";
+import { TurnoMapper } from "./turno.mapper.js";
 
 import {
   obtenerTurnosBackend,
