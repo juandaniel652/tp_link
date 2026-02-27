@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sistema dewhich git gestión S-Link: clientes, técnicos, turnos, puntos de acceso y agenda.">
+  <meta name="author" content="Juan Dominguez">
+  <meta name="robots" content="index, follow">
+
+  <title>Wifi S-Link</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
+
+  <link rel="shortcut icon" href="/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png?v=2" type="image/x-icon">
+
+
+  <!-- Estilos -->
+  <script type="module" crossorigin src="/assets/token.guard-C10oOflc.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/menu-BNP5vtTF.css">
+</head>
+<body>
+
+
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-container">
+      <div class="logo-container">
+        <img src="/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png" alt="Logo S-Link" class="logo">
+        <span class="brand-name">Menú principal</span>
+        <span id="userEmail" style="margin-left: 10px; font-weight: bold; color: #fff;"></span>
+      </div>
+
+      <!-- Botón hamburguesa -->
+      <button class="menu-toggle" aria-label="Abrir menú">&#9776;</button>
+
+      <nav class="top-nav" aria-label="Menú principal">
+        <ul>
+          <li><a href="../index.html" class="active">Menú</a></li>
+          <li><a href="html/cliente.html">Clientes</a></li>
+          <li><a href="html/tecnico.html">Técnicos</a></li>
+          <li><a href="html/turno.html">Turnos</a></li>
+          <li><a href="html/agenda.html">Agenda</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="main-container">
+    <!-- Menú tipo dashboard -->
+    <section class="menu-principal">
+      <a href="html/cliente.html" class="menu-button" target="_blank" rel="noopener noreferrer">
+        <img src="/assets/clientes-Cvo26Veq.png" alt="Clientes">
+        <span>Cliente</span>
+      </a>
+
+      <a href="html/tecnico.html" class="menu-button" target="_blank" rel="noopener noreferrer">
+        <img src="data:image/png;base64,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" alt="Técnicos">
+        <span>Técnico</span>
+      </a>
+
+      <a href="html/turno.html" class="menu-button" target="_blank" rel="noopener noreferrer">
+        <img src="/assets/ticket_turno-BKFA_7lK.png" alt="Turnos">
+        <span>Turno</span>
+      </a>
+
+      <a href="html/agenda.html" class="menu-button" target="_blank" rel="noopener noreferrer">
+        <img src="/assets/agenda-DN7FjNUr.png" alt="Agenda">
+        <span>Agenda</span>
+      </a>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>&copy; 2025 S-Link. Todos los derechos reservados.</p>
+    <p>Desarrollado por <a href="https://portafolio-juan-daniel-dom-men-05.netlify.app/" target="_blank" rel="noopener noreferrer">Juan Dominguez</a></p>
+  </footer>
+
+  <!-- JS MENÚ HAMBURGUESA -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const nav = document.querySelector('.top-nav');
+      
+    menuToggle.addEventListener('click', () => {
+      if(nav.style.display === 'flex') {
+        nav.style.display = 'none';
+      } else {
+        nav.style.display = 'flex';
+      }
+    });
+  });
+
+  </script>
+</body>
+</html>

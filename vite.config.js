@@ -9,6 +9,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
+        main: path.resolve(__dirname, "index.html"),   // 👈 AGREGAR ESTO
         turno: path.resolve(__dirname, "html/turno.html"),
         tecnico: path.resolve(__dirname, "html/tecnico.html"),
         cliente: path.resolve(__dirname, "html/cliente.html"),
@@ -20,9 +21,5 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "js/src"),
     },
-  },
-  test: {
-    environment: "jsdom",
-    globals: true,
   },
 });
