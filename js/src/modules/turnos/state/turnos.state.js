@@ -2,13 +2,14 @@
 
 export class TurnosState {
   constructor() {
-    this.state = {
+    this.initialState = {
       fechaSeleccionada: null,
       turnos: [],
       loading: false,
-      error: null
+      error: null // string simple, no objeto Error
     };
 
+    this.state = structuredClone(this.initialState);
     this.listeners = [];
   }
 
@@ -18,6 +19,7 @@ export class TurnosState {
 
   subscribe(listener) {
     this.listeners.push(listener);
+
     return () => {
       this.listeners = this.listeners.filter(l => l !== listener);
     };
@@ -36,43 +38,63 @@ export class TurnosState {
   // Mutations
   // --------------------
 
-  setLoading(value) {
-    this.state.loading = value;
+  update(patch) {
+    this.state = {
+      ...this.state,
+      ...patch
+    };
     this.notify();
+  }
+
+  setLoading(value) {
+    this.update({ loading: value });
   }
 
   setError(error) {
-    this.state.error = error;
-    this.notify();
+    const message = error?.message ?? String(error);
+    this.update({ error: message });
   }
 
   clearError() {
-    this.state.error = null;
-    this.notify();
+    this.update({ error: null });
   }
 
   setFecha(fecha) {
-    this.state.fechaSeleccionada = fecha;
-    this.notify();
+    this.update({ fechaSeleccionada: fecha });
   }
 
   setTurnos(turnos) {
-    this.state.turnos = [...turnos];
-    this.notify();
+    this.update({ turnos: [...turnos] });
   }
 
   addTurno(turno) {
-    this.state.turnos = [...this.state.turnos, turno];
+    this.update({ turnos: [...this.state.turnos, turno] });
+  }
+
+  cancelTurno(id) {
+      this.update({
+        turnos: this.state.turnos.map(t =>
+          t.id === id
+            ? { ...t, estado: "cancelado" }
+            : t
+        )
+      });
+    }
+
+  reset() {
+    this.state = structuredClone(this.initialState);
     this.notify();
   }
 
-  reset() {
-    this.state = {
-      fechaSeleccionada: null,
-      turnos: [],
-      loading: false,
-      error: null
-    };
-    this.notify();
+  // --------------------
+  // Derived State
+  // --------------------
+
+  hasTurnos() {
+    return this.state.turnos.length > 0;
+  }
+
+  isEmpty() {
+    return !this.state.loading && this.state.turnos.length === 0;
   }
 }

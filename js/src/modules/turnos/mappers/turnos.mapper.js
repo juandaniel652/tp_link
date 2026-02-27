@@ -1,48 +1,58 @@
-// turnos.mapper.js
-// Transformaciones entre Backend DTO ↔ Frontend Model
+import { Turno } from "../model/turno.model.js";
 
-/**
- * Backend → Frontend
- */
-export function mapTurnoFromBackend(turnoBackend) {
+/* FROM API */
+export function mapTurnoFromApi(dto) {
+  return new Turno({
+    id: dto.id,
+    numeroTicket: dto.numero_ticket,
+    tipoTurno: dto.tipo_turno,
+    rangoHorario: dto.rango_horario,
+    estado: dto.estado,
+
+    fecha: new Date(dto.fecha),
+    horaInicio: dto.hora_inicio,
+    horaFin: dto.hora_fin,
+
+    cliente: mapCliente(dto.cliente),
+    tecnico: mapTecnico(dto.tecnico)
+  });
+}
+
+function mapCliente(clienteDto) {
+  if (!clienteDto) return null;
+
   return {
-    id: turnoBackend.id,
-    numero_ticket: turnoBackend.numero_ticket,
-    fecha: turnoBackend.fecha,
-    hora_inicio: turnoBackend.hora_inicio,
-    hora_fin: turnoBackend.hora_fin,
-    id_cliente: turnoBackend.cliente?.id,
-    cliente_nombre: turnoBackend.cliente?.nombre,
-    tecnico: turnoBackend.tecnico?.nombre,
-    tecnico_id: turnoBackend.tecnico?.id,
-    estado: turnoBackend.estado,
-    tipo_turno: turnoBackend.tipo_turno,
-    rango_horario: turnoBackend.rango_horario
+    id: clienteDto.id,
+    numeroCliente: clienteDto.numero_cliente,
+    nombre: clienteDto.nombre
   };
 }
 
-export function mapTurnoListFromBackend(listaBackend) {
-  return listaBackend.map(mapTurnoFromBackend);
-}
+function mapTecnico(tecnicoDto) {
+  if (!tecnicoDto) return null;
 
-/**
- * Frontend → Backend
- */
-export function mapTurnoToBackend(turno) {
   return {
-    numero_ticket: turno.numero_ticket,
-    cliente_id: turno.cliente_id,
-    tecnico_id: turno.tecnico_id,
-    tipo_turno: turno.tipo_turno,
-    rango_horario: turno.rango_horario,
-    fecha: turno.fecha,
-    hora_inicio: `${turno.hora_inicio}:00`,
-    hora_fin: `${turno.hora_fin}:00`,
-    estado: "Abierto"
+    id: tecnicoDto.id,
+    nombre: tecnicoDto.nombre
   };
 }
 
-export function crearFechaLocalDesdeISO(fechaISO) {
-  const [year, month, day] = fechaISO.split("-").map(Number);
-  return new Date(year, month - 1, day);
+/* ARRAY */
+export function mapTurnosFromApi(data) {
+  return data.map(mapTurnoFromApi);
+}
+
+/* TO API (CREATE) */
+export function mapTurnoToApi(turno) {
+  return {
+    numero_ticket: turno.numeroTicket,
+    cliente_id: turno.cliente.id,
+    tecnico_id: turno.tecnico.id,
+    tipo_turno: turno.tipoTurno,
+    rango_horario: turno.rangoHorario,
+    estado: turno.estado,
+    fecha: turno.fecha.toISOString().split("T")[0],
+    hora_inicio: turno.horaInicio,
+    hora_fin: turno.horaFin
+  };
 }

@@ -1,53 +1,37 @@
 export class Turno {
-  constructor({ id = null, clienteId, tecnicoId, fecha, inicio, fin }) {
+  constructor({
+    id,
+    numeroTicket,
+    tipoTurno,
+    rangoHorario,
+    estado,
+    fecha,
+    horaInicio,
+    horaFin,
+    cliente,
+    tecnico
+  }) {
+    this.id = id;
+    this.numeroTicket = numeroTicket;
+    this.tipoTurno = tipoTurno;
+    this.rangoHorario = rangoHorario;
+    this.estado = estado.toLowerCase();
 
-    if (!clienteId) {
-      throw new Error('clienteId es obligatorio')
-    }
+    this.fecha = fecha;         // Date
+    this.horaInicio = horaInicio;
+    this.horaFin = horaFin;
 
-    if (!tecnicoId) {
-      throw new Error('tecnicoId es obligatorio')
-    }
-
-    if (!fecha) {
-      throw new Error('fecha es obligatoria')
-    }
-
-    if (inicio == null || fin == null) {
-      throw new Error('inicio y fin son obligatorios')
-    }
-
-    if (inicio >= fin) {
-      throw new Error('inicio debe ser menor que fin')
-    }
-
-    this.id = id
-    this.clienteId = Number(clienteId)
-    this.tecnicoId = Number(tecnicoId)
-    this.fecha = fecha
-    this.inicio = Number(inicio)
-    this.fin = Number(fin)
+    this.cliente = cliente;     // objeto dominio
+    this.tecnico = tecnico;
   }
 
-  duracion() {
-    return this.fin - this.inicio
+  estaCancelado() {
+    return this.estado === "cancelado";
   }
 
-  solapaCon(otroTurno) {
-
-      if (!(otroTurno instanceof Turno)) {
-        throw new Error('Debe compararse con otra instancia de Turno')
-      }
-  
-      if (this.tecnicoId !== otroTurno.tecnicoId) {
-        return false
-      }
-  
-      if (this.fecha !== otroTurno.fecha) {
-        return false
-      }
-  
-      return this.inicio < otroTurno.fin &&
-             this.fin > otroTurno.inicio
-    }
+  duraEnMinutos() {
+    const [h1, m1] = this.horaInicio.split(":").map(Number);
+    const [h2, m2] = this.horaFin.split(":").map(Number);
+    return (h2 * 60 + m2) - (h1 * 60 + m1);
+  }
 }
