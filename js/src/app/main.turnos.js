@@ -1,9 +1,6 @@
-import { checkAuth } from "@/core/auth/token.guard.js";
+import { bootstrapProtectedPage } from "@/core/auth/bootstrap.js";
 import { initTurnos } from "@/modules/turnos/index.js";
 
-document.addEventListener("DOMContentLoaded", async () => {
-  const isAuth = await checkAuth();
-  if (!isAuth) return;
-
-  initTurnos();
+document.addEventListener("DOMContentLoaded", () => {
+  bootstrapProtectedPage(initTurnos);
 });

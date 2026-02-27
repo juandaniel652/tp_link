@@ -10,11 +10,11 @@ export async function checkAuth() {
   const tokenFromUrl = params.get("token");
 
   if (tokenFromUrl) {
-    setToken(tokenFromUrl);
+    tokenStorage.set(tokenFromUrl);
     window.history.replaceState({}, document.title, window.location.pathname);
   }
 
-  const token = getToken();
+  const token = tokenStorage.get();
 
   if (!token) {
     window.location.replace(LOGIN_URL);
@@ -36,7 +36,7 @@ export async function checkAuth() {
     return true;
 
   } catch (error) {
-    removeToken();
+    tokenStorage.remove();
     window.location.replace(LOGIN_URL);
     return false;
   }

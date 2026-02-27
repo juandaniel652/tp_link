@@ -1,16 +1,20 @@
+import { bootstrapProtectedPage } from "@/core/auth/bootstrap.js";
 import { ClienteController } from "@/modules/clientes/controller/clientes.controller.js";
 import { ClientesView } from "@/modules/clientes/view/clientes.view.js";
 import { tokenStorage } from "@/core/storage/tokenStorage.js";
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
 
-  const view = new ClientesView();
+  bootstrapProtectedPage(async () => {
 
-  const controller = new ClienteController({
-    view,
-    tokenProvider: tokenStorage
+    const view = new ClientesView();
+
+    const controller = new ClienteController({
+      view,
+      tokenProvider: tokenStorage
+    });
+
+    await controller.init();
   });
-
-  await controller.init();
 
 });
