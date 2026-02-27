@@ -1,6 +1,6 @@
 // js/src/core/auth/token.guard.js
 
-import { getToken, setToken, removeToken } from "@/core/storage/tokenStorage.js";
+import { tokenStorage } from "@/core/storage/tokenStorage.js";
 
 const LOGIN_URL = "https://loginagenda.netlify.app/";
 const API_ME = "https://agenda-1-zomu.onrender.com/api/v1/auth/me";

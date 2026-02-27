@@ -1,8 +1,8 @@
 import {
-  fetchTurnos,
-  createTurno,
-  updateTurno,
-  cancelarTurnoApi
+  fetchTurnosPorFecha,
+  createTurno as createTurnoApi,
+  updateTurno as updateTurnoApi,
+  cancelarTurno as cancelarTurnoApi
 } from "./turnos.api.js";
 
 import {
@@ -10,7 +10,6 @@ import {
   mapTurnoToApi
 } from "../mappers/turnos.mapper.js";
 
-/* VALIDACIÓN DOMINIO */
 function validarTurno(turno) {
   if (!turno.cliente?.id) {
     throw new Error("Cliente inválido");
@@ -25,36 +24,32 @@ function validarTurno(turno) {
   }
 }
 
-/* LISTAR */
-export async function obtenerTurnos() {
-  const data = await fetchTurnos();
+export async function obtenerTurnosPorFecha(fecha) {
+  const data = await fetchTurnosPorFecha(fecha);
 
   if (!Array.isArray(data)) return [];
 
   return data.map(mapTurnoFromApi);
 }
 
-/* CREAR */
 export async function crearTurno(turno) {
   validarTurno(turno);
 
   const payload = mapTurnoToApi(turno);
-  const created = await createTurno(payload);
+  const created = await createTurnoApi(payload);
 
   return mapTurnoFromApi(created);
 }
 
-/* ACTUALIZAR */
 export async function actualizarTurno(turno) {
   validarTurno(turno);
 
   const payload = mapTurnoToApi(turno);
-  const updated = await updateTurno(turno.id, payload);
+  const updated = await updateTurnoApi(turno.id, payload);
 
   return mapTurnoFromApi(updated);
 }
 
-/* CANCELAR (no eliminar) */
 export async function cancelarTurno(id) {
   const updated = await cancelarTurnoApi(id);
   return mapTurnoFromApi(updated);

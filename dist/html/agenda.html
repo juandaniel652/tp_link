@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Agenda de turnos organizada con vista clara y responsiva.">
+  <title>Agenda</title>
+
+  <!-- Estilos -->
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
+
+  <link rel="shortcut icon" href="img/logo-transparente-tp-link-blanco.png?v=2" type="image/x-icon">
+  <script type="module" crossorigin src="/assets/token.guard-C10oOflc.js"></script>
+  <script type="module" crossorigin src="/assets/main.turnos-QrBPI2b5.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/agenda-CCu8cY3C.css">
+  <link rel="stylesheet" crossorigin href="/assets/menu-BNP5vtTF.css">
+</head>
+
+   <!-- Toast container -->
+  <div id="toast-container"></div>
+<body>
+
+
+
+<header class="header">
+  <div class="header-container">
+    <!-- Logo -->
+    <div class="logo-container">
+      <img src="/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png" alt="Logo" class="logo">
+    </div>
+
+    <!-- Título centrado -->
+    <h1>Agenda de Turnos</h1>
+
+    <!-- Toggle hamburguesa -->
+    <button class="menu-toggle" aria-label="Abrir menú">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+
+    <!-- Navegación / Módulos -->
+    <nav class="top-nav">
+      <ul>
+        <li><a href="../index.html">Menú</a></li>
+        <li><a href="../html/cliente.html">Clientes</a></li>
+        <li><a href="../html/tecnico.html">Técnicos</a></li>
+        <li><a href="../html/turno.html">Turnos</a></li>
+        <li><a href="../html/agenda.html" class="active">Agenda</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="container main-content">
+    <div id="agendaContainer"></div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 S-Link | Gestión de Agenda</p>
+    </div>
+  </footer>
+
+
+  <script>document.addEventListener('DOMContentLoaded', () => {
+  const menuToggle = document.querySelector('.menu-toggle');
+  const nav = document.querySelector('.top-nav');
+
+  menuToggle.addEventListener('click', () => {
+    nav.classList.toggle('show');
+    menuToggle.classList.toggle('open');
+  });
+});</script>
+
+</body>
+</html>

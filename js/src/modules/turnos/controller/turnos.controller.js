@@ -1,5 +1,5 @@
 import {
-  obtenerTurnos,
+  obtenerTurnosPorFecha,
   crearTurno,
   cancelarTurno
 } from "../service/turnos.service.js";
@@ -50,7 +50,7 @@ export class TurnosController {
     this.state.clearError();
 
     try {
-      const turnos = await obtenerTurnos();
+      const turnos = await obtenerTurnosPorFecha(fecha);
       this.state.update({
         fechaSeleccionada: fecha,
         turnos
