@@ -1,5 +1,3 @@
-// js/src/core/auth/token.guard.js
-
 import { tokenStorage } from "@/core/storage/tokenStorage.js";
 
 const LOGIN_URL = "https://loginagenda.netlify.app/";
@@ -10,11 +8,11 @@ export async function checkAuth() {
   const tokenFromUrl = params.get("token");
 
   if (tokenFromUrl) {
-    tokenStorage.set(tokenFromUrl);
+    tokenStorage.setToken(tokenFromUrl);
     window.history.replaceState({}, document.title, window.location.pathname);
   }
 
-  const token = tokenStorage.get();
+  const token = tokenStorage.getToken();
 
   if (!token) {
     window.location.replace(LOGIN_URL);
@@ -30,13 +28,10 @@ export async function checkAuth() {
 
     if (!response.ok) throw new Error("Token inválido");
 
-    const user = await response.json();
-    console.log("Usuario autenticado:", user);
-
     return true;
 
   } catch (error) {
-    tokenStorage.remove();
+    tokenStorage.removeToken();
     window.location.replace(LOGIN_URL);
     return false;
   }

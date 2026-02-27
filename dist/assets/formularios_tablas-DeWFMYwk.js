@@ -1,1 +1,0 @@
-function t(){return localStorage.getItem("access_token")}function o(e){localStorage.setItem("access_token",e)}function n(){localStorage.removeItem("access_token")}const c={getToken:t,setToken:o,removeToken:n};export{c as t};
