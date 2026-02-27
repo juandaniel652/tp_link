@@ -10,6 +10,9 @@ export default defineConfig({
     rollupOptions: {
       input: {
         turno: path.resolve(__dirname, "html/turno.html"),
+        tecnico: path.resolve(__dirname, "html/tecnico.html"),
+        cliente: path.resolve(__dirname, "html/cliente.html"),
+        agenda: path.resolve(__dirname, "html/agenda.html"),
       },
     },
   },

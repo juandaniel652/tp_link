@@ -7,6 +7,9 @@ import {
 
 import { Tecnico } from "../model/tecnico.model.js";
 
+import { crearDisponibilidad } from "../../disponibilidad/service/disponibilidad.service.js";
+import { Disponibilidad } from "../../disponibilidad/model/disponibilidad.model.js";
+
 export class TecnicosController {
 
   constructor({ view, tokenProvider }) {
@@ -40,24 +43,38 @@ export class TecnicosController {
   async handleGuardar(data) {
     try {
       const token = this.tokenProvider.getToken();
-
+    
       const tecnico = new Tecnico({
         ...data,
         id: this.editando?.id ?? null,
-        horarios: [],
         activo: true
       });
-
+    
+      let tecnicoCreado;
+    
       if (!this.editando) {
-        await crearTecnico(tecnico, token);
+        tecnicoCreado = await crearTecnico(tecnico, token);
       } else {
-        await actualizarTecnico(tecnico, token);
+        tecnicoCreado = await actualizarTecnico(tecnico, token);
         this.editando = null;
       }
-
+    
+      // Crear disponibilidades
+      const horariosDesdeUI = this.view.getHorarios(); // suponiendo que llamamos a DisponibilidadView.recopilarHorarios()
+      for (const h of horariosDesdeUI) {
+        await crearDisponibilidad(
+          new Disponibilidad({
+            tecnicoId: tecnicoCreado.id,
+            diaSemana: h.diaSemana,
+            horaInicio: h.horaInicio,
+            horaFin: h.horaFin
+          }),
+          token
+        );
+      }
+    
       this.view.resetForm();
       await this.cargar();
-
     } catch (error) {
       this.view.showError(error.message);
     }
