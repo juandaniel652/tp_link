@@ -1,3 +1,4 @@
+// js/src/modules/tecnicos/controller/tecnicos.controller.js
 import {
   obtenerTecnicos,
   crearTecnico,
@@ -7,7 +8,12 @@ import {
 
 import { Tecnico } from "../model/tecnico.model.js";
 
-import { crearDisponibilidad } from "../../disponibilidad/service/disponibilidad.service.js";
+import {
+  crearDisponibilidad,
+  eliminarDisponibilidad,
+  obtenerDisponibilidad
+} from "../../disponibilidad/service/disponibilidad.service.js";
+
 import { Disponibilidad } from "../../disponibilidad/model/disponibilidad.model.js";
 
 export class TecnicosController {
@@ -43,49 +49,64 @@ export class TecnicosController {
   async handleGuardar(data) {
     try {
       const token = this.tokenProvider.getToken();
-    
+
       const tecnico = new Tecnico({
         ...data,
         id: this.editando?.id ?? null,
-        activo: true
+        activo: true,
+        horarios: [] // horarios se crean como agregado independiente
       });
-    
+
       let tecnicoCreado;
-    
+
       if (!this.editando) {
         tecnicoCreado = await crearTecnico(tecnico, token);
       } else {
         tecnicoCreado = await actualizarTecnico(tecnico, token);
+
+        // eliminar disponibilidades previas antes de crear nuevas
+        const prevDisps = await obtenerDisponibilidad(tecnicoCreado.id, token);
+        await Promise.all(prevDisps.map(d => eliminarDisponibilidad(d.id, token)));
+
         this.editando = null;
       }
-    
-      // Crear disponibilidades
-      const horariosDesdeUI = this.view.getHorarios(); // suponiendo que llamamos a DisponibilidadView.recopilarHorarios()
-      for (const h of horariosDesdeUI) {
-        await crearDisponibilidad(
-          new Disponibilidad({
-            tecnicoId: tecnicoCreado.id,
-            diaSemana: h.diaSemana,
-            horaInicio: h.horaInicio,
-            horaFin: h.horaFin
-          }),
-          token
+
+      // Crear disponibilidades del técnico en paralelo
+      if (data.horarios && data.horarios.length) {
+        await Promise.all(
+          data.horarios.map(h => crearDisponibilidad(
+            new Disponibilidad({
+              tecnicoId: tecnicoCreado.id,
+              diaSemana: h.dia_semana,
+              horaInicio: h.hora_inicio,
+              horaFin: h.hora_fin
+            }),
+            token
+          ))
         );
       }
-    
+
       this.view.resetForm();
       await this.cargar();
+
     } catch (error) {
       this.view.showError(error.message);
     }
   }
 
-  handleEditar(id) {
+  async handleEditar(id) {
     const tecnico = this.tecnicos.find(t => t.id === id);
     if (!tecnico) return;
 
     this.editando = tecnico;
-    // Podés extender luego con fillForm()
+
+    try {
+      const token = this.tokenProvider.getToken();
+      const horarios = await obtenerDisponibilidad(tecnico.id, token);
+      this.view.fillForm({ ...tecnico, horarios });
+    } catch (error) {
+      this.view.showError(error.message);
+    }
   }
 
   async handleEliminar(id) {

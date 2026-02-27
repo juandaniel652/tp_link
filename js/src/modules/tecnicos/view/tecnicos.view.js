@@ -1,3 +1,4 @@
+// js/src/modules/tecnicos/view/tecnicos.view.js
 import { DisponibilidadView } from "../../disponibilidad/view/disponibilidad.view.js";
 
 export class TecnicosView {
@@ -23,6 +24,9 @@ export class TecnicosView {
     this.disponibilidadView = new DisponibilidadView("#formGeneral", "#listaHorarios");
   }
 
+  // =========================
+  // EVENTOS
+  // =========================
   onSubmit(callback) {
     this.form.addEventListener("submit", e => {
       e.preventDefault();
@@ -39,6 +43,9 @@ export class TecnicosView {
     this._onDelete = callback;
   }
 
+  // =========================
+  // RENDER DE TABLA
+  // =========================
   render(tecnicos) {
     this.tableBody.innerHTML = "";
     if (!tecnicos.length) {
@@ -75,6 +82,9 @@ export class TecnicosView {
     });
   }
 
+  // =========================
+  // RESET FORM
+  // =========================
   resetForm() {
     this.form.reset();
     this.disponibilidadView.reset();
@@ -84,6 +94,31 @@ export class TecnicosView {
     this.btnSubmit.textContent = "Guardar";
   }
 
+  // =========================
+  // FILL FORM (para editar)
+  // =========================
+  fillForm(tecnico) {
+    this.inputs.nombre.value = tecnico.nombre;
+    this.inputs.apellido.value = tecnico.apellido;
+    this.inputs.email.value = tecnico.email || "";
+    this.inputs.telefono.value = tecnico.telefono || "";
+    this.inputs.duracionTurno.value = tecnico.duracionTurnoMin;
+
+    // Imagen
+    this.inputs.previewImagen.src = tecnico.imagenUrl || "";
+    this.inputs.previewImagen.style.display = tecnico.imagenUrl ? "block" : "none";
+
+    // Disponibilidad
+    this.disponibilidadView.renderHorarios(tecnico.horarios || []);
+
+    // Botones
+    this.btnSubmit.textContent = "Actualizar";
+    this.btnCancel.style.display = "inline-block";
+  }
+
+  // =========================
+  // RECOPILAR DATOS FORM
+  // =========================
   _recopilarDatosFormulario() {
     return {
       nombre: this.inputs.nombre.value.trim(),

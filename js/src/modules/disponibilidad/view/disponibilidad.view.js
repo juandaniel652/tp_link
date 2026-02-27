@@ -5,12 +5,15 @@ export class DisponibilidadView {
     this.form = document.querySelector(formSelector);
     this.container = document.querySelector(containerSelector);
 
+    this.horariosContainer = this.form.querySelector(containerSelector);
     this.btnAddHorario = this.form.querySelector("#addHorario");
-    this.horariosContainer = this.form.querySelector("#listaHorarios");
 
     this.btnAddHorario.addEventListener("click", () => this.agregarFilaHorario());
   }
 
+  // =========================
+  // AGREGAR FILA DE HORARIO
+  // =========================
   agregarFilaHorario(data = {}) {
     const row = document.createElement("div");
     row.classList.add("horario-row");
@@ -30,15 +33,19 @@ export class DisponibilidadView {
       <button type="button" class="remove">🗑️</button>
     `;
 
+    // Rellenar datos si vienen desde un técnico existente
     if (data.diaSemana !== undefined) row.querySelector(".dia").value = data.diaSemana;
     if (data.horaInicio) row.querySelector(".inicio").value = data.horaInicio.slice(0,5);
     if (data.horaFin) row.querySelector(".fin").value = data.horaFin.slice(0,5);
 
-    row.querySelector(".remove").onclick = () => row.remove();
+    row.querySelector(".remove").addEventListener("click", () => row.remove());
 
     this.horariosContainer.appendChild(row);
   }
 
+  // =========================
+  // RECOPILAR HORARIOS
+  // =========================
   recopilarHorarios() {
     const rows = this.horariosContainer.querySelectorAll(".horario-row");
     return Array.from(rows)
@@ -50,10 +57,16 @@ export class DisponibilidadView {
       }));
   }
 
+  // =========================
+  // RESET UI
+  // =========================
   reset() {
     this.horariosContainer.innerHTML = "";
   }
 
+  // =========================
+  // RENDER HORARIOS EXISTENTES
+  // =========================
   renderHorarios(horarios) {
     this.reset();
     horarios.forEach(h => this.agregarFilaHorario(h));
