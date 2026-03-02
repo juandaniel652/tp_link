@@ -6,9 +6,7 @@ export function initTurnos() {
 
   const controller = new TurnosController({
     view,
-    tokenProvider: {
-      getToken: () => localStorage.getItem("token")
-    }
+    tokenProvider: tokenStorage
   });
 
   controller.init();
