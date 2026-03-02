@@ -3,6 +3,18 @@ import { tokenStorage } from "@/core/storage/tokenStorage.js";
 const LOGIN_URL = "https://loginagenda.netlify.app/";
 const API_ME = "https://agenda-1-zomu.onrender.com/api/v1/auth/me";
 
+document.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
+  const tokenFromUrl = params.get("token");
+
+  if (tokenFromUrl) {
+    localStorage.setItem("access_token", tokenFromUrl);
+
+    // Limpia la URL para que no quede el token visible
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+});
+
 export async function checkAuth() {
   const params = new URLSearchParams(window.location.search);
   const tokenFromUrl = params.get("token");
