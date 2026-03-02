@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://agenda-uipe.onrender.com/api/v1";
+const API_BASE_URL = "https://agenda-1-zomu.onrender.com";
 
 export async function loginRequest(email, password) {
   const response = await fetch(`${API_BASE_URL}/auth/login`, {
