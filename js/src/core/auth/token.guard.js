@@ -1,25 +1,14 @@
 import { tokenStorage } from "@/core/storage/tokenStorage.js";
-import { apiRequest } from "@/core/api/apiRequest.js";
 
-
-
-export async function checkAuth() {
+export function requireAuth() {
   const token = tokenStorage.getToken();
-  tokenStorage.getToken()
-  tokenStorage.setToken(token)
-
 
   if (!token) {
-    window.location.replace("/html/login.html");
-    return false;
+    window.location.href = "/login.html";
   }
+}
 
-  try {
-    await apiRequest("/auth/me");
-    return true;
-  } catch (err) {
-    removeToken();
-    window.location.replace("/html/login.html");
-    return false;
-  }
+export function logout() {
+  tokenStorage.removeToken();
+  window.location.href = "/login.html";
 }
