@@ -6,6 +6,7 @@ import { initTecnicos } from "@/modules/tecnicos/index.js";
 document.addEventListener("DOMContentLoaded", async () => {
 
   const isAuthenticated = await checkAuth();
+  console.log(isAuthenticated);
   if (!isAuthenticated) return;
 
   initTurnos();
