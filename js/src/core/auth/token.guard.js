@@ -1,8 +1,13 @@
-import { getToken, removeToken } from "@/core/storage/tokenStorage.js";
+import { tokenStorage } from "@/core/storage/tokenStorage.js";
 import { apiRequest } from "@/core/api/apiRequest.js";
 
+
+
 export async function checkAuth() {
-  const token = getToken();
+  const token = tokenStorage.getToken();
+  tokenStorage.getToken()
+  tokenStorage.setToken(token)
+
 
   if (!token) {
     window.location.replace("/html/login.html");

@@ -1,51 +1,29 @@
-export async function apiRequest(endpoint, options = {}) {
+import { tokenStorage } from "@/core/storage/tokenStorage.js";
 
+const API_BASE_URL = "https://agenda-1-zomu.onrender.com";
+
+export async function apiRequest(endpoint, options = {}) {
   const token = tokenStorage.getToken();
 
-  if (!token) {
-    throw new Error("No autenticado");
-  }
-
   const headers = {
-  "Authorization": `Bearer ${token}`,
-  ...options.headers
+    "Content-Type": "application/json",
+    ...(token && { Authorization: `Bearer ${token}` }),
+    ...options.headers
   };
-  
-  if (!(options.body instanceof FormData)) {
-    headers["Content-Type"] = "application/json";
-  }
 
-  // Detectar tipo de body
-  if (options.body) {
-
-    // Si es FormData → NO tocar Content-Type
-    if (options.body instanceof FormData) {
-      // el browser agrega multipart/form-data automáticamente
-    }
-
-    // Si es JSON object → convertir a string
-    else if (typeof options.body === "object") {
-      headers["Content-Type"] = "application/json";
-      options.body = JSON.stringify(options.body);
-    }
-
-  }
-
-  const response = await fetch(
-    `https://agenda-1-zomu.onrender.com/api/v1${endpoint}`,
-    {
-      ...options,
-      headers
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    ...options,
+    headers
+  });
 
   if (!response.ok) {
+    if (response.status === 401) {
+      tokenStorage.removeToken();
+      window.location.href = "/login.html"; // LOCAL
+    }
 
-    const error = await response.json().catch(() => ({}));
-
-    console.error("API ERROR:", error);
-
-    throw error;
+    const error = await response.json();
+    throw new Error(error.detail || "Error de servidor");
   }
 
   return response.json();

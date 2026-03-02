@@ -1,5 +1,5 @@
-import { loginRequest } from "./login.service.js";
-import { setToken } from "@/core/storage/tokenStorage.js";
+import { loginRequest } from "../service/login.service.js";
+import { tokenStorage } from "@/core/storage/tokenStorage.js";
 
 const form = document.getElementById("loginForm");
 const usuario = document.getElementById("usuario");
@@ -7,6 +7,15 @@ const password = document.getElementById("password");
 const errorDiv = document.getElementById("error");
 const button = form.querySelector("button");
 const buttonText = document.getElementById("buttonText");
+
+const token = tokenStorage.getToken();
+if (token) {
+  window.location.href = "/index.html";
+}
+
+tokenStorage.setToken(token)
+tokenStorage.removeToken()
+
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
