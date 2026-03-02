@@ -26,11 +26,14 @@ export async function checkAuth() {
       },
     });
 
+    console.log("Auth status:", response.status);
+
     if (!response.ok) throw new Error("Token inválido");
 
     return true;
 
   } catch (error) {
+    console.log("Auth failed:", error);
     tokenStorage.removeToken();
     window.location.replace(LOGIN_URL);
     return false;
