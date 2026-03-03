@@ -13,9 +13,6 @@ if (token) {
   window.location.href = "/index.html";
 }
 
-tokenStorage.setToken(token)
-tokenStorage.removeToken()
-
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -35,7 +32,7 @@ form.addEventListener("submit", async (e) => {
     const data = await loginRequest(email, pass);
 
     // ✅ Guardar token en el MISMO dominio
-    setToken(data.access_token);
+    tokenStorage.setToken(data.access_token);
 
     // ✅ Redirigir dentro del mismo proyecto
     window.location.href = "/index.html";
