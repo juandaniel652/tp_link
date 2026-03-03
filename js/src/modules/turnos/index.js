@@ -3,10 +3,6 @@ import { TurnosView } from "./view/turnos.view.js";
 
 export function initTurnos() {
   const view = new TurnosView();
-
-  const controller = new TurnosController({
-    view
-  });
-
+  const controller = new TurnosController({ view });
   controller.init();
 }
