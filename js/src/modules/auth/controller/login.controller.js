@@ -21,7 +21,7 @@ export function initLogin() {
 
   const token = tokenStorage.getToken();
   if (token) {
-    window.location.href = "../html/index.html";
+    window.location.href = "/index.html";
     return;
   }
 
@@ -48,7 +48,7 @@ export function initLogin() {
 
         console.log("TOKEN GUARDADO:", localStorage.getItem("access_token"));
 
-        window.location.href = "../html/index.html";
+        window.location.href = "/index.html";
 
     } catch (err) {
       mostrarError(err.message);
