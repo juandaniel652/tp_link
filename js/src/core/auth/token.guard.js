@@ -5,7 +5,10 @@ export function requireAuth() {
 
   if (!token) {
     window.location.href = "/login.html";
+    return false;
   }
+
+  return true;
 }
 
 export function logout() {
