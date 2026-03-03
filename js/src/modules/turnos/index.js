@@ -5,8 +5,7 @@ export function initTurnos() {
   const view = new TurnosView();
 
   const controller = new TurnosController({
-    view,
-    tokenProvider: tokenStorage
+    view
   });
 
   controller.init();
