@@ -1,55 +1,62 @@
 import { loginRequest } from "../service/login.service.js";
 import { tokenStorage } from "@/core/storage/tokenStorage.js";
 
-const form = document.getElementById("loginForm");
-const usuario = document.getElementById("usuario");
-const password = document.getElementById("password");
-const errorDiv = document.getElementById("error");
-const button = form.querySelector("button");
-const buttonText = document.getElementById("buttonText");
+export function initLogin() {
 
-const token = tokenStorage.getToken();
-if (token) {
-  window.location.href = "/index.html";
-}
+  const container = document.getElementById("loginContainer");
+  const form = document.getElementById("loginForm");
+  const usuario = document.getElementById("usuario");
+  const password = document.getElementById("password");
+  const errorDiv = document.getElementById("error");
 
+  if (!form) return; // Seguridad
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  ocultarError();
+  const button = form.querySelector("button");
+  const buttonText = document.getElementById("buttonText");
 
-  const email = usuario.value.trim();
-  const pass = password.value.trim();
-
-  if (!email || !pass) {
-    return mostrarError("Todos los campos son obligatorios.");
+  // Animación segura
+  if (container) {
+    container.classList.add("animate-in");
   }
 
-  buttonText.textContent = "Verificando...";
-  button.disabled = true;
-
-  try {
-    const data = await loginRequest(email, pass);
-
-    // ✅ Guardar token en el MISMO dominio
-    tokenStorage.setToken(data.access_token);
-
-    // ✅ Redirigir dentro del mismo proyecto
-    window.location.href = "../html/index.html";
-
-  } catch (err) {
-    mostrarError(err.message);
-    buttonText.textContent = "ACCEDER";
-    button.disabled = false;
+  const token = tokenStorage.getToken();
+  if (token) {
+    window.location.href = "/index.html";
+    return;
   }
-});
 
-function mostrarError(mensaje) {
-  errorDiv.textContent = mensaje;
-  errorDiv.classList.remove("hidden");
-}
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    ocultarError();
 
-function ocultarError() {
-  errorDiv.classList.add("hidden");
-  errorDiv.textContent = "";
+    const email = usuario.value.trim();
+    const pass = password.value.trim();
+
+    if (!email || !pass) {
+      return mostrarError("Todos los campos son obligatorios.");
+    }
+
+    buttonText.textContent = "Verificando...";
+    button.disabled = true;
+
+    try {
+      const data = await loginRequest(email, pass);
+      tokenStorage.setToken(data.access_token);
+      window.location.href = "/index.html";
+    } catch (err) {
+      mostrarError(err.message);
+      buttonText.textContent = "ACCEDER";
+      button.disabled = false;
+    }
+  });
+
+  function mostrarError(mensaje) {
+    errorDiv.textContent = mensaje;
+    errorDiv.classList.remove("hidden");
+  }
+
+  function ocultarError() {
+    errorDiv.classList.add("hidden");
+    errorDiv.textContent = "";
+  }
 }

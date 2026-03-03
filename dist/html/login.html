@@ -45,17 +45,30 @@
     };
   </script>
   <style>
-    /* Ocultamos el main al cargar para evitar el 'flash' sin animación */
-    
-    /* Clase para la transición que se aplica con JS */
-    .show-form {
+    /* Estado base visible */
+    #loginContainer {
+      opacity: 1;
+      transform: scale(1);
+      transition: all 0.7s ease-out;
+    }
+
+    /* Solo si JS agrega esta clase, arranca animación */
+    .animate-in {
+      animation: loginFadeIn 0.6s ease-out forwards;
+    }
+
+    @keyframes loginFadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
         opacity: 1;
         transform: scale(1);
+      }
     }
   </style>
-  <script type="module" crossorigin src="/assets/login-DNlhjvTb.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
-  <link rel="modulepreload" crossorigin href="/assets/tokenStorage-BJFfxEW5.js">
+  <script type="module" crossorigin src="/assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
 </head>
 
 <body class="min-h-screen bg-gray-50 flex items-center justify-center px-4 text-grisTexto">

@@ -1,23 +1,14 @@
 import { requireAuth } from "@/core/auth/token.guard.js";
-import { initTurnos } from "@/modules/turnos/index.js";
-import { initClientes } from "@/modules/clientes/index.js";
-import { initTecnicos } from "@/modules/tecnicos/index.js";
+import { initTurnos } from "@/modules/turnos";
+import { initClientes } from "@/modules/clientes";
+import { initTecnicos } from "@/modules/tecnicos";
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
 
-  const isAuthenticated = requireAuth();
-  if (!isAuthenticated) return;
+  if (!requireAuth()) return;
 
-  if (document.querySelector("#turnosContainer")) {
-    initTurnos();
-  }
-
-  if (document.querySelector("#clientesTable")) {
-    initClientes();
-  }
-
-  if (document.querySelector("#formGeneral")) {
-    initTecnicos();
-  }
+  if (document.querySelector("#turnosContainer")) initTurnos();
+  if (document.querySelector("#clientesTable")) initClientes();
+  if (document.querySelector("#formGeneral")) initTecnicos();
 
 });
