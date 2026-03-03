@@ -1,5 +1,23 @@
 // tecnico.adapter.js
 
+export function mapTecnicoFromApi(apiData) {
+  return {
+    id: apiData.id,
+    nombre: apiData.nombre,
+    apellido: apiData.apellido,
+    telefono: apiData.telefono,
+    email: apiData.email,
+    activo: apiData.activo,
+    duracionTurnoMinutos: apiData.duracion_turno_min,
+    horarios: (apiData.horarios || []).map(h => ({
+      diaSemana: h.dia_semana,
+      horaInicio: h.hora_inicio || null,
+      horaFin: h.hora_fin || null,
+    })),
+    imagenUrl: apiData.imagen_url,
+  };
+}
+
 export function adaptDisponibilidadFromApi(d) {
   return {
     id: d.id,
