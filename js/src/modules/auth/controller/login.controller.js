@@ -35,7 +35,7 @@ form.addEventListener("submit", async (e) => {
     tokenStorage.setToken(data.access_token);
 
     // ✅ Redirigir dentro del mismo proyecto
-    window.location.href = "/index.html";
+    window.location.href = "../html/index.html";
 
   } catch (err) {
     mostrarError(err.message);
