@@ -7,6 +7,8 @@ export class TecnicosView {
     this.form = document.querySelector("#formGeneral");
     this.tableBody = document.querySelector("#generalContainer");
 
+    if (!this.form) return;
+
     this.inputs = {
       nombre: this.form.querySelector("#nombre"),
       apellido: this.form.querySelector("#apellido"),
@@ -129,5 +131,12 @@ export class TecnicosView {
       imagen: this.inputs.imagen.files[0] || null,
       horarios: this.disponibilidadView.recopilarHorarios()
     };
+  }
+
+  // =========================
+  // ERROR HANDLING
+  // =========================
+  showError(message) {
+    console.error("Error técnicos:", message);
   }
 }
