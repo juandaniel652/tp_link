@@ -5,7 +5,7 @@ export function requireAuth() {
 
   if (!token || token === "null" || token === "undefined") {
     tokenStorage.removeToken();
-    window.location.replace("/login.html");
+    window.location.replace("../html/login.html");
     return false;
   }
 
@@ -14,5 +14,5 @@ export function requireAuth() {
 
 export function logout() {
   tokenStorage.removeToken();
-  window.location.href = "/login.html";
+  window.location.href = "../html/login.html";
 }
