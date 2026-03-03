@@ -21,7 +21,7 @@ export function initLogin() {
 
   const token = tokenStorage.getToken();
   if (token) {
-    window.location.href = "/index.html";
+    window.location.href = "../html/index.html";
     return;
   }
 
@@ -42,7 +42,7 @@ export function initLogin() {
     try {
       const data = await loginRequest(email, pass);
       tokenStorage.setToken(data.access_token);
-      window.location.href = "/index.html";
+      window.location.href = "../html/index.html";
     } catch (err) {
       mostrarError(err.message);
       buttonText.textContent = "ACCEDER";
