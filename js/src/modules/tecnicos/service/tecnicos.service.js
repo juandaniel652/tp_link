@@ -10,9 +10,13 @@ import {
   mapTecnicoToApi
 } from "../mappers/tecnico.mapper.js";
 
-export async function obtenerTecnicos(token) {
-  const data = await fetchTecnicos(token);
-  return data.map(mapTecnicoFromApi);
+import { adaptTecnicoFromApi } from "./adapters/tecnico.adapter";
+
+export async function obtenerTecnicos() {
+  const res = await fetch(`${API_URL}/tecnico`);
+  const data = await res.json();
+
+  return data.map(adaptTecnicoFromApi);
 }
 
 export async function crearTecnico(tecnico, token) {
