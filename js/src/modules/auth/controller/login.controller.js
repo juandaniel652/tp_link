@@ -40,9 +40,16 @@ export function initLogin() {
     button.disabled = true;
 
     try {
-      tokenStorage.setToken(data.access_token);
-      console.log("RESPONSE COMPLETA:", data);
-      console.log("TOKEN GUARDADO:", localStorage.getItem("access_token"));
+        const data = await loginRequest(email, pass);
+
+        console.log("LOGIN RESPONSE:", data);
+
+        tokenStorage.setToken(data.access_token);
+
+        console.log("TOKEN GUARDADO:", localStorage.getItem("access_token"));
+
+        window.location.href = "../html/index.html";
+
     } catch (err) {
       mostrarError(err.message);
       buttonText.textContent = "ACCEDER";
