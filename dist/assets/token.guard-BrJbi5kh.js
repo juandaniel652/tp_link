@@ -1,1 +1,0 @@
-const t="access_token",o={getToken(){return localStorage.getItem(t)},setToken(e){localStorage.setItem(t,e)},removeToken(){localStorage.removeItem(t)}};function n(){const e=o.getToken();return!e||e==="null"||e==="undefined"?(o.removeToken(),window.location.replace("../html/login.html"),!1):!0}export{n as r,o as t};
