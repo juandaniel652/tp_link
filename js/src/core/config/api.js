@@ -1,0 +1,1 @@
+export const API_URL = "https://agenda-1-zomu.onrender.com/api/v1";
