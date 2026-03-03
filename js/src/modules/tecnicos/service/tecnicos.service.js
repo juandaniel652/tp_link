@@ -6,16 +6,12 @@ import {
 } from "./tecnicos.api.js";
 
 import {
-  mapTecnicoFromApi,
-  mapTecnicoToApi
-} from "../mappers/tecnico.mapper.js";
-
-import { adaptTecnicoFromApi } from "./adapters/tecnico.adapter";
+  adaptTecnicoFromApi,
+  adaptTecnicoToApi
+} from "./mappers/tecnico.mapper.js";
 
 export async function obtenerTecnicos() {
-  const res = await fetch(`${API_URL}/tecnico`);
-  const data = await res.json();
-
+  const data = await fetchTecnicos();
   return data.map(adaptTecnicoFromApi);
 }
 
@@ -30,15 +26,18 @@ export async function crearTecnico(tecnico, token) {
     formData.append("email", tecnico.email);
     formData.append("activo", tecnico.activo);
     formData.append("imagen", tecnico.imagen);
-    formData.append("horarios", JSON.stringify(tecnico.horarios));
+    formData.append(
+      "horarios",
+      JSON.stringify(tecnico.horarios.map(adaptDisponibilidadToApi))
+    );
 
     const created = await createTecnico(formData, token, true);
-    return mapTecnicoFromApi(created);
+    return adaptTecnicoFromApi(created);
   }
 
-  const payload = mapTecnicoToApi(tecnico);
+  const payload = adaptTecnicoToApi(tecnico);
   const created = await createTecnico(payload, token);
-  return mapTecnicoFromApi(created);
+  return adaptTecnicoFromApi(created);
 }
 
 export async function actualizarTecnico(tecnico, token) {
@@ -52,15 +51,18 @@ export async function actualizarTecnico(tecnico, token) {
     formData.append("email", tecnico.email);
     formData.append("activo", tecnico.activo);
     formData.append("imagen", tecnico.imagen);
-    formData.append("horarios", JSON.stringify(tecnico.horarios));
+    formData.append(
+      "horarios",
+      JSON.stringify(tecnico.horarios.map(adaptDisponibilidadToApi))
+    );
 
     const updated = await updateTecnico(tecnico.id, formData, token, true);
-    return mapTecnicoFromApi(updated);
+    return adaptTecnicoFromApi(updated);
   }
 
-  const payload = mapTecnicoToApi(tecnico);
+  const payload = adaptTecnicoToApi(tecnico);
   const updated = await updateTecnico(tecnico.id, payload, token);
-  return mapTecnicoFromApi(updated);
+  return adaptTecnicoFromApi(updated);
 }
 
 export async function eliminarTecnico(id, token) {
