@@ -15,8 +15,7 @@ export async function obtenerTecnicos() {
   return data.map(adaptTecnicoFromApi);
 }
 
-export async function crearTecnico(tecnico, token) {
-
+export async function crearTecnico(tecnico) {
   if (tecnico.imagen instanceof File) {
     const formData = new FormData();
     formData.append("nombre", tecnico.nombre);
@@ -28,16 +27,16 @@ export async function crearTecnico(tecnico, token) {
     formData.append("imagen", tecnico.imagen);
     formData.append(
       "horarios",
-      JSON.stringify(tecnico.horarios.map(adaptDisponibilidadToApi))
+      JSON.stringify(tecnico.horarios.map(mapDisponibilidadToApi))
     );
 
-    const created = await createTecnico(formData, token, true);
-    return adaptTecnicoFromApi(created);
+    const created = await createTecnico(formData);
+    return mapTecnicoFromApi(created);
   }
 
-  const payload = adaptTecnicoToApi(tecnico);
-  const created = await createTecnico(payload, token);
-  return adaptTecnicoFromApi(created);
+  const payload = mapTecnicoToApi(tecnico);
+  const created = await createTecnico(JSON.stringify(payload));
+  return mapTecnicoFromApi(created);
 }
 
 export async function actualizarTecnico(tecnico, token) {
