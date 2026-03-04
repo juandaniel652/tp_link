@@ -8,7 +8,7 @@ import {
 import {
   adaptTecnicoFromApi,
   adaptTecnicoToApi
-} from "./mappers/tecnico.mapper.js";
+} from "../mappers/tecnicos.mapper.js";
 
 export async function obtenerTecnicos() {
   const data = await fetchTecnicos();
