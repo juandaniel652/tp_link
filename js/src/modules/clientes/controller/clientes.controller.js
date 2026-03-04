@@ -23,8 +23,8 @@ export class ClienteController {
 
   bindEvents() {
     this.view.onSubmit((data) => this.handleGuardar(data));
-    this.view.onEditar((id) => this.handleEditar(id));
-    this.view.onEliminar((id) => this.handleEliminar(id));
+    this.view.onEdit((id) => this.handleEditar(id));
+    this.view.onDelete((id) => this.handleEliminar(id));
   }
 
   async cargarClientes() {
