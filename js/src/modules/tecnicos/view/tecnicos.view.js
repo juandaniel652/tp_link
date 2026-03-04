@@ -1,13 +1,13 @@
-// js/src/modules/tecnicos/view/tecnicos.view.js
+import { BaseCrudView } from "../../../core/view/BaseCrudView.js";
 import { DisponibilidadView } from "../../disponibilidad/view/disponibilidad.view.js";
 
-export class TecnicosView {
+export class TecnicosView extends BaseCrudView {
 
   constructor() {
-    this.form = document.querySelector("#formGeneral");
-    this.tableBody = document.querySelector("#generalContainer");
-
-    if (!this.form) return;
+    super({
+      tableSelector: "#generalContainer",
+      formSelector: "#formGeneral"
+    });
 
     this.inputs = {
       nombre: this.form.querySelector("#nombre"),
@@ -19,109 +19,34 @@ export class TecnicosView {
       previewImagen: this.form.querySelector("#previewImagen")
     };
 
-    this.btnSubmit = this.form.querySelector("#btnSubmit");
-    this.btnCancel = this.form.querySelector("#btnCancel");
-
-    // Disponibilidad UI
-    this.disponibilidadView = new DisponibilidadView("#formGeneral", "#listaHorarios");
+    this.disponibilidadView =
+      new DisponibilidadView("#formGeneral", "#listaHorarios");
   }
 
-  // =========================
-  // EVENTOS
-  // =========================
-  onSubmit(callback) {
-    this.form.addEventListener("submit", e => {
-      e.preventDefault();
-      const data = this._recopilarDatosFormulario();
-      callback(data);
-    });
-  }
-
-  onEdit(callback) {
-    this._onEdit = callback;
-  }
-
-  onDelete(callback) {
-    this._onDelete = callback;
-  }
-
-  // =========================
-  // RENDER DE TABLA
-  // =========================
-  render(tecnicos) {
-    this.tableBody.innerHTML = "";
-    if (!tecnicos.length) {
-      this.tableBody.innerHTML = `<tr><td colspan="7">No hay registros</td></tr>`;
-      return;
-    }
+  buildRowCells(t) {
 
     const diasSemana = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
 
-    tecnicos.forEach(t => {
-      const tr = document.createElement("tr");
+    const horariosTexto = (t.horarios || [])
+      .map(h =>
+        `${diasSemana[h.diaSemana]} ${h.horaInicio.slice(0,5)}-${h.horaFin.slice(0,5)}`
+      )
+      .join("<br>");
 
-      const horariosTexto = (t.horarios || [])
-        .map(h => `${diasSemana[h.diaSemana]} ${h.horaInicio.slice(0,5)}-${h.horaFin.slice(0,5)}`)
-        .join("<br>");
-
-      tr.innerHTML = `
-        <td>${t.imagenUrl ? `<img src="${t.imagenUrl}" class="foto-tecnico">` : "—"}</td>
-        <td>${t.nombre}</td>
-        <td>${t.apellido}</td>
-        <td>${t.telefono || "-"}</td>
-        <td>${t.duracionTurnoMin} min</td>
-        <td>${horariosTexto || "-"}</td>
-        <td>
-          <button type="button" class="btn-edit">✏️</button>
-          <button type="button" class="btn-delete">🗑️</button>
-        </td>
-      `;
-
-      tr.querySelector(".btn-edit").onclick = () => this._onEdit?.(t.id);
-      tr.querySelector(".btn-delete").onclick = () => this._onDelete?.(t.id);
-
-      this.tableBody.appendChild(tr);
-    });
+    return `
+      <td>${t.imagenUrl
+        ? `<img src="${t.imagenUrl}" class="foto-tecnico">`
+        : "—"}
+      </td>
+      <td>${t.nombre}</td>
+      <td>${t.apellido}</td>
+      <td>${t.telefono || "-"}</td>
+      <td>${t.duracionTurnoMin} min</td>
+      <td>${horariosTexto || "-"}</td>
+    `;
   }
 
-  // =========================
-  // RESET FORM
-  // =========================
-  resetForm() {
-    this.form.reset();
-    this.disponibilidadView.reset();
-    this.inputs.previewImagen.src = "";
-    this.inputs.previewImagen.style.display = "none";
-    this.btnCancel.style.display = "none";
-    this.btnSubmit.textContent = "Guardar";
-  }
-
-  // =========================
-  // FILL FORM (para editar)
-  // =========================
-  fillForm(tecnico) {
-    this.inputs.nombre.value = tecnico.nombre;
-    this.inputs.apellido.value = tecnico.apellido;
-    this.inputs.email.value = tecnico.email || "";
-    this.inputs.telefono.value = tecnico.telefono || "";
-    this.inputs.duracionTurno.value = tecnico.duracionTurnoMin;
-
-    // Imagen
-    this.inputs.previewImagen.src = tecnico.imagenUrl || "";
-    this.inputs.previewImagen.style.display = tecnico.imagenUrl ? "block" : "none";
-
-    // Disponibilidad
-    this.disponibilidadView.renderHorarios(tecnico.horarios || []);
-
-    // Botones
-    this.btnSubmit.textContent = "Actualizar";
-    this.btnCancel.style.display = "inline-block";
-  }
-
-  // =========================
-  // RECOPILAR DATOS FORM
-  // =========================
-  _recopilarDatosFormulario() {
+  _getFormData() {
     return {
       nombre: this.inputs.nombre.value.trim(),
       apellido: this.inputs.apellido.value.trim(),
@@ -133,10 +58,29 @@ export class TecnicosView {
     };
   }
 
-  // =========================
-  // ERROR HANDLING
-  // =========================
-  showError(message) {
-    console.error("Error técnicos:", message);
+  fillForm(tecnico) {
+
+    this.inputs.nombre.value = tecnico.nombre;
+    this.inputs.apellido.value = tecnico.apellido;
+    this.inputs.email.value = tecnico.email || "";
+    this.inputs.telefono.value = tecnico.telefono || "";
+    this.inputs.duracionTurno.value = tecnico.duracionTurnoMin;
+
+    this.inputs.previewImagen.src = tecnico.imagenUrl || "";
+    this.inputs.previewImagen.style.display =
+      tecnico.imagenUrl ? "block" : "none";
+
+    this.disponibilidadView.renderHorarios(tecnico.horarios || []);
+
+    this.enterEditMode(tecnico.id);
+  }
+
+  resetForm() {
+    super.resetForm();
+
+    this.disponibilidadView.reset();
+
+    this.inputs.previewImagen.src = "";
+    this.inputs.previewImagen.style.display = "none";
   }
 }
