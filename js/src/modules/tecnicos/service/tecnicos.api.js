@@ -35,12 +35,18 @@ export function updateTecnico(tecnico, token) {
     formData.append("imagen", tecnico.imagenFile);
   }
 
+  console.log("Enviar FormData:");
+  for (let pair of formData.entries()) {
+    console.log(pair[0], pair[1]);
+  }
+
   return apiRequest(`/tecnicos/${tecnico.id}`, {
     method: "PUT",
     body: formData,
     token,
     isFormData: true
   });
+
 }
 
 export function deleteTecnico(id) {
