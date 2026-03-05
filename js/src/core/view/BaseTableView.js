@@ -58,4 +58,18 @@ export class BaseTableView {
   buildRowCells() {
     throw new Error("Debes implementar buildRowCells en la clase hija");
   }
+
+  showError(message) {
+    console.error(message);
+    
+    if (!this.tableBody) return;
+    
+    this.tableBody.innerHTML = `
+      <tr>
+        <td colspan="100%" style="color:red">
+          ${message}
+        </td>
+      </tr>
+    `;
+  }
 }
