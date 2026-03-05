@@ -13,10 +13,33 @@ export function createTecnico(payload) {
   });
 }
 
-export function updateTecnico(id, payload) {
-  return apiRequest(`/tecnicos/${id}`, {
+export function updateTecnico(tecnico, token) {
+  const formData = new FormData();
+  formData.append("nombre", tecnico.nombre);
+  formData.append("apellido", tecnico.apellido);
+  formData.append("telefono", tecnico.telefono || "");
+  formData.append("email", tecnico.email || "");
+  formData.append("duracion_turno_min", tecnico.duracionTurnoMinutos);
+  
+  // Horarios como JSON string
+  formData.append("horarios", JSON.stringify(
+    (tecnico.horarios || []).map(h => ({
+      dia_semana: h.diaSemana,
+      hora_inicio: h.horaInicio,
+      hora_fin: h.horaFin
+    }))
+  ));
+
+  // Imagen si existe
+  if (tecnico.imagenFile) {
+    formData.append("imagen", tecnico.imagenFile);
+  }
+
+  return apiRequest(`/tecnicos/${tecnico.id}`, {
     method: "PUT",
-    body: payload
+    body: formData,
+    token,
+    isFormData: true
   });
 }
 

@@ -54,8 +54,10 @@ export class TecnicosController {
         ...data,
         id: this.editando?.id ?? null,
         activo: true,
-        horarios: [] // horarios se crean como agregado independiente
+        horarios: data.horarios || []
       });
+      
+      await actualizarTecnico(tecnico, token);
 
       let tecnicoCreado;
 
@@ -97,11 +99,11 @@ export class TecnicosController {
   async handleEditar(id) {
 
     const tecnico = this.tecnicos.find(t => t.id === id);
-    
+
     if (!tecnico) return;
-    
+
     this.editando = tecnico;
-    
+
     this.view.fillForm(tecnico);
   }
 
