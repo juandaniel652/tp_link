@@ -80,4 +80,21 @@ export class BaseCrudView extends BaseTableView {
   resetForm() {
     this.form.reset();
   }
+
+   renderError(message) {
+
+      const container = document.querySelector("#app");
+    
+      if (!container) {
+        console.error(message);
+        return;
+      }
+    
+      container.innerHTML = `
+        <div class="alert alert-danger">
+          ${message}
+        </div>
+      `;
+    }
+
 }
