@@ -95,18 +95,14 @@ export class TecnicosController {
   }
 
   async handleEditar(id) {
+
     const tecnico = this.tecnicos.find(t => t.id === id);
+    
     if (!tecnico) return;
-
+    
     this.editando = tecnico;
-
-    try {
-      const token = this.tokenProvider.getToken();
-      const horarios = await obtenerDisponibilidad(tecnico.id, token);
-      this.view.fillForm({ ...tecnico, horarios });
-    } catch (error) {
-      this.view.showError(error.message);
-    }
+    
+    this.view.fillForm(tecnico);
   }
 
   async handleEliminar(id) {
