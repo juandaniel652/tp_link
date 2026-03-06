@@ -45,13 +45,11 @@ export class HorariosView {
   }
 
   setHorarios(horarios) {
-
     this.horarios = horarios.map(h => ({
-      diaSemana: h.diaSemana,
-      horaInicio: h.horaInicio.slice(0,5),
-      horaFin: h.horaFin.slice(0,5)
+      diaSemana: h.diaSemana ?? 0,
+      horaInicio: h.horaInicio ? h.horaInicio.slice(0,5) : "09:00",
+      horaFin: h.horaFin ? h.horaFin.slice(0,5) : "17:00"
     }));
-
     this.render();
   }
 
@@ -63,31 +61,24 @@ export class HorariosView {
   }
 
   getHorarios() {
-
     const rows = this.container.querySelectorAll(".horario-row");
-
     const horarios = [];
-
+    
     rows.forEach(row => {
-
       const dia = Number(row.querySelector(".dia").value);
       const inicio = row.querySelector(".inicio").value;
       const fin = row.querySelector(".fin").value;
-
-      if (!inicio || !fin) return;
-
+    
+      if (!inicio || !fin) return; // descartar filas vacías
+    
       horarios.push({
         diaSemana: dia,
         horaInicio: inicio + ":00",
         horaFin: fin + ":00"
       });
-
     });
-
-    this.validarSolapamientos(horarios);
-
+  
     return horarios;
-
   }
 
   validarSolapamientos(horarios) {

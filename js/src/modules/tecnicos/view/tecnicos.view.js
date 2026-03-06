@@ -82,7 +82,14 @@ export class TecnicosView extends BaseCrudView {
       tecnico.imagenUrl ? "block" : "none";
 
     // Cargar horarios en el submódulo
-    this.horariosView.setHorarios(tecnico.horarios || []);
+
+    const horariosValidos = (tecnico.horarios || []).map(h => ({
+      diaSemana: h.diaSemana ?? 0,
+      horaInicio: h.horaInicio ?? "09:00",
+      horaFin: h.horaFin ?? "17:00"
+    }));
+    
+    this.horariosView.setHorarios(horariosValidos);
 
     this.enterEditMode(tecnico.id);
   }
