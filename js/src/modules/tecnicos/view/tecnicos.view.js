@@ -1,6 +1,7 @@
+// js/src/modules/tecnicos/view/tecnicos.view.js
 import { BaseCrudView } from "../../../core/view/BaseCrudView.js";
-import { DisponibilidadView } from "../../disponibilidad/view/disponibilidad.view.js";
 
+// export class TecnicosView
 export class TecnicosView extends BaseCrudView {
 
   constructor() {
@@ -19,25 +20,35 @@ export class TecnicosView extends BaseCrudView {
       previewImagen: this.form.querySelector("#previewImagen")
     };
 
-    this.disponibilidadView =
-      new DisponibilidadView("#formGeneral", "#listaHorarios");
+    // reemplazar disponibilidadView por un método interno de manejo de horarios
+    // Ejemplo: inicializamos un arreglo para los horarios
+    this.horarios = [];
+  }
+
+  recopilarHorarios() {
+    // lógica para obtener los horarios desde inputs del form
+    return this.horarios;
+  }
+
+  renderHorarios(horarios) {
+    this.horarios = horarios;
+    // aquí podrías renderizar en #listaHorarios si existe
+    const container = this.form.querySelector("#listaHorarios");
+    if (!container) return;
+
+    container.innerHTML = horarios.map(h => 
+      `${["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"][h.diaSemana]} ${h.horaInicio}-${h.horaFin}`
+    ).join("<br>");
   }
 
   buildRowCells(t) {
-
     const diasSemana = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
-
     const horariosTexto = (t.horarios || [])
-      .map(h =>
-        `${diasSemana[h.diaSemana]} ${h.horaInicio.slice(0,5)}-${h.horaFin.slice(0,5)}`
-      )
+      .map(h => `${diasSemana[h.diaSemana]} ${h.horaInicio.slice(0,5)}-${h.horaFin.slice(0,5)}`)
       .join("<br>");
 
     return `
-      <td>${t.imagenUrl
-        ? `<img src="${t.imagenUrl}" class="foto-tecnico">`
-        : "—"}
-      </td>
+      <td>${t.imagenUrl ? `<img src="${t.imagenUrl}" class="foto-tecnico">` : "—"}</td>
       <td>${t.nombre}</td>
       <td>${t.apellido}</td>
       <td>${t.telefono || "-"}</td>
@@ -54,32 +65,25 @@ export class TecnicosView extends BaseCrudView {
       telefono: this.inputs.telefono.value.trim(),
       duracionTurnoMin: Number(this.inputs.duracionTurno.value),
       imagen: this.inputs.imagen.files[0] || null,
-      horarios: this.disponibilidadView.recopilarHorarios()
+      horarios: this.recopilarHorarios()
     };
   }
 
   fillForm(tecnico) {
-
     this.inputs.nombre.value = tecnico.nombre;
     this.inputs.apellido.value = tecnico.apellido;
     this.inputs.email.value = tecnico.email || "";
     this.inputs.telefono.value = tecnico.telefono || "";
     this.inputs.duracionTurno.value = tecnico.duracionTurnoMin;
-
     this.inputs.previewImagen.src = tecnico.imagenUrl || "";
-    this.inputs.previewImagen.style.display =
-      tecnico.imagenUrl ? "block" : "none";
-
-    this.disponibilidadView.renderHorarios(tecnico.horarios || []);
-
+    this.inputs.previewImagen.style.display = tecnico.imagenUrl ? "block" : "none";
+    this.renderHorarios(tecnico.horarios || []);
     this.enterEditMode(tecnico.id);
   }
 
   resetForm() {
     super.resetForm();
-
-    this.disponibilidadView.reset();
-
+    this.horarios = [];
     this.inputs.previewImagen.src = "";
     this.inputs.previewImagen.style.display = "none";
   }

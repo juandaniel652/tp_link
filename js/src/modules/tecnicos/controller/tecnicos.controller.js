@@ -2,120 +2,88 @@
 import {
   obtenerTecnicos,
   crearTecnico,
-  actualizarTecnico,
+  updateTecnico,
   eliminarTecnico
-} from "../service/tecnicos.service.js";
+} from "../service/tecnicos.api.js";
 
-import { Tecnico } from "../model/tecnico.model.js";
+export function initTecnicosController({ view, tokenProvider }) {
+  let tecnicos = [];
+  let editando = null;
 
-import {
-  crearDisponibilidad,
-  eliminarDisponibilidad,
-  obtenerDisponibilidad
-} from "../../disponibilidad/service/disponibilidad.service.js";
-
-import { Disponibilidad } from "../../disponibilidad/model/disponibilidad.model.js";
-
-export class TecnicosController {
-
-  constructor({ view, tokenProvider }) {
-    this.view = view;
-    this.tokenProvider = tokenProvider;
-    this.tecnicos = [];
-    this.editando = null;
+  // Inicialización
+  async function init() {
+    bindEvents();
+    await cargar();
   }
 
-  async init() {
-    this.bindEvents();
-    await this.cargar();
+  // Eventos
+  function bindEvents() {
+    view.onSubmit(handleGuardar);
+    view.onEdit(handleEditar);
+    view.onDelete(handleEliminar);
   }
 
-  bindEvents() {
-    this.view.onSubmit(data => this.handleGuardar(data));
-    this.view.onEdit(id => this.handleEditar(id));
-    this.view.onDelete(id => this.handleEliminar(id));
-  }
-
-  async cargar() {
+  // Cargar lista de técnicos
+  async function cargar() {
     try {
-      const token = this.tokenProvider.getToken();
-      this.tecnicos = await obtenerTecnicos(token);
-      this.view.render(this.tecnicos);
+      const token = tokenProvider.getToken();
+      tecnicos = await obtenerTecnicos(token);
+      view.render(tecnicos);
     } catch (error) {
-      this.view.showError(error.message);
+      view.showError(error.message);
     }
   }
 
-  async handleGuardar(data) {
+  // Guardar o actualizar técnico
+  async function handleGuardar(data) {
     try {
-      const token = this.tokenProvider.getToken();
+      const token = tokenProvider.getToken();
 
-      const tecnico = new Tecnico({
+      const tecnico = {
         ...data,
-        id: this.editando?.id ?? null,
+        id: editando?.id ?? null,
         activo: true,
         horarios: data.horarios || []
-      });
-      
-      await actualizarTecnico(tecnico, token);
+      };
 
       let tecnicoCreado;
 
-      if (!this.editando) {
+      if (!editando) {
         tecnicoCreado = await crearTecnico(tecnico, token);
       } else {
-        tecnicoCreado = await actualizarTecnico(tecnico, token);
-
-        // eliminar disponibilidades previas antes de crear nuevas
-        const prevDisps = await obtenerDisponibilidad(tecnicoCreado.id, token);
-        await Promise.all(prevDisps.map(d => eliminarDisponibilidad(d.id, token)));
-
-        this.editando = null;
+        tecnicoCreado = await updateTecnico(tecnico, token);
+        editando = null;
       }
 
-      // Crear disponibilidades del técnico en paralelo
-      if (data.horarios && data.horarios.length) {
-        await Promise.all(
-          data.horarios.map(h => crearDisponibilidad(
-            new Disponibilidad({
-              tecnicoId: tecnicoCreado.id,
-              diaSemana: h.dia_semana,
-              horaInicio: h.hora_inicio,
-              horaFin: h.hora_fin
-            }),
-            token
-          ))
-        );
-      }
-
-      this.view.resetForm();
-      await this.cargar();
+      view.resetForm();
+      await cargar();
 
     } catch (error) {
-      this.view.showError(error.message);
+      view.showError(error.message);
     }
   }
 
-  async handleEditar(id) {
-
-    const tecnico = this.tecnicos.find(t => t.id === id);
-
+  // Editar técnico
+  function handleEditar(id) {
+    const tecnico = tecnicos.find(t => t.id === id);
     if (!tecnico) return;
 
-    this.editando = tecnico;
-
-    this.view.fillForm(tecnico);
+    editando = tecnico;
+    view.fillForm(tecnico);
   }
 
-  async handleEliminar(id) {
+  // Eliminar técnico
+  async function handleEliminar(id) {
     if (!confirm("¿Eliminar técnico?")) return;
 
     try {
-      const token = this.tokenProvider.getToken();
+      const token = tokenProvider.getToken();
       await eliminarTecnico(id, token);
-      await this.cargar();
+      await cargar();
     } catch (error) {
-      this.view.showError(error.message);
+      view.showError(error.message);
     }
   }
+
+  return { init };
 }
