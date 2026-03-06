@@ -55,17 +55,16 @@ export class TecnicosView extends BaseCrudView {
   _getFormData() {
     const duracion = Number(this.inputs.duracionTurno.value);
     if (!duracion || duracion <= 0) {
-      this.showError("La duración del turno debe ser mayor a 0");
-      throw new Error("Duración inválida");
+      throw new Error("La duración del turno debe ser mayor a 0");
     }
-
+  
     return {
       nombre: this.inputs.nombre.value.trim(),
       apellido: this.inputs.apellido.value.trim(),
       email: this.inputs.email.value.trim(),
       telefono: this.inputs.telefono.value.trim(),
-      duracionTurnoMin: duracion,
-      imagenFile: this.inputs.imagen.files[0] || null,
+      duracionTurnoMinutos: duracion, // coincide con mapper
+      imagenFile: this.inputs.imagen.files[0] || null, // coincide con API
       horarios: this.horariosView.getHorarios()
     };
   }

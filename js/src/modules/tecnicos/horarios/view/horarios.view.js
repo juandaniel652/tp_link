@@ -45,10 +45,10 @@ export class HorariosView {
   }
 
   setHorarios(horarios) {
-    this.horarios = horarios.map(h => ({
+    this.horarios = (horarios || []).map(h => ({
       diaSemana: h.diaSemana ?? 0,
-      horaInicio: (h.horaInicio || "09:00").slice(0,5),
-      horaFin: (h.horaFin || "17:00").slice(0,5)
+      horaInicio: h.horaInicio && typeof h.horaInicio === "string" ? h.horaInicio.slice(0,5) : "09:00",
+      horaFin: h.horaFin && typeof h.horaFin === "string" ? h.horaFin.slice(0,5) : "17:00"
     }));
     this.render();
   }
