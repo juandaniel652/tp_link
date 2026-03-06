@@ -1,5 +1,4 @@
 // js/src/modules/tecnicos/view/tecnicos.view.js
-
 import { BaseCrudView } from "../../../core/view/BaseCrudView.js";
 import { HorariosView } from "../horarios/view/horarios.view.js";
 
@@ -21,19 +20,17 @@ export class TecnicosView extends BaseCrudView {
       previewImagen: this.form.querySelector("#previewImagen")
     };
 
-    // Submódulo que maneja la UI de horarios
+    // Submódulo de horarios
     this.horariosView = new HorariosView(
       "#listaHorarios",
       "#addHorario"
     );
   }
 
-  // Construye las celdas de la tabla para cada técnico
   buildRowCells(t) {
-
     const diasSemana = [
-      "Domingo","Lunes","Martes",
-      "Miércoles","Jueves","Viernes","Sábado"
+      "Domingo","Lunes","Martes","Miércoles",
+      "Jueves","Viernes","Sábado"
     ];
 
     const horariosTexto = (t.horarios || [])
@@ -55,62 +52,52 @@ export class TecnicosView extends BaseCrudView {
     `;
   }
 
-  // Obtiene los datos del formulario
   _getFormData() {
     const duracion = Number(this.inputs.duracionTurno.value);
-    
     if (!duracion || duracion <= 0) {
       this.showError("La duración del turno debe ser mayor a 0");
       throw new Error("Duración inválida");
     }
-  
+
     return {
       nombre: this.inputs.nombre.value.trim(),
       apellido: this.inputs.apellido.value.trim(),
       email: this.inputs.email.value.trim(),
       telefono: this.inputs.telefono.value.trim(),
       duracionTurnoMin: duracion,
-      imagen: this.inputs.imagen.files[0] || null,
+      imagenFile: this.inputs.imagen.files[0] || null,
       horarios: this.horariosView.getHorarios()
     };
   }
 
-  // Llena el formulario con los datos de un técnico
   fillForm(tecnico) {
-
     this.inputs.nombre.value = tecnico.nombre;
     this.inputs.apellido.value = tecnico.apellido;
     this.inputs.email.value = tecnico.email || "";
     this.inputs.telefono.value = tecnico.telefono || "";
-    this.inputs.duracionTurno.value = tecnico.duracionTurnoMin;
+    this.inputs.duracionTurno.value = tecnico.duracionTurnoMin || "";
 
     this.inputs.previewImagen.src = tecnico.imagenUrl || "";
     this.inputs.previewImagen.style.display =
       tecnico.imagenUrl ? "block" : "none";
 
-    // Cargar horarios en el submódulo
-
+    // Cargar horarios en submódulo
     const horariosValidos = (tecnico.horarios || []).map(h => ({
       diaSemana: h.diaSemana ?? 0,
       horaInicio: h.horaInicio ?? "09:00",
       horaFin: h.horaFin ?? "17:00"
     }));
-
     this.horariosView.setHorarios(horariosValidos);
 
     this.enterEditMode(tecnico.id);
   }
 
-  // Reset del formulario
   resetForm() {
-
     super.resetForm();
 
     this.inputs.previewImagen.src = "";
     this.inputs.previewImagen.style.display = "none";
 
-    // Resetear horarios
     this.horariosView.reset();
   }
-
 }
