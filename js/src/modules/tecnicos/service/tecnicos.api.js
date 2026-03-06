@@ -25,7 +25,10 @@ export function updateTecnico(tecnico, token) {
   formData.append("apellido", tecnicoApi.apellido || "");
   formData.append("telefono", tecnicoApi.telefono || "");
   formData.append("email", tecnicoApi.email || "");
-  formData.append("duracion_turno_min", tecnicoApi.duracion_turno_min ?? 0);
+  formData.append("duracion_turno_min",  tecnicoApi.duracion_turno_min);
+  if (!tecnicoApi.duracion_turno_min || tecnicoApi.duracion_turno_min <= 0) {
+  throw new Error("La duración del turno debe ser mayor a 0");
+}
   formData.append(
     "horarios",
     JSON.stringify(
