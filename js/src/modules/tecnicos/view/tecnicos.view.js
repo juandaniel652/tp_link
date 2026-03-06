@@ -1,5 +1,7 @@
 // js/src/modules/tecnicos/view/tecnicos.view.js
+
 import { BaseCrudView } from "../../../core/view/BaseCrudView.js";
+import { HorariosView } from "../horarios/view/horarios.view.js";
 
 export class TecnicosView extends BaseCrudView {
 
@@ -19,32 +21,20 @@ export class TecnicosView extends BaseCrudView {
       previewImagen: this.form.querySelector("#previewImagen")
     };
 
-    // Inicializamos arreglo interno de horarios
-    this.horarios = [];
-  }
-
-  // Recopila horarios desde inputs o estructura interna
-  recopilarHorarios() {
-    return this.horarios;
-  }
-
-  // Renderiza los horarios en el contenedor #listaHorarios
-  renderHorarios(horarios) {
-    this.horarios = horarios;
-    const container = this.form.querySelector("#listaHorarios");
-    if (!container) return;
-
-    container.innerHTML = horarios.map(h => {
-      const dia = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"][h.diaSemana] || "?";
-      const inicio = h.horaInicio ? h.horaInicio.slice(0,5) : "--:--";
-      const fin = h.horaFin ? h.horaFin.slice(0,5) : "--:--";
-      return `${dia} ${inicio}-${fin}`;
-    }).join("<br>");
+    // Submódulo que maneja la UI de horarios
+    this.horariosView = new HorariosView(
+      "#listaHorarios",
+      "#addHorario"
+    );
   }
 
   // Construye las celdas de la tabla para cada técnico
   buildRowCells(t) {
-    const diasSemana = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+
+    const diasSemana = [
+      "Domingo","Lunes","Martes",
+      "Miércoles","Jueves","Viernes","Sábado"
+    ];
 
     const horariosTexto = (t.horarios || [])
       .map(h => {
@@ -74,29 +64,39 @@ export class TecnicosView extends BaseCrudView {
       telefono: this.inputs.telefono.value.trim(),
       duracionTurnoMin: Number(this.inputs.duracionTurno.value),
       imagen: this.inputs.imagen.files[0] || null,
-      horarios: this.recopilarHorarios()
+      horarios: this.horariosView.getHorarios()
     };
   }
 
   // Llena el formulario con los datos de un técnico
   fillForm(tecnico) {
+
     this.inputs.nombre.value = tecnico.nombre;
     this.inputs.apellido.value = tecnico.apellido;
     this.inputs.email.value = tecnico.email || "";
     this.inputs.telefono.value = tecnico.telefono || "";
     this.inputs.duracionTurno.value = tecnico.duracionTurnoMin;
-    this.inputs.previewImagen.src = tecnico.imagenUrl || "";
-    this.inputs.previewImagen.style.display = tecnico.imagenUrl ? "block" : "none";
 
-    this.renderHorarios(tecnico.horarios || []);
+    this.inputs.previewImagen.src = tecnico.imagenUrl || "";
+    this.inputs.previewImagen.style.display =
+      tecnico.imagenUrl ? "block" : "none";
+
+    // Cargar horarios en el submódulo
+    this.horariosView.setHorarios(tecnico.horarios || []);
+
     this.enterEditMode(tecnico.id);
   }
 
-  // Resetea el formulario y los horarios internos
+  // Reset del formulario
   resetForm() {
+
     super.resetForm();
-    this.horarios = [];
+
     this.inputs.previewImagen.src = "";
     this.inputs.previewImagen.style.display = "none";
+
+    // Resetear horarios
+    this.horariosView.reset();
   }
+
 }
