@@ -44,8 +44,12 @@ export class TecnicosView extends BaseCrudView {
   buildRowCells(t) {
     const diasSemana = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
     const horariosTexto = (t.horarios || [])
-      .map(h => `${diasSemana[h.diaSemana]} ${h.horaInicio.slice(0,5)}-${h.horaFin.slice(0,5)}`)
-      .join("<br>");
+    .map(h => {
+      const inicio = h.horaInicio ? h.horaInicio.slice(0,5) : "--:--";
+      const fin = h.horaFin ? h.horaFin.slice(0,5) : "--:--";
+      return `${diasSemana[h.diaSemana] || "?"} ${inicio}-${fin}`;
+    })
+    .join("<br>");
 
     return `
       <td>${t.imagenUrl ? `<img src="${t.imagenUrl}" class="foto-tecnico">` : "—"}</td>
