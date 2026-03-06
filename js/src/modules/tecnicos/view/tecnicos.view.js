@@ -34,20 +34,20 @@ export class TecnicosView extends BaseCrudView {
     ];
 
     const horariosTexto = (t.horarios || [])
-      .map(h => {
-        const dia = diasSemana[h.diaSemana] || "?";
-        const inicio = h.horaInicio ? h.horaInicio.slice(0,5) : "--:--";
-        const fin = h.horaFin ? h.horaFin.slice(0,5) : "--:--";
-        return `${dia} ${inicio}-${fin}`;
-      })
-      .join("<br>");
+    .map(h => {
+      const dia = diasSemana[h.diaSemana] ?? "?";
+      const inicio = h.horaInicio ? h.horaInicio.slice(0,5) : "09:00";
+      const fin = h.horaFin ? h.horaFin.slice(0,5) : "17:00";
+      return `${dia} ${inicio}-${fin}`;
+    })
+    .join("<br>");
 
     return `
       <td>${t.imagenUrl ? `<img src="${t.imagenUrl}" class="foto-tecnico">` : "—"}</td>
       <td>${t.nombre}</td>
       <td>${t.apellido}</td>
       <td>${t.telefono || "-"}</td>
-      <td>${t.duracionTurnoMin} min</td>
+      <td>${t.duracionTurnoMinutos} min</td>
       <td>${horariosTexto || "-"}</td>
     `;
   }
@@ -57,7 +57,7 @@ export class TecnicosView extends BaseCrudView {
     if (!duracion || duracion <= 0) {
       throw new Error("La duración del turno debe ser mayor a 0");
     }
-  
+
     return {
       nombre: this.inputs.nombre.value.trim(),
       apellido: this.inputs.apellido.value.trim(),
@@ -74,7 +74,7 @@ export class TecnicosView extends BaseCrudView {
     this.inputs.apellido.value = tecnico.apellido;
     this.inputs.email.value = tecnico.email || "";
     this.inputs.telefono.value = tecnico.telefono || "";
-    this.inputs.duracionTurno.value = tecnico.duracionTurnoMin || "";
+    this.inputs.duracionTurno.value = tecnico.duracionTurnoMinutos || "";
 
     this.inputs.previewImagen.src = tecnico.imagenUrl || "";
     this.inputs.previewImagen.style.display =
