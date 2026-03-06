@@ -21,26 +21,31 @@ export class TecnicosView extends BaseCrudView {
     };
 
     // Submódulo de horarios
-    this.horariosView = new HorariosView(
-      "#listaHorarios",
-      "#addHorario"
-    );
+    this.horariosView = new HorariosView("#listaHorarios", "#addHorario");
+
+    // Preview de imagen
+    this.inputs.imagen.addEventListener("change", () => {
+      const file = this.inputs.imagen.files[0];
+      if (file) {
+        this.inputs.previewImagen.src = URL.createObjectURL(file);
+        this.inputs.previewImagen.style.display = "block";
+      } else {
+        this.inputs.previewImagen.style.display = "none";
+      }
+    });
   }
 
   buildRowCells(t) {
-    const diasSemana = [
-      "Domingo","Lunes","Martes","Miércoles",
-      "Jueves","Viernes","Sábado"
-    ];
+    const diasSemana = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
 
     const horariosTexto = (t.horarios || [])
-    .map(h => {
-      const dia = diasSemana[h.diaSemana] ?? "?";
-      const inicio = h.horaInicio ? h.horaInicio.slice(0,5) : "09:00";
-      const fin = h.horaFin ? h.horaFin.slice(0,5) : "17:00";
-      return `${dia} ${inicio}-${fin}`;
-    })
-    .join("<br>");
+      .map(h => {
+        const dia = diasSemana[h.diaSemana-1] ?? "?"; // Ajuste: diaSemana 1-6
+        const inicio = h.horaInicio?.slice(0,5) || "09:00";
+        const fin = h.horaFin?.slice(0,5) || "17:00";
+        return `${dia} ${inicio}-${fin}`;
+      })
+      .join("<br>");
 
     return `
       <td>${t.imagenUrl ? `<img src="${t.imagenUrl}" class="foto-tecnico">` : "—"}</td>
@@ -54,17 +59,15 @@ export class TecnicosView extends BaseCrudView {
 
   _getFormData() {
     const duracion = Number(this.inputs.duracionTurno.value);
-    if (!duracion || duracion <= 0) {
-      throw new Error("La duración del turno debe ser mayor a 0");
-    }
+    if (!duracion || duracion <= 0) throw new Error("La duración del turno debe ser mayor a 0");
 
     return {
       nombre: this.inputs.nombre.value.trim(),
       apellido: this.inputs.apellido.value.trim(),
       email: this.inputs.email.value.trim(),
       telefono: this.inputs.telefono.value.trim(),
-      duracionTurnoMinutos: duracion, // coincide con mapper
-      imagenFile: this.inputs.imagen.files[0] || null, // coincide con API
+      duracionTurnoMinutos: duracion,
+      imagenFile: this.inputs.imagen.files[0] || null,
       horarios: this.horariosView.getHorarios()
     };
   }
@@ -77,15 +80,16 @@ export class TecnicosView extends BaseCrudView {
     this.inputs.duracionTurno.value = tecnico.duracionTurnoMinutos || "";
 
     this.inputs.previewImagen.src = tecnico.imagenUrl || "";
-    this.inputs.previewImagen.style.display =
-      tecnico.imagenUrl ? "block" : "none";
+    this.inputs.previewImagen.style.display = tecnico.imagenUrl ? "block" : "none";
 
-    // Cargar horarios en submódulo
-    const horariosValidos = (tecnico.horarios || []).map(h => ({
-      diaSemana: h.diaSemana ?? 0,
-      horaInicio: h.horaInicio ?? "09:00",
-      horaFin: h.horaFin ?? "17:00"
-    }));
+    const horariosValidos = (tecnico.horarios || [])
+      .filter(h => h.diaSemana >= 1 && h.diaSemana <= 6)
+      .map(h => ({
+        diaSemana: h.diaSemana ?? 1,
+        horaInicio: h.horaInicio ?? "09:00",
+        horaFin: h.horaFin ?? "17:00"
+      }));
+
     this.horariosView.setHorarios(horariosValidos);
 
     this.enterEditMode(tecnico.id);
@@ -93,10 +97,8 @@ export class TecnicosView extends BaseCrudView {
 
   resetForm() {
     super.resetForm();
-
     this.inputs.previewImagen.src = "";
     this.inputs.previewImagen.style.display = "none";
-
     this.horariosView.reset();
   }
 }
