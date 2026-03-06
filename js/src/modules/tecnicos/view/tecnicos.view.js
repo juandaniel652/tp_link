@@ -120,22 +120,22 @@ export class TecnicosView extends BaseCrudView {
 
     tecnicos.forEach(t => {
       const tr = document.createElement("tr");
-      const horariosTexto = (t.horarios || [])
-        .map(h => `${diasSemana[h.dia_semana]} ${h.hora_inicio.slice(0,5)}-${h.hora_fin.slice(0,5)}`)
-        .join("<br>");
-
-      tr.innerHTML = `
-        <td>${t.imagen ? `<img src="${t.imagen}" class="foto-tecnico">` : "—"}</td>
-        <td>${t.nombre}</td>
-        <td>${t.apellido}</td>
-        <td>${t.telefono || "-"}</td>
-        <td>${t.duracionTurnoMinutos} min</td>
-        <td>${horariosTexto || "-"}</td>
-        <td>
-          <button type="button" class="btn-edit">✏️</button>
-          <button type="button" class="btn-delete">🗑️</button>
-        </td>
-      `;
+      const horariosTexto = (r.horarios || [])
+      .map(h => `${h.dia_semana ? diasSemana[h.dia_semana] : "?"} ${h.inicio}-${h.fin}`)
+      .join("<br>");
+        
+    tr.innerHTML = `
+      <td>${r.imagen_url ? `<img src="${r.imagen_url}" class="foto-tecnico">` : "—"}</td>
+      <td>${r.nombre}</td>
+      <td>${r.apellido}</td>
+      <td>${r.telefono || "-"}</td>
+      <td>${r.duracionTurnoMinutos ?? r.duracion_turno_min} min</td>
+      <td>${horariosTexto || "-"}</td>
+      <td>
+        <button type="button" class="btn-edit">✏️</button>
+        <button type="button" class="btn-delete">🗑️</button>
+      </td>
+    `;
 
       tr.querySelector(".btn-edit").onclick = () => this._editarTecnico(t);
       tr.querySelector(".btn-delete").onclick = () => this._eliminarTecnico(t.id);

@@ -1,6 +1,7 @@
 // js/src/modules/tecnicos/service/tecnicos.service.js
 import { getToken } from "../conexion_backend/tokenStorage.js";
 import { adaptTecnicoFromApi, adaptTecnicoToApi, adaptDisponibilidadToApi } from "../mappers/tecnicos.mapper.js";
+import { fetchTecnicos } from "./tecnicos.api.js";
 
 const API_BASE = "https://agenda-1-zomu.onrender.com/api/v1";
 
@@ -18,6 +19,11 @@ async function apiRequest(endpoint, options = {}) {
 
   if (!response.ok) throw new Error(data.detail || "Error en la petición");
   return data;
+}
+
+export async function obtenerTodos() {
+  const data = await fetchTecnicos();
+  return data.map(adaptTecnicoFromApi);
 }
 
 // =========================
