@@ -1,6 +1,7 @@
 // modules/tecnicos/service/tecnicos.api.js
 
 import { apiRequest } from "@/core/api/apiRequest.js";
+import { adaptTecnicoToApi } from "../mappers/tecnicos.mapper.js";
 
 export function fetchTecnicos() {
   return apiRequest("/tecnicos/");
@@ -16,26 +17,23 @@ export function createTecnico(payload) {
 export function updateTecnico(tecnico, token) {
   const formData = new FormData();
 
-  // Campos obligatorios
-  formData.append("nombre", tecnico.nombre || "");
-  formData.append("apellido", tecnico.apellido || "");
-  formData.append("telefono", tecnico.telefono || "");
-  formData.append("email", tecnico.email || "");
-  formData.append("duracion_turno_min", tecnico.duracionTurnoMinutos ?? 0);
+  // Convertir a formato API
+  const tecnicoApi = adaptTecnicoToApi(tecnico);
 
-  // Filtramos horarios inválidos
-  const horariosValidos = (tecnico.horarios || []).filter(
-    h => h.diaSemana && h.horaInicio && h.horaFin
-  );
+  // Campos simples
+  formData.append("nombre", tecnicoApi.nombre || "");
+  formData.append("apellido", tecnicoApi.apellido || "");
+  formData.append("telefono", tecnicoApi.telefono || "");
+  formData.append("email", tecnicoApi.email || "");
+  formData.append("duracion_turno_min", tecnicoApi.duracion_turno_min ?? 0);
 
+  // Horarios como JSON string
   formData.append(
     "horarios",
     JSON.stringify(
-      horariosValidos.map(h => ({
-        dia_semana: h.diaSemana,
-        hora_inicio: h.horaInicio,
-        hora_fin: h.horaFin
-      }))
+      (tecnicoApi.horarios || []).filter(
+        h => h.dia_semana && h.hora_inicio && h.hora_fin
+      )
     )
   );
 
@@ -44,7 +42,7 @@ export function updateTecnico(tecnico, token) {
     formData.append("imagen", tecnico.imagenFile);
   }
 
-  // Debug: revisar FormData antes de enviar
+  // Debug
   console.log("FormData a enviar:");
   for (let pair of formData.entries()) {
     console.log(pair[0], pair[1]);
@@ -54,7 +52,7 @@ export function updateTecnico(tecnico, token) {
     method: "PUT",
     body: formData,
     token,
-    isFormData: true // asegurarse que apiRequest NO ponga Content-Type manualmente
+    isFormData: true
   });
 }
 
