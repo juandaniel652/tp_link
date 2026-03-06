@@ -1,10 +1,9 @@
 // js/src/modules/tecnicos/view/tecnicos.view.js
 import { BaseCrudView } from "../../../core/view/BaseCrudView.js";
-import { HorariosView } from "../horarios/view/horarios.view.js";
-import { obtenerTecnicos, crearTecnico, actualizarTecnico, eliminarTecnico } from "../service/tecnicos.service.js";
+import * as TecnicoService from "../service/tecnicos.service.js";
+import { Tecnico } from "../model/tecnico.model.js";
 
 export class TecnicosView extends BaseCrudView {
-
   constructor() {
     super({
       tableSelector: "#generalContainer",
@@ -20,32 +19,28 @@ export class TecnicosView extends BaseCrudView {
       imagen: this.form.querySelector("#imagen")
     };
 
+    this.previewImagen = document.getElementById("previewImagen");
+    this.imagenActual = null;
+
+    this.btnSubmit = this.form.querySelector("#btnSubmit");
+    this.btnCancel = this.form.querySelector("#btnCancel");
+
     this.btnAddHorario = this.form.querySelector("#addHorario");
     this.horariosContainer = this.form.querySelector("#listaHorarios");
-    this.previewImagen = document.getElementById("previewImagen");
 
-    this.imagenActual = null;
     this.indiceEdicion = null;
 
     this._bindEvents();
   }
 
-  // =========================
-  // EVENTS
-  // =========================
   _bindEvents() {
-    this.form.addEventListener("submit", (e) => {
+    this.form.addEventListener("submit", e => {
       e.preventDefault();
       this._guardarTecnico();
     });
 
-    this.form.querySelector("#btnCancel").addEventListener("click", () => {
-      this.limpiarFormulario();
-    });
-
-    this.btnAddHorario.addEventListener("click", () => {
-      this._agregarFilaHorario();
-    });
+    this.btnCancel.addEventListener("click", () => this.limpiarFormulario());
+    this.btnAddHorario.addEventListener("click", () => this._agregarFilaHorario());
 
     this.inputs.imagen.addEventListener("change", () => {
       const file = this.inputs.imagen.files[0];
@@ -58,9 +53,6 @@ export class TecnicosView extends BaseCrudView {
     });
   }
 
-  // =========================
-  // HORARIOS
-  // =========================
   _agregarFilaHorario(data = {}) {
     const row = document.createElement("div");
     row.classList.add("horario-row");
@@ -79,30 +71,28 @@ export class TecnicosView extends BaseCrudView {
       <button type="button" class="remove">🗑️</button>
     `;
 
-    if (data.dia_semana !== undefined) row.querySelector(".dia").value = data.dia_semana;
-    if (data.hora_inicio) row.querySelector(".inicio").value = data.hora_inicio.slice(0,5);
-    if (data.hora_fin) row.querySelector(".fin").value = data.hora_fin.slice(0,5);
+    if (data.dia_semana) row.querySelector(".dia").value = data.dia_semana;
+    if (data.inicio) row.querySelector(".inicio").value = data.inicio.slice(0,5);
+    if (data.fin) row.querySelector(".fin").value = data.fin.slice(0,5);
 
     row.querySelector(".remove").onclick = () => row.remove();
     this.horariosContainer.appendChild(row);
   }
 
   _recopilarHorarios() {
-    return Array.from(this.horariosContainer.querySelectorAll(".horario-row"))
-      .filter(r => r.querySelector(".inicio").value && r.querySelector(".fin").value)
-      .map(r => ({
-        dia_semana: Number(r.querySelector(".dia").value),
-        hora_inicio: r.querySelector(".inicio").value + ":00",
-        hora_fin: r.querySelector(".fin").value + ":00"
+    const rows = this.horariosContainer.querySelectorAll(".horario-row");
+    return Array.from(rows)
+      .filter(row => row.querySelector(".inicio").value && row.querySelector(".fin").value)
+      .map(row => ({
+        dia_semana: Number(row.querySelector(".dia").value),
+        inicio: row.querySelector(".inicio").value + ":00",
+        fin: row.querySelector(".fin").value + ":00"
       }));
   }
 
-  // =========================
-  // TABLA
-  // =========================
   async renderTabla() {
     this.contenedor.innerHTML = "";
-    const tecnicos = await obtenerTecnicos();
+    const tecnicos = await TecnicoService.obtenerTodos();
 
     if (!tecnicos.length) {
       this.contenedor.innerHTML = `<tr><td colspan="7">No hay registros</td></tr>`;
@@ -118,96 +108,91 @@ export class TecnicosView extends BaseCrudView {
       6: "Sábado"
     };
 
-    tecnicos.forEach(t => {
+    tecnicos.forEach(r => {
       const tr = document.createElement("tr");
-      const horariosTexto = (r.horarios || [])
-      .map(h => `${h.dia_semana ? diasSemana[h.dia_semana] : "?"} ${h.inicio}-${h.fin}`)
-      .join("<br>");
-        
-    tr.innerHTML = `
-      <td>${r.imagen_url ? `<img src="${r.imagen_url}" class="foto-tecnico">` : "—"}</td>
-      <td>${r.nombre}</td>
-      <td>${r.apellido}</td>
-      <td>${r.telefono || "-"}</td>
-      <td>${r.duracionTurnoMinutos ?? r.duracion_turno_min} min</td>
-      <td>${horariosTexto || "-"}</td>
-      <td>
-        <button type="button" class="btn-edit">✏️</button>
-        <button type="button" class="btn-delete">🗑️</button>
-      </td>
-    `;
 
-      tr.querySelector(".btn-edit").onclick = () => this._editarTecnico(t);
-      tr.querySelector(".btn-delete").onclick = () => this._eliminarTecnico(t.id);
+      const horariosTexto = (r.horarios || [])
+        .map(h => `${diasSemana[h.dia_semana]} ${h.inicio}-${h.fin}`)
+        .join("<br>");
+
+      tr.innerHTML = `
+        <td>${r.imagen_url ? `<img src="${r.imagen_url}" class="foto-tecnico">` : "—"}</td>
+        <td>${r.nombre}</td>
+        <td>${r.apellido}</td>
+        <td>${r.telefono || "-"}</td>
+        <td>${r.duracionTurnoMinutos} min</td>
+        <td>${horariosTexto || "-"}</td>
+        <td>
+          <button type="button" class="btn-edit">✏️</button>
+          <button type="button" class="btn-delete">🗑️</button>
+        </td>
+      `;
+
+      tr.querySelector(".btn-edit").onclick = () => this._editarTecnico(r);
+      tr.querySelector(".btn-delete").onclick = () => this._eliminarTecnico(r.id);
 
       this.contenedor.appendChild(tr);
     });
   }
 
-  // =========================
-  // GUARDAR
-  // =========================
+  _recopilarDatosFormulario() {
+    const nuevaImagen = this.inputs.imagen.files[0];
+    return new Tecnico({
+      id: this.indiceEdicion,
+      nombre: this.inputs.nombre.value.trim(),
+      apellido: this.inputs.apellido.value.trim(),
+      telefono: this.inputs.telefono.value.trim(),
+      duracionTurnoMinutos: Number(this.inputs.duracion.value),
+      email: this.inputs.email.value.trim(),
+      imagen: nuevaImagen || this.imagenActual,
+      imagenUrl: this.imagenActual,
+      horarios: this._recopilarHorarios(),
+      activo: true
+    });
+  }
+
   async _guardarTecnico() {
     const tecnico = this._recopilarDatosFormulario();
 
-    const payload = {
-      ...tecnico,
-      duracionTurnoMinutos: Number(tecnico.duracionTurnoMinutos),
-      horarios: tecnico.horarios,
-      activo: true
-    };
-
     if (this.indiceEdicion !== null) {
-      await actualizarTecnico({ ...payload, id: this.indiceEdicion });
+      await TecnicoService.actualizarTecnico(tecnico);
     } else {
-      await crearTecnico(payload);
+      await TecnicoService.crearTecnico(tecnico);
     }
 
     this.limpiarFormulario();
     await this.renderTabla();
   }
 
-  _editarTecnico(t) {
-    this.indiceEdicion = t.id;
-    this.inputs.nombre.value = t.nombre;
-    this.inputs.apellido.value = t.apellido;
-    this.inputs.telefono.value = t.telefono || "";
-    this.inputs.duracion.value = t.duracionTurnoMinutos;
-    this.inputs.email.value = t.email || "";
+  _editarTecnico(tecnico) {
+    this.indiceEdicion = tecnico.id;
 
-    this.imagenActual = t.imagen || null;
+    this.inputs.nombre.value = tecnico.nombre;
+    this.inputs.apellido.value = tecnico.apellido;
+    this.inputs.telefono.value = tecnico.telefono || "";
+    this.inputs.duracion.value = tecnico.duracionTurnoMinutos;
+    this.inputs.email.value = tecnico.email || "";
+
+    this.imagenActual = tecnico.imagenUrl || null;
     this.inputs.imagen.value = "";
 
-    if (t.imagen) {
-      this.previewImagen.src = t.imagen;
+    if (tecnico.imagenUrl) {
+      this.previewImagen.src = tecnico.imagenUrl;
       this.previewImagen.style.display = "block";
     } else {
       this.previewImagen.style.display = "none";
     }
 
     this.horariosContainer.innerHTML = "";
-    (t.horarios || []).forEach(h => this._agregarFilaHorario(h));
+    (tecnico.horarios || []).forEach(h => this._agregarFilaHorario(h));
 
-    this.form.querySelector("#btnSubmit").textContent = "Actualizar";
-    this.form.querySelector("#btnCancel").style.display = "inline-block";
-  }
-
-  _recopilarDatosFormulario() {
-    const nuevaImagen = this.inputs.imagen.files[0];
-    return {
-      nombre: this.inputs.nombre.value.trim(),
-      apellido: this.inputs.apellido.value.trim(),
-      telefono: this.inputs.telefono.value.trim(),
-      duracionTurnoMinutos: this.inputs.duracion.value,
-      email: this.inputs.email.value.trim(),
-      imagen: nuevaImagen || this.imagenActual,
-      horarios: this._recopilarHorarios()
-    };
+    this.btnSubmit.textContent = "Actualizar";
+    this.btnCancel.style.display = "inline-block";
   }
 
   async _eliminarTecnico(id) {
     if (!confirm("¿Eliminar técnico?")) return;
-    await eliminarTecnico(id);
+    await TecnicoService.eliminarTecnico(id);
     await this.renderTabla();
   }
 
@@ -218,8 +203,7 @@ export class TecnicosView extends BaseCrudView {
     this.imagenActual = null;
     this.previewImagen.src = "";
     this.previewImagen.style.display = "none";
-    this.form.querySelector("#btnSubmit").textContent = "Guardar";
-    this.form.querySelector("#btnCancel").style.display = "none";
+    this.btnSubmit.textContent = "Guardar";
+    this.btnCancel.style.display = "none";
   }
-
 }
