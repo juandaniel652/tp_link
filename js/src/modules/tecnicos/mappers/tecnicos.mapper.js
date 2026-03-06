@@ -1,63 +1,64 @@
-// tecnico.adapter.js
+// js/src/modules/tecnicos/mappers/tecnicos.mapper.js
 
-export function adaptTecnicoToApi(t) {
+// =========================
+// ADAPTAR DE API A MODELO
+// =========================
+export function adaptTecnicoFromApi(data) {
+
+  const DIAS_MAP = {
+    1: "lunes",
+    2: "martes",
+    3: "miércoles",
+    4: "jueves",
+    5: "viernes",
+    6: "sábado",
+    7: "domingo"
+  };
+
+  const horarios = Array.isArray(data.horarios)
+    ? data.horarios
+        .filter(h => h.dia_semana !== 7) // eliminar domingo
+        .map(h => ({
+          dia_semana: h.dia_semana,
+          inicio: (h.hora_inicio ?? "").slice(0,5),
+          fin: (h.hora_fin ?? "").slice(0,5)
+        }))
+    : [];
+
   return {
-    nombre: t.nombre,
-    apellido: t.apellido,
-    telefono: t.telefono,
-    duracion_turno_min: t.duracionTurnoMinutos, // coincide con API
-    email: t.email,
-    activo: t.activo,
-    horarios: (t.horarios || []).map(h => ({
-      id: h.id || undefined,
-      dia_semana: h.diaSemana,
-      hora_inicio: h.horaInicio,
-      hora_fin: h.horaFin
-    })),
-    imagen: t.imagenFile || undefined
+    id: data.id,
+    nombre: data.nombre ?? "",
+    apellido: data.apellido ?? "",
+    telefono: data.telefono ?? "",
+    duracionTurnoMinutos: Number(data.duracion_turno_min ?? 0),
+    email: data.email ?? "",
+    imagen_url: data.imagen_url ?? "",
+    horarios
   };
 }
 
-export function adaptDisponibilidadFromApi(d) {
+// =========================
+// ADAPTAR DE MODELO A API
+// =========================
+export function adaptTecnicoToApi(tecnico) {
   return {
-    id: d.id,
-    diaSemana: d.dia_semana,
-    horaInicio: d.hora_inicio,
-    horaFin: d.hora_fin
+    nombre: tecnico.nombre,
+    apellido: tecnico.apellido,
+    telefono: tecnico.telefono || null,
+    duracion_turno_min: Number(tecnico.duracionTurnoMinutos),
+    email: tecnico.email || null,
+    activo: true,
+    horarios: tecnico.horarios.map(adaptDisponibilidadToApi)
   };
 }
 
-export function adaptDisponibilidadToApi(d) {
+// =========================
+// HORARIOS
+// =========================
+export function adaptDisponibilidadToApi(h) {
   return {
-    id: d.id,
-    dia_semana: d.diaSemana,
-    hora_inicio: d.horaInicio,
-    hora_fin: d.horaFin
-  };
-}
-
-export function adaptTecnicoFromApi(t) {
-  return {
-    id: t.id,
-    nombre: t.nombre,
-    apellido: t.apellido,
-    telefono: t.telefono,
-    duracionTurnoMinutos: t.duracion_turno_min,
-    email: t.email,
-    activo: t.activo,
-    imagen: t.imagen,
-    horarios: (t.horarios || []).map(adaptDisponibilidadFromApi)
-  };
-}
-
-export function adaptTecnicoToApi(t) {
-  return {
-    nombre: t.nombre,
-    apellido: t.apellido,
-    telefono: t.telefono,
-    duracion_turno_min: t.duracionTurnoMinutos,
-    email: t.email,
-    activo: t.activo,
-    horarios: (t.horarios || []).map(adaptDisponibilidadToApi)
+    dia_semana: h.dia_semana,
+    hora_inicio: h.inicio?.length === 5 ? h.inicio + ":00" : h.inicio,
+    hora_fin: h.fin?.length === 5 ? h.fin + ":00" : h.fin
   };
 }

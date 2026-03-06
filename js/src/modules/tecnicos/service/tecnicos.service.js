@@ -1,78 +1,87 @@
 // js/src/modules/tecnicos/service/tecnicos.service.js
-import {
-  fetchTecnicos,
-  createTecnico,
-  updateTecnico,
-  deleteTecnico
-} from "./tecnicos.api.js";
+import { getToken } from "../conexion_backend/tokenStorage.js";
+import { adaptTecnicoFromApi, adaptTecnicoToApi, adaptDisponibilidadToApi } from "../mappers/tecnicos.mapper.js";
 
-import {
-  adaptTecnicoFromApi,
-  adaptTecnicoToApi,
-  adaptDisponibilidadToApi
-} from "../mappers/tecnicos.mapper.js";
+const API_BASE = "https://agenda-1-zomu.onrender.com/api/v1";
 
-export async function obtenerTecnicos(token) {
-  const data = await fetchTecnicos(token); // PASAR TOKEN
+// =========================
+// PETICIONES CRUD
+// =========================
+async function apiRequest(endpoint, options = {}) {
+  const token = getToken();
+  const headers = options.headers || {};
+  headers["Authorization"] = `Bearer ${token}`;
+  if (!(options.body instanceof FormData)) headers["Content-Type"] = "application/json";
+
+  const response = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+  const data = await response.json();
+
+  if (!response.ok) throw new Error(data.detail || "Error en la petición");
+  return data;
+}
+
+// =========================
+// OBTENER TODOS
+// =========================
+export async function obtenerTecnicos() {
+  const data = await apiRequest("/tecnicos");
   return data.map(adaptTecnicoFromApi);
 }
 
-export async function crearTecnico(tecnico, token) {
+// =========================
+// CREAR
+// =========================
+export async function crearTecnico(tecnico) {
 
-  let created;
-
-  if (tecnico.imagenFile instanceof File) {
+  if (tecnico.imagen instanceof File) {
     const formData = new FormData();
     formData.append("nombre", tecnico.nombre);
     formData.append("apellido", tecnico.apellido);
-    formData.append("telefono", tecnico.telefono);
+    if (tecnico.telefono) formData.append("telefono", tecnico.telefono);
+    if (tecnico.email) formData.append("email", tecnico.email);
     formData.append("duracion_turno_min", tecnico.duracionTurnoMinutos);
-    formData.append("email", tecnico.email);
-    formData.append("activo", tecnico.activo);
-    formData.append("imagen", tecnico.imagenFile);
-    formData.append(
-      "horarios",
-      JSON.stringify((tecnico.horarios || []).map(adaptDisponibilidadToApi))
-    );
+    formData.append("activo", true);
+    formData.append("imagen", tecnico.imagen);
+    formData.append("horarios", JSON.stringify(tecnico.horarios.map(adaptDisponibilidadToApi)));
 
-    created = await createTecnico(formData, token, true);
-
-  } else {
-    const payload = adaptTecnicoToApi(tecnico);
-    created = await createTecnico(JSON.stringify(payload), token);
+    const created = await apiRequest("/tecnicos", { method: "POST", body: formData });
+    return adaptTecnicoFromApi(created);
   }
 
+  // si no hay imagen
+  const payload = adaptTecnicoToApi(tecnico);
+  const created = await apiRequest("/tecnicos", { method: "POST", body: JSON.stringify(payload) });
   return adaptTecnicoFromApi(created);
 }
 
-export async function actualizarTecnico(tecnico, token) {
+// =========================
+// ACTUALIZAR
+// =========================
+export async function actualizarTecnico(tecnico) {
 
-  let updated;
-
-  if (tecnico.imagenFile instanceof File) {
+  if (tecnico.imagen instanceof File) {
     const formData = new FormData();
     formData.append("nombre", tecnico.nombre);
     formData.append("apellido", tecnico.apellido);
-    formData.append("telefono", tecnico.telefono);
+    if (tecnico.telefono) formData.append("telefono", tecnico.telefono);
+    if (tecnico.email) formData.append("email", tecnico.email);
     formData.append("duracion_turno_min", tecnico.duracionTurnoMinutos);
-    formData.append("email", tecnico.email);
-    formData.append("activo", tecnico.activo);
-    formData.append("imagen", tecnico.imagenFile);
-    formData.append(
-      "horarios",
-      JSON.stringify((tecnico.horarios || []).map(adaptDisponibilidadToApi))
-    );
+    formData.append("activo", true);
+    formData.append("imagen", tecnico.imagen);
+    formData.append("horarios", JSON.stringify(tecnico.horarios.map(adaptDisponibilidadToApi)));
 
-    updated = await updateTecnico(tecnico.id, formData, token, true);
-
-  } else {
-    const payload = adaptTecnicoToApi(tecnico);
-    updated = await updateTecnico(tecnico.id, payload, token);
+    const updated = await apiRequest(`/tecnicos/${tecnico.id}`, { method: "PUT", body: formData });
+    return adaptTecnicoFromApi(updated);
   }
 
+  const payload = adaptTecnicoToApi(tecnico);
+  const updated = await apiRequest(`/tecnicos/${tecnico.id}`, { method: "PUT", body: JSON.stringify(payload) });
   return adaptTecnicoFromApi(updated);
 }
 
-export async function eliminarTecnico(id, token) {
-  return deleteTecnico(id, token);
+// =========================
+// ELIMINAR
+// =========================
+export async function eliminarTecnico(id) {
+  return apiRequest(`/tecnicos/${id}`, { method: "DELETE" });
 }
