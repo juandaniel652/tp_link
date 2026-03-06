@@ -5,23 +5,13 @@
 // =========================
 export function adaptTecnicoFromApi(data) {
 
-  const DIAS_MAP = {
-    1: "lunes",
-    2: "martes",
-    3: "miércoles",
-    4: "jueves",
-    5: "viernes",
-    6: "sábado",
-    7: "domingo"
-  };
-
   const horarios = Array.isArray(data.horarios)
     ? data.horarios
-        .filter(h => h.dia_semana !== 7) // eliminar domingo
+        .filter(h => h.dia_semana !== 7)
         .map(h => ({
-          dia_semana: h.dia_semana,
-          inicio: (h.hora_inicio ?? "").slice(0,5),
-          fin: (h.hora_fin ?? "").slice(0,5)
+          diaSemana: h.dia_semana,
+          horaInicio: (h.hora_inicio ?? "").slice(0,5),
+          horaFin: (h.hora_fin ?? "").slice(0,5)
         }))
     : [];
 
@@ -32,7 +22,7 @@ export function adaptTecnicoFromApi(data) {
     telefono: data.telefono ?? "",
     duracionTurnoMinutos: Number(data.duracion_turno_min ?? 0),
     email: data.email ?? "",
-    imagen_url: data.imagen_url ?? "",
+    imagenUrl: data.imagen_url ?? "",
     horarios
   };
 }
