@@ -3,31 +3,29 @@
 import { apiRequest } from "@/core/api/apiRequest.js";
 import { adaptTecnicoToApi } from "../mappers/tecnicos.mapper.js";
 
-export function fetchTecnicos() {
-  return apiRequest("/tecnicos/");
+// Listar técnicos
+export function obtenerTecnicos(token) {
+  return apiRequest("/tecnicos/", { token });
 }
 
-export function createTecnico(payload) {
+// Crear técnico
+export function crearTecnico(payload) {
   return apiRequest("/tecnicos/", {
     method: "POST",
     body: payload
   });
 }
 
+// Actualizar técnico
 export function updateTecnico(tecnico, token) {
   const formData = new FormData();
-
-  // Convertir a formato API
   const tecnicoApi = adaptTecnicoToApi(tecnico);
 
-  // Campos simples
   formData.append("nombre", tecnicoApi.nombre || "");
   formData.append("apellido", tecnicoApi.apellido || "");
   formData.append("telefono", tecnicoApi.telefono || "");
   formData.append("email", tecnicoApi.email || "");
   formData.append("duracion_turno_min", tecnicoApi.duracion_turno_min ?? 0);
-
-  // Horarios como JSON string
   formData.append(
     "horarios",
     JSON.stringify(
@@ -37,15 +35,8 @@ export function updateTecnico(tecnico, token) {
     )
   );
 
-  // Imagen si existe
   if (tecnico.imagenFile) {
     formData.append("imagen", tecnico.imagenFile);
-  }
-
-  // Debug
-  console.log("FormData a enviar:");
-  for (let pair of formData.entries()) {
-    console.log(pair[0], pair[1]);
   }
 
   return apiRequest(`/tecnicos/${tecnico.id}`, {
@@ -56,7 +47,8 @@ export function updateTecnico(tecnico, token) {
   });
 }
 
-export function deleteTecnico(id) {
+// Eliminar técnico
+export function eliminarTecnico(id) {
   return apiRequest(`/tecnicos/${id}`, {
     method: "DELETE"
   });
