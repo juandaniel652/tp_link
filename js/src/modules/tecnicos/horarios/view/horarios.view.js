@@ -65,14 +65,14 @@ export class HorariosView {
 
   render() {
     if (!this.container) return;
-
+    
     const dias = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
-
+    
     this.container.innerHTML = this.horarios.map((h,i) => `
       <div class="horario-row">
         <select class="dia">
           ${dias.map((d,idx) => `
-            <option value="${idx}" ${idx+1 === h.diaSemana ? "selected" : ""}>
+            <option value="${idx+1}" ${idx+1 === h.diaSemana ? "selected" : ""}>
               ${d}
             </option>
           `).join("")}
