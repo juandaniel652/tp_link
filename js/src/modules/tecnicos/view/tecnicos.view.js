@@ -1,7 +1,6 @@
 // js/src/modules/tecnicos/view/tecnicos.view.js
 import { BaseCrudView } from "../../../core/view/BaseCrudView.js";
 
-// export class TecnicosView
 export class TecnicosView extends BaseCrudView {
 
   constructor() {
@@ -20,36 +19,41 @@ export class TecnicosView extends BaseCrudView {
       previewImagen: this.form.querySelector("#previewImagen")
     };
 
-    // reemplazar disponibilidadView por un método interno de manejo de horarios
-    // Ejemplo: inicializamos un arreglo para los horarios
+    // Inicializamos arreglo interno de horarios
     this.horarios = [];
   }
 
+  // Recopila horarios desde inputs o estructura interna
   recopilarHorarios() {
-    // lógica para obtener los horarios desde inputs del form
     return this.horarios;
   }
 
+  // Renderiza los horarios en el contenedor #listaHorarios
   renderHorarios(horarios) {
     this.horarios = horarios;
-    // aquí podrías renderizar en #listaHorarios si existe
     const container = this.form.querySelector("#listaHorarios");
     if (!container) return;
 
-    container.innerHTML = horarios.map(h => 
-      `${["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"][h.diaSemana]} ${h.horaInicio}-${h.horaFin}`
-    ).join("<br>");
-  }
-
-  buildRowCells(t) {
-    const diasSemana = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
-    const horariosTexto = (t.horarios || [])
-    .map(h => {
+    container.innerHTML = horarios.map(h => {
+      const dia = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"][h.diaSemana] || "?";
       const inicio = h.horaInicio ? h.horaInicio.slice(0,5) : "--:--";
       const fin = h.horaFin ? h.horaFin.slice(0,5) : "--:--";
-      return `${diasSemana[h.diaSemana] || "?"} ${inicio}-${fin}`;
-    })
-    .join("<br>");
+      return `${dia} ${inicio}-${fin}`;
+    }).join("<br>");
+  }
+
+  // Construye las celdas de la tabla para cada técnico
+  buildRowCells(t) {
+    const diasSemana = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+
+    const horariosTexto = (t.horarios || [])
+      .map(h => {
+        const dia = diasSemana[h.diaSemana] || "?";
+        const inicio = h.horaInicio ? h.horaInicio.slice(0,5) : "--:--";
+        const fin = h.horaFin ? h.horaFin.slice(0,5) : "--:--";
+        return `${dia} ${inicio}-${fin}`;
+      })
+      .join("<br>");
 
     return `
       <td>${t.imagenUrl ? `<img src="${t.imagenUrl}" class="foto-tecnico">` : "—"}</td>
@@ -61,6 +65,7 @@ export class TecnicosView extends BaseCrudView {
     `;
   }
 
+  // Obtiene los datos del formulario
   _getFormData() {
     return {
       nombre: this.inputs.nombre.value.trim(),
@@ -73,6 +78,7 @@ export class TecnicosView extends BaseCrudView {
     };
   }
 
+  // Llena el formulario con los datos de un técnico
   fillForm(tecnico) {
     this.inputs.nombre.value = tecnico.nombre;
     this.inputs.apellido.value = tecnico.apellido;
@@ -81,10 +87,12 @@ export class TecnicosView extends BaseCrudView {
     this.inputs.duracionTurno.value = tecnico.duracionTurnoMin;
     this.inputs.previewImagen.src = tecnico.imagenUrl || "";
     this.inputs.previewImagen.style.display = tecnico.imagenUrl ? "block" : "none";
+
     this.renderHorarios(tecnico.horarios || []);
     this.enterEditMode(tecnico.id);
   }
 
+  // Resetea el formulario y los horarios internos
   resetForm() {
     super.resetForm();
     this.horarios = [];
