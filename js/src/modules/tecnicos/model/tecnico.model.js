@@ -77,7 +77,7 @@ export default class Tecnico {
       case "apellido":
         return valor && soloLetras.test(valor) ? "" : "Solo se permiten letras (sin números).";
       case "telefono":
-        return telRegex.test(valor) ? "" : "Formato válido: 11 1234-5678";
+        return valor && valor.trim().length >= 8 ? "" : "Teléfono inválido.";
       case "duracionTurnoMinutos":
         if (isNaN(duracion) || duracion <= 0) return "Debe ser un número mayor que 0.";
         if (duracion > 90)    return "Máximo permitido es 90 minutos.";

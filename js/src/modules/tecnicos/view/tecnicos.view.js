@@ -163,7 +163,7 @@ export default class TecnicosView {
       this.previewImagen.style.display = "none";
     }
 
-    this.horariosView.cargar(tecnico.horarios || []);
+    this.horariosView.cargar(tecnico._horariosRaw || []);
 
     this.btnSubmit.textContent      = "Actualizar";
     this.btnCancel.style.display    = "inline-block";
