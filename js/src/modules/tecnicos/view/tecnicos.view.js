@@ -114,16 +114,16 @@ export default class TecnicosView {
     tecnicos.forEach(r => {
       const tr = document.createElement("tr");
 
-      const horariosTexto = (r.horarios || [])
-        .map(h => `${DIAS_LABEL[h.dia_semana] ?? h.dia_semana} ${h.hora_inicio.slice(0, 5)}-${h.hora_fin.slice(0, 5)}`)
-        .join("<br>");
+      const horariosTexto = (r._horariosRaw || [])
+      .map(h => `${DIAS_LABEL[h.dia_semana] ?? h.dia_semana} ${h.hora_inicio.slice(0, 5)}-${h.hora_fin.slice(0, 5)}`)
+      .join("<br>");
 
       tr.innerHTML = `
         <td>${r.imagen ? `<img src="${r.imagen}" class="foto-tecnico" />` : "—"}</td>
         <td>${r.nombre}</td>
         <td>${r.apellido}</td>
         <td>${r.telefono || "-"}</td>
-        <td>${r.duracionTurnoMinutos ?? r.duracion_turno_min} min</td>
+        <td>${r.duracionTurnoMinutos} min</td>
         <td>${horariosTexto || "-"}</td>
         <td>
           <button type="button" class="btn-edit"   data-id="${r.id}">✏️</button>

@@ -5,7 +5,9 @@ import Tecnico from "../model/tecnico.model.js";
  * Convierte la respuesta cruda de la API en una instancia de Tecnico.
  */
 export function fromApi(raw) {
-  return new Tecnico(raw);
+  const tecnico = new Tecnico(raw);
+  tecnico._horariosRaw = raw.horarios ?? [];   // preservar formato API para la vista
+  return tecnico;
 }
 
 /**
