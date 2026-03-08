@@ -1,95 +1,192 @@
 /* ================================
-   HORARIOS — DISEÑO CORPORATIVO
+   HORARIOS — SELECTOR CORPORATIVO
 ================================ */
 
-/* ── Botón agregar horario ── */
-.btn-add-horario {
-  display: inline-flex;
-  align-items: center;
+/* ── Wrapper general ── */
+.hs-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+/* ── Chips de días ── */
+.hs-chips {
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
-  margin-top: 10px;
-  padding: 10px 20px;
+}
+
+.hs-chip {
+  padding: 8px 16px;
+  border: 2px solid #d0daea;
+  border-radius: 999px;
+  background: #f4f6fb;
+  color: #4a6080;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  letter-spacing: 0.3px;
+}
+
+.hs-chip:hover {
+  border-color: #2A5298;
+  color: #1E3C72;
+  background: #eef2fa;
+  transform: translateY(-1px);
+}
+
+.hs-chip--active {
+  background: linear-gradient(135deg, #1E3C72, #2A5298);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(30, 60, 114, 0.3);
+}
+
+.hs-chip--active:hover {
+  background: linear-gradient(135deg, #16306b, #1E3C72);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* ── Panel rango global ── */
+.hs-global {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: #f7f9ff;
+  border: 1.5px solid #e0e7f3;
+  border-radius: 12px;
+  flex-wrap: wrap;
+}
+
+.hs-global-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7ea8;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.hs-global-inputs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+/* ── Inputs de hora (global y por día) ── */
+.hs-global input[type="time"],
+.hs-day-inputs input[type="time"] {
+  padding: 8px 12px;
+  border: 2px solid #d0daea;
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: 'RobotoMonoBold', monospace;
+  font-weight: 700;
+  color: #1E3C72;
+  background: #fff;
+  width: 118px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.hs-global input[type="time"]:focus,
+.hs-day-inputs input[type="time"]:focus {
+  border-color: #1E3C72;
+  box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.12);
+  outline: none;
+}
+
+/* ── Separador → ── */
+.hs-sep {
+  color: #2A5298;
+  font-weight: 700;
+  font-size: 16px;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+/* ── Botón aplicar ── */
+.hs-apply-btn {
+  padding: 9px 18px;
   background: linear-gradient(135deg, #1E3C72, #2A5298);
   color: #fff;
   border: none;
   border-radius: 10px;
-  font-size: 14px;
-  font-weight: 700;
   font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
   cursor: pointer;
+  white-space: nowrap;
   transition: transform 0.2s, box-shadow 0.2s;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
 }
 
-.btn-add-horario:hover {
+.hs-apply-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(30, 60, 114, 0.3);
+  box-shadow: 0 5px 14px rgba(30, 60, 114, 0.3);
 }
 
-.btn-add-horario:active {
+.hs-apply-btn:active {
   transform: scale(0.97);
 }
 
-/* ── Contenedor de filas ── */
-#listaHorarios {
+/* ── Filas de días seleccionados ── */
+.hs-rows {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 14px;
+  gap: 8px;
 }
 
-/* ── Tarjeta de horario ── */
-.dia-row {
+.hs-day-row {
   display: grid;
-  grid-template-columns: 160px 1fr auto;
+  grid-template-columns: 110px 1fr;
   grid-template-rows: auto auto;
   align-items: center;
   gap: 10px 16px;
-  padding: 16px 20px;
+  padding: 14px 18px;
   background: #fff;
   border: 1.5px solid #e0e7f3;
-  border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(30, 60, 114, 0.06);
-  transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
-  position: relative;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(30, 60, 114, 0.05);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  animation: hs-row-in 0.2s ease both;
 }
 
-.dia-row:hover {
+@keyframes hs-row-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.hs-day-row:hover {
   border-color: #2A5298;
-  box-shadow: 0 4px 16px rgba(30, 60, 114, 0.12);
-  background: #f7f9ff;
+  box-shadow: 0 4px 14px rgba(30, 60, 114, 0.1);
 }
 
-/* ── Select de día ── */
-.dia-row .dia {
+/* Nombre del día */
+.hs-day-name {
   grid-column: 1;
   grid-row: 1;
-  appearance: none;
-  -webkit-appearance: none;
-  padding: 9px 36px 9px 14px;
-  border: 2px solid #d0daea;
-  border-radius: 10px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
-  font-family: inherit;
   color: #1E3C72;
-  background-color: #eef2fa;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%231E3C72' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #eef2fa;
+  padding: 6px 12px;
+  border-radius: 8px;
+  text-align: center;
+  letter-spacing: 0.2px;
 }
 
-.dia-row .dia:focus {
-  border-color: #1E3C72;
-  box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.15);
-  outline: none;
-  background-color: #fff;
-}
-
-/* ── Contenedor de horas ── */
-.dia-row .horarios {
+/* Inputs del día */
+.hs-day-inputs {
   grid-column: 2;
   grid-row: 1;
   display: flex;
@@ -97,113 +194,32 @@
   gap: 10px;
 }
 
-/* Etiquetas "Desde" / "Hasta" */
-.dia-row .horarios .hora-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: #6b7ea8;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-}
-
-/* Input de hora */
-.dia-row input[type="time"] {
-  padding: 9px 12px;
-  border: 2px solid #d0daea;
-  border-radius: 10px;
-  font-size: 15px;
-  font-family: 'RobotoMonoBold', monospace;
-  font-weight: 700;
-  color: #1E3C72;
-  background: #f9fbff;
-  width: 120px;
-  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-  cursor: pointer;
-}
-
-.dia-row input[type="time"]:hover {
-  border-color: #2A5298;
-  background: #fff;
-}
-
-.dia-row input[type="time"]:focus {
-  border-color: #1E3C72;
-  box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.15);
-  background: #fff;
-  outline: none;
-}
-
-/* Separador entre horas */
-.dia-row .horarios .hora-sep {
-  color: #2A5298;
-  font-weight: 700;
-  font-size: 18px;
-  line-height: 1;
-  user-select: none;
-}
-
-/* ── Botón eliminar ── */
-.dia-row .btn-delete-horario {
-  grid-column: 3;
-  grid-row: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: #fff0f0;
-  border: 1.5px solid #ffd0d0;
-  border-radius: 8px;
-  color: #dc3545;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s, transform 0.15s;
-  flex-shrink: 0;
-}
-
-.dia-row .btn-delete-horario:hover {
-  background: #dc3545;
-  border-color: #dc3545;
-  color: #fff;
-  transform: scale(1.1);
-}
-
-/* ── Estado error ── */
-.dia-row--error {
-  border-color: #e53935;
-  background: #fff8f8;
-  box-shadow: 0 2px 10px rgba(229, 57, 53, 0.1);
-}
-
-.dia-row--error input[type="time"] {
-  border-color: #e53935;
-  background: #fff5f5;
-}
-
-.dia-row--error .dia {
-  border-color: #e53935;
-}
-
-/* Mensaje de error por fila */
-.horario-error {
+/* Error por fila */
+.hs-row-error {
   grid-column: 1 / -1;
   grid-row: 2;
-  display: flex;
-  align-items: center;
-  gap: 6px;
   color: #c62828;
   font-size: 12px;
   font-weight: 600;
-  padding: 4px 2px 0;
+  padding-left: 2px;
+  min-height: 0;
 }
 
-.horario-error::before {
-  content: "⚠";
-  font-size: 13px;
+.hs-row-error:not(:empty)::before {
+  content: "⚠ ";
 }
 
-/* Mensaje de error general (debajo de toda la lista) */
+/* Estado error fila */
+.hs-day-row--error {
+  border-color: #e53935;
+  background: #fff8f8;
+}
+
+.hs-day-row--error input[type="time"] {
+  border-color: #e53935;
+}
+
+/* ── Error general ── */
 .field-error {
   display: none;
   align-items: center;
@@ -211,18 +227,22 @@
   color: #c62828;
   font-size: 13px;
   font-weight: 600;
-  margin-top: 8px;
+  margin: 0;
   padding: 10px 14px;
   background: #fff0f0;
   border: 1px solid #ffcdd2;
   border-radius: 8px;
 }
 
+.field-error:not(:empty) {
+  display: flex;
+}
+
 .field-error::before {
   content: "⚠";
 }
 
-/* ── Botones de tabla (editar / eliminar) ── */
+/* ── Botones tabla ── */
 .btn-edit {
   display: inline-flex;
   align-items: center;
@@ -267,37 +287,51 @@
   transform: scale(1.1);
 }
 
+/* ── Botón agregar horario (oculto en el nuevo UX) ── */
+.btn-add-horario {
+  display: none;
+}
+
 /* ── Responsive ── */
-@media (max-width: 768px) {
-  .dia-row {
-    grid-template-columns: 1fr auto;
-    grid-template-rows: auto auto auto;
-    padding: 14px 16px;
+@media (max-width: 600px) {
+  .hs-global {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
 
-  .dia-row .dia {
-    grid-column: 1;
-    grid-row: 1;
+  .hs-global-inputs {
     width: 100%;
   }
 
-  .dia-row .btn-delete-horario {
-    grid-column: 2;
-    grid-row: 1;
+  .hs-apply-btn {
+    width: 100%;
+    text-align: center;
   }
 
-  .dia-row .horarios {
-    grid-column: 1 / -1;
+  .hs-day-row {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+
+  .hs-day-name {
+    grid-column: 1;
+    grid-row: 1;
+    text-align: left;
+  }
+
+  .hs-day-inputs {
+    grid-column: 1;
     grid-row: 2;
     flex-wrap: wrap;
   }
 
-  .horario-error {
+  .hs-row-error {
     grid-row: 3;
   }
 
-  .dia-row input[type="time"] {
-    width: 100%;
+  .hs-day-inputs input[type="time"] {
     flex: 1;
+    width: auto;
   }
 }
