@@ -143,6 +143,9 @@ export default class TecnicosView {
 
   /** Rellena el formulario con los datos del técnico a editar. */
   _prepararEdicion(tecnico) {
+    console.log("EDITAR tecnico:", tecnico);
+    console.log("horarios:", tecnico.horarios);
+    console.log("_horariosRaw:", tecnico._horariosRaw);
     this._editandoId   = tecnico.id;
     this._imagenActual = tecnico.imagen ?? tecnico.imagen_url ?? null;
 

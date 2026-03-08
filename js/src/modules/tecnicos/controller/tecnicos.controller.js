@@ -24,6 +24,8 @@ export default class TecnicosController {
   // ── Handlers privados ────────────────────────────────────────────────────────
 
   async _guardar(payload) {
+    console.log("GUARDAR payload:", payload);
+    console.log("_validar:", this._validar(payload));
     // Validación básica antes de ir al servidor
     if (!this._validar(payload)) return;
 
