@@ -1,7 +1,7 @@
 // modules/tecnicos/index.js
 import TecnicosController from "./controller/tecnicos.controller.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+export function initTecnicos() {
   const ctrl = new TecnicosController("#formGeneral", "#generalContainer");
   ctrl.init();
-});
+}
