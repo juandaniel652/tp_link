@@ -16,18 +16,21 @@ export default class HorariosView {
     btnAdd.addEventListener("click", () => this.agregarFila());
   }
 
-  // ── API pública ─────────────────────────────────────────────────────────────
+  // ── API pública ──────────────────────────────────────────────────────────────
 
   agregarFila(data = {}) {
     const row = document.createElement("div");
-    row.classList.add("horario-row");
+    row.classList.add("dia-row");
 
     row.innerHTML = `
       <select class="dia">
         ${DIAS.map(d => `<option value="${d.value}">${d.label}</option>`).join("")}
       </select>
-      <input type="time" class="inicio" />
-      <input type="time" class="fin"    />
+      <div class="horarios">
+        <input type="time" class="inicio" />
+        <span>→</span>
+        <input type="time" class="fin" />
+      </div>
       <button type="button" class="btn-delete" title="Eliminar horario">🗑️</button>
       <span class="horario-error"></span>
     `;
@@ -41,32 +44,29 @@ export default class HorariosView {
     if (data.hora_fin)
       row.querySelector(".fin").value = data.hora_fin.slice(0, 5);
 
-    // Limpiar error al corregir
     row.querySelector(".inicio").addEventListener("change", () => this._limpiarErrorFila(row));
     row.querySelector(".fin").addEventListener("change",    () => this._limpiarErrorFila(row));
-
     row.querySelector(".btn-delete").onclick = () => row.remove();
 
     this.container.appendChild(row);
   }
 
   /**
-   * Valida todas las filas y retorna el array de horarios si son válidos,
-   * o null si hay algún error (marcando los errores inline).
+   * Valida todas las filas.
+   * - Filas completamente vacías: se eliminan silenciosamente.
+   * - Filas incompletas o con fin <= inicio: se marcan con error y retorna null.
+   * - Todo válido: retorna el array de horarios listos para la API.
    */
   recopilarYValidar() {
-    const rows = Array.from(this.container.querySelectorAll(".horario-row"));
+    const rows = Array.from(this.container.querySelectorAll(".dia-row"));
     let valido = true;
-
     const horarios = [];
 
     rows.forEach(row => {
       const inicio = row.querySelector(".inicio").value;
       const fin    = row.querySelector(".fin").value;
-      const error  = row.querySelector(".horario-error");
 
       if (!inicio && !fin) {
-        // Fila completamente vacía → la ignoramos pero no bloqueamos
         row.remove();
         return;
       }
@@ -84,7 +84,7 @@ export default class HorariosView {
       }
 
       if (fin <= inicio) {
-        this._mostrarErrorFila(row, "La hora de fin debe ser mayor que la de inicio.");
+        this._mostrarErrorFila(row, "La hora de fin debe ser posterior a la de inicio.");
         valido = false;
         return;
       }
@@ -110,17 +110,17 @@ export default class HorariosView {
     horarios.forEach(h => this.agregarFila(h));
   }
 
-  // ── Helpers privados ─────────────────────────────────────────────────────────
+  // ── Helpers ──────────────────────────────────────────────────────────────────
 
   _mostrarErrorFila(row, mensaje) {
     const span = row.querySelector(".horario-error");
     if (span) span.textContent = mensaje;
-    row.classList.add("horario-row--error");
+    row.classList.add("dia-row--error");
   }
 
   _limpiarErrorFila(row) {
     const span = row.querySelector(".horario-error");
     if (span) span.textContent = "";
-    row.classList.remove("horario-row--error");
+    row.classList.remove("dia-row--error");
   }
 }
