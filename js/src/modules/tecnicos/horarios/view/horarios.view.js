@@ -6,37 +6,33 @@ const DIAS = [
   { value: 3, label: "Mié", full: "Miércoles" },
   { value: 4, label: "Jue", full: "Jueves"    },
   { value: 5, label: "Vie", full: "Viernes"   },
-  { value: 6, label: "Sáb", full: "Sábado"    },
-  { value: 0, label: "Dom", full: "Domingo"   }
+  { value: 6, label: "Sáb", full: "Sábado"    }
 ];
 
 export default class HorariosView {
 
   constructor(container, btnAdd) {
-    // btnAdd ya no se usa — el nuevo UI no necesita "agregar fila"
-    // lo ocultamos para no romper el HTML existente
     btnAdd.style.display = "none";
-
     this.container = container;
     this._render();
   }
 
-  // ── Render inicial ───────────────────────────────────────────────────────────
-
   _render() {
     this.container.innerHTML = `
       <div class="hs-wrap">
-
-        <!-- Chips de días -->
-        <div class="hs-chips" role="group" aria-label="Seleccionar días">
-          ${DIAS.map(d => `
-            <button type="button" class="hs-chip" data-dia="${d.value}" aria-pressed="false">
-              ${d.label}
-            </button>
-          `).join("")}
+        <div class="hs-chips-row">
+          <div class="hs-chips" role="group" aria-label="Seleccionar días">
+            ${DIAS.map(d => `
+              <button type="button" class="hs-chip" data-dia="${d.value}" aria-pressed="false">
+                ${d.label}
+              </button>
+            `).join("")}
+          </div>
+          <button type="button" class="hs-select-all" id="hs-select-all">
+            Seleccionar todos
+          </button>
         </div>
 
-        <!-- Panel de rango global -->
         <div class="hs-global">
           <span class="hs-global-label">Rango global</span>
           <div class="hs-global-inputs">
@@ -49,40 +45,35 @@ export default class HorariosView {
           </div>
         </div>
 
-        <!-- Filas por día (se generan dinámicamente) -->
         <div class="hs-rows" id="hs-rows"></div>
-
-        <!-- Error general -->
         <p class="field-error" id="hs-error"></p>
-
       </div>
     `;
 
-    this._rows     = this.container.querySelector("#hs-rows");
-    this._error    = this.container.querySelector("#hs-error");
-    this._chips    = this.container.querySelectorAll(".hs-chip");
-    this._gInicio  = this.container.querySelector("#hs-global-inicio");
-    this._gFin     = this.container.querySelector("#hs-global-fin");
-    this._applyBtn = this.container.querySelector("#hs-apply");
+    this._rows         = this.container.querySelector("#hs-rows");
+    this._error        = this.container.querySelector("#hs-error");
+    this._chips        = this.container.querySelectorAll(".hs-chip");
+    this._gInicio      = this.container.querySelector("#hs-global-inicio");
+    this._gFin         = this.container.querySelector("#hs-global-fin");
+    this._applyBtn     = this.container.querySelector("#hs-apply");
+    this._selectAllBtn = this.container.querySelector("#hs-select-all");
 
-    // Estado: dia_semana → { inicio, fin }
-    this._selected = new Map();
+    this._selected    = new Map();
+    this._allSelected = false;
 
     this._bindChips();
-    this._applyBtn.addEventListener("click", () => this._aplicarGlobal());
+    this._applyBtn.addEventListener("click",     () => this._aplicarGlobal());
+    this._selectAllBtn.addEventListener("click", () => this._toggleSelectAll());
   }
-
-  // ── Chips ────────────────────────────────────────────────────────────────────
 
   _bindChips() {
     this._chips.forEach(chip => {
       chip.addEventListener("click", () => {
-        const dia = Number(chip.dataset.dia);
+        const dia    = Number(chip.dataset.dia);
         const active = chip.classList.toggle("hs-chip--active");
         chip.setAttribute("aria-pressed", active);
 
         if (active) {
-          // Agregar con rango global como default
           this._selected.set(dia, {
             inicio: this._gInicio.value || "09:00",
             fin:    this._gFin.value    || "17:00"
@@ -91,40 +82,66 @@ export default class HorariosView {
           this._selected.delete(dia);
         }
 
+        this._syncSelectAllState();
         this._renderRows();
       });
     });
   }
 
-  // ── Aplicar rango global ─────────────────────────────────────────────────────
+  _toggleSelectAll() {
+    if (this._allSelected) {
+      this._selected.clear();
+      this._chips.forEach(c => {
+        c.classList.remove("hs-chip--active");
+        c.setAttribute("aria-pressed", "false");
+      });
+      this._allSelected = false;
+      this._selectAllBtn.textContent = "Seleccionar todos";
+    } else {
+      DIAS.forEach(d => {
+        if (!this._selected.has(d.value)) {
+          this._selected.set(d.value, {
+            inicio: this._gInicio.value || "09:00",
+            fin:    this._gFin.value    || "17:00"
+          });
+        }
+        const chip = this.container.querySelector(`.hs-chip[data-dia="${d.value}"]`);
+        if (chip) {
+          chip.classList.add("hs-chip--active");
+          chip.setAttribute("aria-pressed", "true");
+        }
+      });
+      this._allSelected = true;
+      this._selectAllBtn.textContent = "Deseleccionar todos";
+    }
+    this._renderRows();
+  }
+
+  _syncSelectAllState() {
+    this._allSelected = this._selected.size === DIAS.length;
+    this._selectAllBtn.textContent = this._allSelected
+      ? "Deseleccionar todos"
+      : "Seleccionar todos";
+  }
 
   _aplicarGlobal() {
     const inicio = this._gInicio.value;
     const fin    = this._gFin.value;
-
     if (!inicio || !fin) return;
 
     this._selected.forEach((_, dia) => {
       this._selected.set(dia, { inicio, fin });
     });
-
     this._renderRows();
   }
 
-  // ── Render filas de días seleccionados ───────────────────────────────────────
-
   _renderRows() {
     this._rows.innerHTML = "";
-
     if (this._selected.size === 0) return;
 
-    // Ordenar por valor de día
+    const order    = [1, 2, 3, 4, 5, 6];
     const ordenados = [...this._selected.entries()]
-      .sort(([a], [b]) => {
-        // domingo al final
-        const order = [1, 2, 3, 4, 5, 6, 0];
-        return order.indexOf(a) - order.indexOf(b);
-      });
+      .sort(([a], [b]) => order.indexOf(a) - order.indexOf(b));
 
     ordenados.forEach(([dia, rango]) => {
       const info = DIAS.find(d => d.value === dia);
@@ -142,30 +159,19 @@ export default class HorariosView {
         <span class="hs-row-error"></span>
       `;
 
-      // Sincronizar cambios en los inputs con el estado interno
       const inputInicio = row.querySelector(".hs-inicio");
       const inputFin    = row.querySelector(".hs-fin");
-
       const sync = () => {
-        this._selected.set(dia, {
-          inicio: inputInicio.value,
-          fin:    inputFin.value
-        });
+        this._selected.set(dia, { inicio: inputInicio.value, fin: inputFin.value });
         this._limpiarErrorFila(row);
       };
 
       inputInicio.addEventListener("change", sync);
       inputFin.addEventListener("change",    sync);
-
       this._rows.appendChild(row);
     });
   }
 
-  // ── API pública ──────────────────────────────────────────────────────────────
-
-  /**
-   * Valida y retorna los horarios listos para la API, o null si hay errores.
-   */
   recopilarYValidar() {
     if (this._selected.size === 0) return [];
 
@@ -177,25 +183,16 @@ export default class HorariosView {
       const inicio = row.querySelector(".hs-inicio").value;
       const fin    = row.querySelector(".hs-fin").value;
 
-      if (!inicio) {
-        this._mostrarErrorFila(row, "Falta hora de inicio.");
-        valido = false; return;
-      }
-      if (!fin) {
-        this._mostrarErrorFila(row, "Falta hora de fin.");
-        valido = false; return;
-      }
-      if (fin <= inicio) {
-        this._mostrarErrorFila(row, "El fin debe ser posterior al inicio.");
-        valido = false; return;
-      }
+      if (!inicio) { this._mostrarErrorFila(row, "Falta hora de inicio."); valido = false; return; }
+      if (!fin)    { this._mostrarErrorFila(row, "Falta hora de fin.");    valido = false; return; }
+      if (fin <= inicio) { this._mostrarErrorFila(row, "El fin debe ser posterior al inicio."); valido = false; return; }
 
       this._limpiarErrorFila(row);
       horarios.push({ dia_semana: dia, hora_inicio: inicio + ":00", hora_fin: fin + ":00" });
     });
 
     if (!valido) {
-      this._error.textContent = "Corregí los errores en los horarios.";
+      this._error.textContent   = "Corregí los errores en los horarios.";
       this._error.style.display = "flex";
       return null;
     }
@@ -206,39 +203,29 @@ export default class HorariosView {
 
   limpiar() {
     this._selected.clear();
+    this._allSelected = false;
     this._chips.forEach(c => {
       c.classList.remove("hs-chip--active");
       c.setAttribute("aria-pressed", "false");
     });
-    this._rows.innerHTML = "";
-    this._error.style.display = "none";
+    this._rows.innerHTML           = "";
+    this._error.style.display      = "none";
+    this._selectAllBtn.textContent = "Seleccionar todos";
   }
 
-  /**
-   * Carga horarios existentes (formato API: { dia_semana, hora_inicio, hora_fin }).
-   */
   cargar(horarios = []) {
     this.limpiar();
-
     horarios.forEach(h => {
       const dia    = h.dia_semana;
       const inicio = (h.hora_inicio ?? "").slice(0, 5);
       const fin    = (h.hora_fin    ?? "").slice(0, 5);
-
       this._selected.set(dia, { inicio, fin });
-
-      // Activar chip correspondiente
       const chip = this.container.querySelector(`.hs-chip[data-dia="${dia}"]`);
-      if (chip) {
-        chip.classList.add("hs-chip--active");
-        chip.setAttribute("aria-pressed", "true");
-      }
+      if (chip) { chip.classList.add("hs-chip--active"); chip.setAttribute("aria-pressed", "true"); }
     });
-
+    this._syncSelectAllState();
     this._renderRows();
   }
-
-  // ── Helpers ──────────────────────────────────────────────────────────────────
 
   _mostrarErrorFila(row, msg) {
     const span = row.querySelector(".hs-row-error");

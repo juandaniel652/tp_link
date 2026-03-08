@@ -335,3 +335,41 @@
     width: auto;
   }
 }
+
+/* ── Fila chips + botón seleccionar todos ── */
+.hs-chips-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hs-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex: 1;
+}
+
+.hs-select-all {
+  padding: 8px 16px;
+  background: transparent;
+  border: 2px solid #1E3C72;
+  border-radius: 999px;
+  color: #1E3C72;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  letter-spacing: 0.2px;
+  flex-shrink: 0;
+}
+
+.hs-select-all:hover {
+  background: #1E3C72;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(30, 60, 114, 0.25);
+}
