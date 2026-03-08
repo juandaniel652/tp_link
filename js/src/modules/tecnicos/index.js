@@ -1,15 +1,7 @@
-// js/src/modules/tecnicos/index.js
-import { initTecnicosController } from "./controller/tecnicos.controller.js";
-import { TecnicosView } from "./view/tecnicos.view.js";
-import { tokenStorage } from "@/core/storage/tokenStorage.js";
+// modules/tecnicos/index.js
+import TecnicosController from "./controller/tecnicos.controller.js";
 
-export function initTecnicos() {
-  const view = new TecnicosView();
-
-  const controller = initTecnicosController({
-    view,
-    tokenProvider: tokenStorage
-  });
-
-  controller.init();
-}
+document.addEventListener("DOMContentLoaded", () => {
+  const ctrl = new TecnicosController("#formGeneral", "#generalContainer");
+  ctrl.init();
+});

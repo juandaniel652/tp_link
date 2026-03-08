@@ -1,89 +1,91 @@
-// js/src/modules/tecnicos/controller/tecnicos.controller.js
-import {
-  obtenerTecnicos,
-  crearTecnico,
-  updateTecnico,
-  eliminarTecnico
-} from "../service/tecnicos.api.js";
+// modules/tecnicos/controller/tecnicos.controller.js
+import TecnicosService from "../service/tecnicos.service.js";
+import TecnicosView    from "../view/tecnicos.view.js";
+import Tecnico         from "../model/tecnico.model.js";
 
-export function initTecnicosController({ view, tokenProvider }) {
-  let tecnicos = [];
-  let editando = null;
+export default class TecnicosController {
 
-  // Inicialización
-  async function init() {
-    bindEvents();
-    await cargar();
+  constructor(formSelector, tableBodySelector) {
+    this.service = TecnicosService;
+    this.view    = new TecnicosView(formSelector, tableBodySelector);
+
+    // Conectar callbacks de la vista con la lógica del controlador
+    this.view.onGuardar  = payload => this._guardar(payload);
+    this.view.onEliminar = id      => this._eliminar(id);
+    this.view.onCancelar = ()      => {};   // ya manejado en la vista
   }
 
-  // Eventos
-  function bindEvents() {
-    view.onSubmit(handleGuardar);
-    view.onEdit(handleEditar);
-    view.onDelete(handleEliminar);
+  // ── Ciclo de vida ────────────────────────────────────────────────────────────
+
+  async init() {
+    await this._cargarTabla();
   }
 
-  // Cargar lista de técnicos
-  async function cargar() {
+  // ── Handlers privados ────────────────────────────────────────────────────────
+
+  async _guardar(payload) {
+    // Validación básica antes de ir al servidor
+    if (!this._validar(payload)) return;
+
     try {
-      const token = tokenProvider.getToken();
-      tecnicos = await obtenerTecnicos(token);
-      view.render(tecnicos);
-    } catch (error) {
-      view.showError(error.message);
-    }
-  }
-
-  // Guardar o actualizar técnico
-  async function handleGuardar(data) {
-    try {
-      const token = tokenProvider.getToken();
-
-      const tecnico = {
-        ...data,
-        id: editando?.id ?? null,
-        activo: true,
-        horarios: data.horarios || []
-      };
-
-      let tecnicoCreado;
-
-      if (!editando) {
-        tecnicoCreado = await crearTecnico(tecnico, token);
+      if (payload.id !== undefined) {
+        await this.service.actualizar(payload.id, payload);
       } else {
-        tecnicoCreado = await updateTecnico(tecnico, token);
-        editando = null;
+        await this.service.crear(payload);
       }
 
-      view.resetForm();
-      await cargar();
+      this.view.resetFormulario();
+      await this._cargarTabla();
 
-    } catch (error) {
-      view.showError(error.message);
+    } catch (err) {
+      console.error("Error al guardar técnico:", err);
+      alert("Ocurrió un error al guardar. Revisá la consola.");
     }
   }
 
-  // Editar técnico
-  function handleEditar(id) {
-    const tecnico = tecnicos.find(t => t.id === id);
-    if (!tecnico) return;
-
-    editando = tecnico;
-    view.fillForm(tecnico);
-  }
-
-  // Eliminar técnico
-  async function handleEliminar(id) {
+  async _eliminar(id) {
     if (!confirm("¿Eliminar técnico?")) return;
 
     try {
-      const token = tokenProvider.getToken();
-      await eliminarTecnico(id, token);
-      await cargar();
-    } catch (error) {
-      view.showError(error.message);
+      await this.service.eliminar(id);
+      await this._cargarTabla();
+    } catch (err) {
+      console.error("Error al eliminar técnico:", err);
+      alert("Ocurrió un error al eliminar.");
     }
   }
 
-  return { init };
+  // ── Helpers ──────────────────────────────────────────────────────────────────
+
+  async _cargarTabla() {
+    try {
+      const tecnicos = await this.service.obtenerTodos();
+      this.view.renderTabla(tecnicos);
+    } catch (err) {
+      console.error("Error al cargar técnicos:", err);
+    }
+  }
+
+  _validar(payload) {
+    this.view.limpiarErrores();
+
+    const campos = ["nombre", "apellido", "telefono", "email"];
+    let valido = true;
+
+    campos.forEach(campo => {
+      const error = Tecnico.validarCampo(campo, payload[campo]);
+      if (error) {
+        this.view.mostrarError(campo, error);
+        valido = false;
+      }
+    });
+
+    const errorDuracion = Tecnico.validarCampo("duracionTurnoMinutos", payload.duracion_turno_min);
+    if (errorDuracion) {
+      this.view.mostrarError("duracionTurnoMinutos", errorDuracion);
+      valido = false;
+    }
+
+    return valido;
+  }
 }

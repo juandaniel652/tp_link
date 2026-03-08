@@ -1,54 +1,32 @@
-// js/src/modules/tecnicos/mappers/tecnicos.mapper.js
+// modules/tecnicos/mappers/tecnicos.mapper.js
+import Tecnico from "../model/tecnico.model.js";
 
-// =========================
-// ADAPTAR DE API A MODELO
-// =========================
-export function adaptTecnicoFromApi(data) {
-
-  const horarios = Array.isArray(data.horarios)
-    ? data.horarios
-        .filter(h => h.dia_semana !== 7)
-        .map(h => ({
-          diaSemana: h.dia_semana,
-          horaInicio: (h.hora_inicio ?? "").slice(0,5),
-          horaFin: (h.hora_fin ?? "").slice(0,5)
-        }))
-    : [];
-
-  return {
-    id: data.id,
-    nombre: data.nombre ?? "",
-    apellido: data.apellido ?? "",
-    telefono: data.telefono ?? "",
-    duracionTurnoMinutos: Number(data.duracion_turno_min ?? 0),
-    email: data.email ?? "",
-    imagenUrl: data.imagen_url ?? "",
-    horarios
-  };
+/**
+ * Convierte la respuesta cruda de la API en una instancia de Tecnico.
+ */
+export function fromApi(raw) {
+  return new Tecnico(raw);
 }
 
-// =========================
-// ADAPTAR DE MODELO A API
-// =========================
-export function adaptTecnicoToApi(tecnico) {
-  return {
-    nombre: tecnico.nombre,
-    apellido: tecnico.apellido,
-    telefono: tecnico.telefono || null,
-    duracion_turno_min: Number(tecnico.duracionTurnoMinutos),
-    email: tecnico.email || null,
-    activo: true,
-    horarios: tecnico.horarios.map(adaptDisponibilidadToApi)
-  };
-}
+/**
+ * Convierte los datos del formulario en el payload que espera la API (FormData).
+ * Se usa tanto para crear como para actualizar.
+ */
+export function toFormData(data) {
+  const fd = new FormData();
 
-// =========================
-// HORARIOS
-// =========================
-export function adaptDisponibilidadToApi(h) {
-  return {
-    dia_semana: h.dia_semana,
-    hora_inicio: h.inicio?.length === 5 ? h.inicio + ":00" : h.inicio,
-    hora_fin: h.fin?.length === 5 ? h.fin + ":00" : h.fin
-  };
+  fd.append("nombre",           data.nombre);
+  fd.append("apellido",         data.apellido);
+  fd.append("duracion_turno_min", Number(data.duracion_turno_min));
+
+  if (data.telefono)  fd.append("telefono",  data.telefono);
+  if (data.email)     fd.append("email",     data.email);
+
+  // Imagen: sólo adjuntar si es un File nuevo
+  if (data.imagen instanceof File) fd.append("imagen", data.imagen);
+
+  if (Array.isArray(data.horarios) && data.horarios.length)
+    fd.append("horarios", JSON.stringify(data.horarios));
+
+  return fd;
 }

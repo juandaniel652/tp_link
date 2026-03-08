@@ -1,236 +1,190 @@
-// js/src/modules/tecnicos/view/tecnicos.view.js
-import { BaseCrudView } from "../../../core/view/BaseCrudView.js";
-import { TecnicoService } from "../service/tecnicos.service.js";
-import { Tecnico } from "../model/tecnico.model.js";
+// modules/tecnicos/view/tecnicos.view.js
+import HorariosView from "../horarios/view/horarios.view.js";
 
-export class TecnicosView extends BaseCrudView {
+const DIAS_LABEL = {
+  1: "Lunes", 2: "Martes", 3: "Miércoles",
+  4: "Jueves", 5: "Viernes", 6: "Sábado", 7: "Domingo"
+};
 
-  constructor() {
-    super({
-      tableSelector: "#generalContainer",
-      formSelector: "#formGeneral"
-    });
+/**
+ * Vista CRUD de técnicos.
+ * El controlador se encarga de la lógica; la vista sólo maneja el DOM.
+ *
+ * Eventos emitidos a través de callbacks inyectados por el controlador:
+ *   onGuardar(payload)   → crear / actualizar
+ *   onEliminar(id)
+ *   onCancelar()
+ */
+export default class TecnicosView {
 
+  constructor(formSelector, tableBodySelector) {
+    this.form       = document.querySelector(formSelector);
+    this.contenedor = document.querySelector(tableBodySelector);
+
+    if (!this.form || !this.contenedor)
+      throw new Error("TecnicosView: no se encontró el formulario o el contenedor.");
+
+    // Inputs del formulario
     this.inputs = {
-      nombre: document.querySelector("#nombre"),
-      apellido: document.querySelector("#apellido"),
-      telefono: document.querySelector("#telefono"),
-      duracion: document.querySelector("#duracion"),
-      email: document.querySelector("#email"),
-      imagen: document.querySelector("#imagen")
+      nombre:   this.form.querySelector("#nombre"),
+      apellido: this.form.querySelector("#apellido"),
+      telefono: this.form.querySelector("#telefono"),
+      duracion: this.form.querySelector("#duracionTurno"),
+      email:    this.form.querySelector("#duracionEmail"),
+      imagen:   this.form.querySelector("#imagen")
     };
 
-    this.previewImagen = document.querySelector("#previewImagen");
-    this.horariosContainer = document.querySelector("#horariosContainer");
-    this.btnSubmit = document.querySelector("#btnSubmit");
-    this.btnCancel = document.querySelector("#btnCancel");
+    this.previewImagen = document.getElementById("previewImagen");
+    this.btnSubmit     = this.form.querySelector("#btnSubmit");
+    this.btnCancel     = this.form.querySelector("#btnCancel");
 
-    this.indiceEdicion = null;
-    this.imagenActual = null;
+    // Sub-módulo de horarios
+    this.horariosView = new HorariosView(
+      this.form.querySelector("#listaHorarios"),
+      this.form.querySelector("#addHorario")
+    );
 
-    this._configurarEventos();
+    // Estado interno
+    this._editandoId    = null;
+    this._imagenActual  = null;   // URL de imagen existente al editar
+
+    // Callbacks (se asignan desde el controlador)
+    this.onGuardar  = null;
+    this.onEliminar = null;
+    this.onCancelar = null;
+
+    this._bindEvents();
   }
 
-  _configurarEventos() {
+  // ── Binding ─────────────────────────────────────────────────────────────────
+
+  _bindEvents() {
+    this.form.addEventListener("submit", e => {
+      e.preventDefault();
+      this._emitGuardar();
+    });
+
+    this.btnCancel.addEventListener("click", () => {
+      this.onCancelar?.();
+      this.resetFormulario();
+    });
 
     this.inputs.imagen.addEventListener("change", () => {
       const file = this.inputs.imagen.files[0];
-
       if (file) {
-        const reader = new FileReader();
-        reader.onload = e => {
-          this.previewImagen.src = e.target.result;
-          this.previewImagen.style.display = "block";
-        };
-        reader.readAsDataURL(file);
+        this.previewImagen.src = URL.createObjectURL(file);
+        this.previewImagen.style.display = "block";
       } else {
         this.previewImagen.style.display = "none";
       }
     });
   }
 
-  _agregarFilaHorario(data = {}) {
-    const row = document.createElement("div");
-    row.classList.add("horario-row");
+  // ── Emit helpers ────────────────────────────────────────────────────────────
 
-    row.innerHTML = `
-      <select class="dia">
-        <option value="1">Lunes</option>
-        <option value="2">Martes</option>
-        <option value="3">Miércoles</option>
-        <option value="4">Jueves</option>
-        <option value="5">Viernes</option>
-        <option value="6">Sábado</option>
-      </select>
-      <input type="time" class="inicio">
-      <input type="time" class="fin">
-      <button type="button" class="remove">🗑️</button>
-    `;
+  _emitGuardar() {
+    const nuevaImagen = this.inputs.imagen.files[0];
 
-    const diaSemana = data.dia_semana ?? data.diaSemana;
-    const horaInicio = data.inicio ?? data.hora_inicio;
-    const horaFin = data.fin ?? data.hora_fin;
+    const payload = {
+      nombre:           this.inputs.nombre.value.trim(),
+      apellido:         this.inputs.apellido.value.trim(),
+      telefono:         this.inputs.telefono.value.trim(),
+      duracion_turno_min: Number(this.inputs.duracion.value),
+      email:            this.inputs.email.value.trim(),
+      imagen:           nuevaImagen || this._imagenActual,
+      horarios:         this.horariosView.recopilar(),
+      activo:           true,
+      ...(this._editandoId !== null && { id: this._editandoId })
+    };
 
-    if (diaSemana) row.querySelector(".dia").value = String(diaSemana);
-    if (horaInicio) row.querySelector(".inicio").value = this._normalizarHora(horaInicio);
-    if (horaFin) row.querySelector(".fin").value = this._normalizarHora(horaFin);
-
-    row.querySelector(".remove").onclick = () => row.remove();
-    this.horariosContainer.appendChild(row);
+    this.onGuardar?.(payload);
   }
 
-  _recopilarHorarios() {
-    const rows = this.horariosContainer.querySelectorAll(".horario-row");
+  // ── API pública (llamada desde el controlador) ───────────────────────────────
 
-    return Array.from(rows)
-      .filter(row => row.querySelector(".inicio").value && row.querySelector(".fin").value)
-      .map(row => ({
-        dia_semana: Number(row.querySelector(".dia").value),
-        inicio: this._normalizarHoraConSegundos(row.querySelector(".inicio").value),
-        fin: this._normalizarHoraConSegundos(row.querySelector(".fin").value)
-      }));
-  }
-
-  _normalizarHora(hora) {
-    return String(hora).slice(0, 5);
-  }
-
-  _normalizarHoraConSegundos(hora) {
-    if (!hora) return "";
-    return hora.length === 5 ? `${hora}:00` : hora;
-  }
-
-  _obtenerDuracionTurno(tecnico) {
-    const duracion = tecnico.duracionTurnoMinutos ?? tecnico.duracion_turno_min;
-    return Number(duracion || 0);
-  }
-
-  _obtenerHorarios(tecnico) {
-    return (tecnico.horarios || []).map(h => ({
-      dia_semana: h.dia_semana ?? h.diaSemana,
-      inicio: h.inicio ?? h.hora_inicio,
-      fin: h.fin ?? h.hora_fin
-    }));
-  }
-
-  async renderTabla() {
+  /** Renderiza la lista de técnicos en la tabla. */
+  renderTabla(tecnicos = []) {
     this.contenedor.innerHTML = "";
-    const tecnicos = await TecnicoService.obtenerTodos();
 
     if (!tecnicos.length) {
-      this.contenedor.innerHTML = `<tr><td colspan="7">No hay registros</td></tr>`;
+      this.contenedor.innerHTML = `<tr><td colspan="7">No hay registros.</td></tr>`;
       return;
     }
-
-    const diasSemana = {
-      1: "Lunes",
-      2: "Martes",
-      3: "Miércoles",
-      4: "Jueves",
-      5: "Viernes",
-      6: "Sábado"
-    };
 
     tecnicos.forEach(r => {
       const tr = document.createElement("tr");
 
-      const horariosTexto = this._obtenerHorarios(r)
-        .map(h => `${diasSemana[h.dia_semana]} ${h.inicio}-${h.fin}`)
+      const horariosTexto = (r.horarios || [])
+        .map(h => `${DIAS_LABEL[h.dia_semana] ?? h.dia_semana} ${h.hora_inicio.slice(0, 5)}-${h.hora_fin.slice(0, 5)}`)
         .join("<br>");
 
-      const duracionTurnoMinutos = this._obtenerDuracionTurno(r);
-
       tr.innerHTML = `
-        <td>${r.imagen_url ? `<img src="${r.imagen_url}" class="foto-tecnico">` : "—"}</td>
+        <td>${r.imagen ? `<img src="${r.imagen}" class="foto-tecnico" />` : "—"}</td>
         <td>${r.nombre}</td>
         <td>${r.apellido}</td>
         <td>${r.telefono || "-"}</td>
-        <td>${duracionTurnoMinutos} min</td>
+        <td>${r.duracionTurnoMinutos ?? r.duracion_turno_min} min</td>
         <td>${horariosTexto || "-"}</td>
         <td>
-          <button type="button" class="btn-edit">✏️</button>
-          <button type="button" class="btn-delete">🗑️</button>
+          <button type="button" class="btn-edit"   data-id="${r.id}">✏️</button>
+          <button type="button" class="btn-delete" data-id="${r.id}">🗑️</button>
         </td>
       `;
 
-      tr.querySelector(".btn-edit").onclick = () => this._editarTecnico(r);
-      tr.querySelector(".btn-delete").onclick = () => this._eliminarTecnico(r.id);
+      tr.querySelector(".btn-edit").onclick   = () => this._prepararEdicion(r);
+      tr.querySelector(".btn-delete").onclick = () => this.onEliminar?.(r.id);
 
       this.contenedor.appendChild(tr);
     });
   }
 
-  _recopilarDatosFormulario() {
-    const nuevaImagen = this.inputs.imagen.files[0];
+  /** Rellena el formulario con los datos del técnico a editar. */
+  _prepararEdicion(tecnico) {
+    this._editandoId   = tecnico.id;
+    this._imagenActual = tecnico.imagen ?? tecnico.imagen_url ?? null;
 
-    return new Tecnico({
-      id: this.indiceEdicion,
-      nombre: this.inputs.nombre.value.trim(),
-      apellido: this.inputs.apellido.value.trim(),
-      telefono: this.inputs.telefono.value.trim(),
-      duracionTurnoMinutos: Math.max(1, Number(this.inputs.duracion.value)),
-      email: this.inputs.email.value.trim(),
-      imagen: nuevaImagen || this.imagenActual,
-      imagenUrl: this.imagenActual,
-      horarios: this._recopilarHorarios(),
-      activo: true
-    });
-  }
-
-  async _guardarTecnico() {
-    const tecnico = this._recopilarDatosFormulario();
-
-    if (this.indiceEdicion !== null) {
-      await TecnicoService.actualizarTecnico(tecnico);
-    } else {
-      await TecnicoService.crearTecnico(tecnico);
-    }
-
-    this.limpiarFormulario();
-    await this.renderTabla();
-  }
-
-  _editarTecnico(tecnico) {
-    this.indiceEdicion = tecnico.id;
-
-    this.inputs.nombre.value = tecnico.nombre;
+    this.inputs.nombre.value   = tecnico.nombre;
     this.inputs.apellido.value = tecnico.apellido;
     this.inputs.telefono.value = tecnico.telefono || "";
-    this.inputs.duracion.value = this._obtenerDuracionTurno(tecnico);
-    this.inputs.email.value = tecnico.email || "";
+    this.inputs.duracion.value = tecnico.duracionTurnoMinutos ?? tecnico.duracion_turno_min;
+    this.inputs.email.value    = tecnico.email || "";
+    this.inputs.imagen.value   = "";
 
-    this.imagenActual = tecnico.imagenUrl || null;
-    this.inputs.imagen.value = "";
-
-    if (tecnico.imagenUrl) {
-      this.previewImagen.src = tecnico.imagenUrl;
+    if (this._imagenActual) {
+      this.previewImagen.src          = this._imagenActual;
       this.previewImagen.style.display = "block";
     } else {
       this.previewImagen.style.display = "none";
     }
 
-    this.horariosContainer.innerHTML = "";
-    this._obtenerHorarios(tecnico).forEach(h => this._agregarFilaHorario(h));
+    this.horariosView.cargar(tecnico.horarios || []);
 
-    this.btnSubmit.textContent = "Actualizar";
-    this.btnCancel.style.display = "inline-block";
+    this.btnSubmit.textContent      = "Actualizar";
+    this.btnCancel.style.display    = "inline-block";
   }
 
-  async _eliminarTecnico(id) {
-    if (!confirm("¿Eliminar técnico?")) return;
-
-    await TecnicoService.eliminarTecnico(id);
-    await this.renderTabla();
-  }
-
-  limpiarFormulario() {
+  /** Limpia el formulario y vuelve al estado inicial. */
+  resetFormulario() {
     this.form.reset();
-    this.horariosContainer.innerHTML = "";
-    this.indiceEdicion = null;
-    this.imagenActual = null;
-    this.previewImagen.src = "";
+    this.horariosView.limpiar();
+
+    this._editandoId   = null;
+    this._imagenActual = null;
+
+    this.previewImagen.src          = "";
     this.previewImagen.style.display = "none";
-    this.btnSubmit.textContent = "Guardar";
+
+    this.btnSubmit.textContent   = "Guardar";
     this.btnCancel.style.display = "none";
+  }
+
+  /** Muestra un error de validación junto al campo correspondiente. */
+  mostrarError(campo, mensaje) {
+    const el = this.form.querySelector(`[data-error="${campo}"]`);
+    if (el) el.textContent = mensaje;
+  }
+
+  limpiarErrores() {
+    this.form.querySelectorAll("[data-error]").forEach(el => (el.textContent = ""));
   }
 }

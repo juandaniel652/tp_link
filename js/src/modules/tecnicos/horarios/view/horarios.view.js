@@ -1,86 +1,81 @@
-// js/src/modules/tecnicos/view/horarios.view.js
+// modules/tecnicos/horarios/view/horarios.view.js
 
-export class HorariosView {
+const DIAS = [
+  { value: 1, label: "Lunes"     },
+  { value: 2, label: "Martes"    },
+  { value: 3, label: "Miércoles" },
+  { value: 4, label: "Jueves"    },
+  { value: 5, label: "Viernes"   },
+  { value: 6, label: "Sábado"    }
+];
 
-  constructor(containerSelector, addBtnSelector) {
-    this.container = document.querySelector(containerSelector);
-    this.btnAdd = document.querySelector(addBtnSelector);
-    this.horarios = [];
-    this.bindEvents();
+/**
+ * Gestiona la sub-sección de horarios dentro del formulario de técnicos.
+ * Recibe el contenedor <div id="listaHorarios"> y el botón "Agregar horario".
+ */
+export default class HorariosView {
+
+  /**
+   * @param {HTMLElement} container  - contenedor donde se añaden las filas
+   * @param {HTMLElement} btnAdd     - botón que dispara _agregarFila
+   */
+  constructor(container, btnAdd) {
+    this.container = container;
+    btnAdd.addEventListener("click", () => this.agregarFila());
   }
 
-  bindEvents() {
-    if (this.btnAdd) {
-      this.btnAdd.addEventListener("click", () => this.addHorario());
-    }
+  // ── API pública ─────────────────────────────────────────────────────────────
 
-    if (this.container) {
-      this.container.addEventListener("click", (e) => {
-        if (e.target.classList.contains("btn-delete-horario")) {
-          const index = Number(e.target.dataset.index);
-          this.horarios.splice(index, 1);
-          this.render();
-        }
-      });
-    }
+  /** Añade una fila vacía o pre-rellena con datos de la API. */
+  agregarFila(data = {}) {
+    const row = document.createElement("div");
+    row.classList.add("horario-row");
+
+    row.innerHTML = `
+      <select class="dia">
+        ${DIAS.map(d => `<option value="${d.value}">${d.label}</option>`).join("")}
+      </select>
+      <input type="time" class="inicio" />
+      <input type="time" class="fin"    />
+      <button type="button" class="btn-delete">🗑️</button>
+    `;
+
+    if (data.dia_semana !== undefined)
+      row.querySelector(".dia").value = data.dia_semana;
+
+    if (data.hora_inicio)
+      row.querySelector(".inicio").value = data.hora_inicio.slice(0, 5);
+
+    if (data.hora_fin)
+      row.querySelector(".fin").value = data.hora_fin.slice(0, 5);
+
+    row.querySelector(".btn-delete").onclick = () => row.remove();
+
+    this.container.appendChild(row);
   }
 
-  addHorario(data = {}) {
-    this.horarios.push({
-      diaSemana: data.diaSemana ?? 1, // Lunes por defecto
-      horaInicio: data.horaInicio ?? "09:00",
-      horaFin: data.horaFin ?? "17:00"
-    });
-    this.render();
-  }
-
-  setHorarios(horarios) {
-    // Solo lunes a sábado (1-6)
-    this.horarios = (horarios || [])
-      .filter(h => h.diaSemana >= 1 && h.diaSemana <= 6)
-      .map(h => ({
-        diaSemana: h.diaSemana ?? 1,
-        horaInicio: h.horaInicio?.slice(0,5) || "09:00",
-        horaFin: h.horaFin?.slice(0,5) || "17:00"
-      }));
-    this.render();
-  }
-
-  reset() {
-    this.horarios = [];
-    this.render();
-  }
-
-  getHorarios() {
-    const rows = this.container.querySelectorAll(".horario-row");
-    return Array.from(rows)
+  /** Retorna el array de horarios listos para enviar a la API. */
+  recopilar() {
+    return Array.from(this.container.querySelectorAll(".horario-row"))
+      .filter(row =>
+        row.querySelector(".inicio").value &&
+        row.querySelector(".fin").value
+      )
       .map(row => ({
-        diaSemana: Number(row.querySelector(".dia").value) + 1, // Ajuste: 0->Lunes=1
-        horaInicio: row.querySelector(".inicio").value,
-        horaFin: row.querySelector(".fin").value
-      }))
-      .filter(h => h.horaInicio && h.horaFin)
-      .filter(h => h.diaSemana >= 1 && h.diaSemana <= 6); // por si acaso
+        dia_semana: Number(row.querySelector(".dia").value),
+        hora_inicio: row.querySelector(".inicio").value + ":00",
+        hora_fin:    row.querySelector(".fin").value   + ":00"
+      }));
   }
 
-  render() {
-    if (!this.container) return;
-    
-    const dias = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
-    
-    this.container.innerHTML = this.horarios.map((h,i) => `
-      <div class="horario-row">
-        <select class="dia">
-          ${dias.map((d,idx) => `
-            <option value="${idx+1}" ${idx+1 === h.diaSemana ? "selected" : ""}>
-              ${d}
-            </option>
-          `).join("")}
-        </select>
-        <input type="time" class="inicio" value="${h.horaInicio}">
-        <input type="time" class="fin" value="${h.horaFin}">
-        <button type="button" class="btn-delete-horario" data-index="${i}">❌</button>
-      </div>
-    `).join("");
+  /** Limpia todas las filas del contenedor. */
+  limpiar() {
+    this.container.innerHTML = "";
+  }
+
+  /** Rellena las filas a partir de un array de horarios de la API. */
+  cargar(horarios = []) {
+    this.limpiar();
+    horarios.forEach(h => this.agregarFila(h));
   }
 }
