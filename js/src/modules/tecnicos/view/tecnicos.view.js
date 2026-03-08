@@ -104,6 +104,9 @@ export default class TecnicosView {
 
   /** Renderiza la lista de técnicos en la tabla. */
   renderTabla(tecnicos = []) {
+    console.log("TECNICO OBJETO:", tecnicos[0]);  // <-- agregar acá
+    console.log("duracion:", tecnicos[0]?.duracionTurnoMinutos);
+    console.log("_horariosRaw:", tecnicos[0]?._horariosRaw);
     this.contenedor.innerHTML = "";
 
     if (!tecnicos.length) {
