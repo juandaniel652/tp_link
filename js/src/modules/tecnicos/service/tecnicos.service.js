@@ -6,6 +6,7 @@ export default class TecnicosService {
 
   static async obtenerTodos() {
     const data = await tecnicosApi.obtenerTodos();
+    console.log("RAW API:", JSON.stringify(data[0], null, 2));  // <-- agrega
     return data.map(fromApi);
   }
 
