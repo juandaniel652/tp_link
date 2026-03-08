@@ -26,12 +26,17 @@ export default class HorariosView {
       <select class="dia">
         ${DIAS.map(d => `<option value="${d.value}">${d.label}</option>`).join("")}
       </select>
+
       <div class="horarios">
+        <span class="hora-label">Desde</span>
         <input type="time" class="inicio" />
-        <span>→</span>
+        <span class="hora-sep">→</span>
+        <span class="hora-label">Hasta</span>
         <input type="time" class="fin" />
       </div>
-      <button type="button" class="btn-delete" title="Eliminar horario">🗑️</button>
+
+      <button type="button" class="btn-delete-horario" title="Eliminar horario">✕</button>
+
       <span class="horario-error"></span>
     `;
 
@@ -46,7 +51,7 @@ export default class HorariosView {
 
     row.querySelector(".inicio").addEventListener("change", () => this._limpiarErrorFila(row));
     row.querySelector(".fin").addEventListener("change",    () => this._limpiarErrorFila(row));
-    row.querySelector(".btn-delete").onclick = () => row.remove();
+    row.querySelector(".btn-delete-horario").onclick = () => row.remove();
 
     this.container.appendChild(row);
   }
@@ -54,8 +59,8 @@ export default class HorariosView {
   /**
    * Valida todas las filas.
    * - Filas completamente vacías: se eliminan silenciosamente.
-   * - Filas incompletas o con fin <= inicio: se marcan con error y retorna null.
-   * - Todo válido: retorna el array de horarios listos para la API.
+   * - Filas incompletas o con fin <= inicio: se marcan con error → retorna null.
+   * - Todo válido: retorna el array listo para la API.
    */
   recopilarYValidar() {
     const rows = Array.from(this.container.querySelectorAll(".dia-row"));
