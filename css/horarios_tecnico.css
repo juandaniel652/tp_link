@@ -206,3 +206,32 @@
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0,0,0,0.25);
 }
+
+/* Agregar a horarios_tecnico.css */
+
+.horario-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.horario-error {
+  color: #e53935;
+  font-size: 0.78rem;
+  width: 100%;
+  margin-top: 2px;
+}
+
+.horario-row--error .inicio,
+.horario-row--error .fin {
+  border-color: #e53935;
+  outline: 1px solid #e53935;
+}
+
+.field-error {
+  color: #e53935;
+  font-size: 0.82rem;
+  margin-top: 4px;
+}

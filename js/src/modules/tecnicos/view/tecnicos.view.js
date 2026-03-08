@@ -6,15 +6,6 @@ const DIAS_LABEL = {
   4: "Jueves", 5: "Viernes", 6: "Sábado", 7: "Domingo"
 };
 
-/**
- * Vista CRUD de técnicos.
- * El controlador se encarga de la lógica; la vista sólo maneja el DOM.
- *
- * Eventos emitidos a través de callbacks inyectados por el controlador:
- *   onGuardar(payload)   → crear / actualizar
- *   onEliminar(id)
- *   onCancelar()
- */
 export default class TecnicosView {
 
   constructor(formSelector, tableBodySelector) {
@@ -24,7 +15,6 @@ export default class TecnicosView {
     if (!this.form || !this.contenedor)
       throw new Error("TecnicosView: no se encontró el formulario o el contenedor.");
 
-    // Inputs del formulario
     this.inputs = {
       nombre:   this.form.querySelector("#nombre"),
       apellido: this.form.querySelector("#apellido"),
@@ -38,17 +28,20 @@ export default class TecnicosView {
     this.btnSubmit     = this.form.querySelector("#btnSubmit");
     this.btnCancel     = this.form.querySelector("#btnCancel");
 
-    // Sub-módulo de horarios
+    // Mensaje de error general para horarios
+    this._horariosError = document.createElement("p");
+    this._horariosError.className = "field-error";
+    this._horariosError.style.display = "none";
+    this.form.querySelector("#listaHorarios").after(this._horariosError);
+
     this.horariosView = new HorariosView(
       this.form.querySelector("#listaHorarios"),
       this.form.querySelector("#addHorario")
     );
 
-    // Estado interno
-    this._editandoId    = null;
-    this._imagenActual  = null;   // URL de imagen existente al editar
+    this._editandoId   = null;
+    this._imagenActual = null;
 
-    // Callbacks (se asignan desde el controlador)
     this.onGuardar  = null;
     this.onEliminar = null;
     this.onCancelar = null;
@@ -56,7 +49,7 @@ export default class TecnicosView {
     this._bindEvents();
   }
 
-  // ── Binding ─────────────────────────────────────────────────────────────────
+  // ── Binding ──────────────────────────────────────────────────────────────────
 
   _bindEvents() {
     this.form.addEventListener("submit", e => {
@@ -80,33 +73,40 @@ export default class TecnicosView {
     });
   }
 
-  // ── Emit helpers ────────────────────────────────────────────────────────────
+  // ── Emit ─────────────────────────────────────────────────────────────────────
 
   _emitGuardar() {
+    // Validar horarios primero — recopilarYValidar marca errores inline
+    const horarios = this.horariosView.recopilarYValidar();
+
+    if (horarios === null) {
+      this._horariosError.textContent = "Corregí los errores en los horarios antes de guardar.";
+      this._horariosError.style.display = "block";
+      return;
+    }
+
+    this._horariosError.style.display = "none";
+
     const nuevaImagen = this.inputs.imagen.files[0];
 
     const payload = {
-      nombre:           this.inputs.nombre.value.trim(),
-      apellido:         this.inputs.apellido.value.trim(),
-      telefono:         this.inputs.telefono.value.trim(),
+      nombre:             this.inputs.nombre.value.trim(),
+      apellido:           this.inputs.apellido.value.trim(),
+      telefono:           this.inputs.telefono.value.trim(),
       duracion_turno_min: Number(this.inputs.duracion.value),
-      email:            this.inputs.email.value.trim(),
-      imagen:           nuevaImagen || this._imagenActual,
-      horarios:         this.horariosView.recopilar(),
-      activo:           true,
+      email:              this.inputs.email.value.trim(),
+      imagen:             nuevaImagen || this._imagenActual,
+      horarios,
+      activo: true,
       ...(this._editandoId !== null && { id: this._editandoId })
     };
 
     this.onGuardar?.(payload);
   }
 
-  // ── API pública (llamada desde el controlador) ───────────────────────────────
+  // ── Render tabla ─────────────────────────────────────────────────────────────
 
-  /** Renderiza la lista de técnicos en la tabla. */
   renderTabla(tecnicos = []) {
-    console.log("TECNICO OBJETO:", tecnicos[0]);  // <-- agregar acá
-    console.log("duracion:", tecnicos[0]?.duracionTurnoMinutos);
-    console.log("_horariosRaw:", tecnicos[0]?._horariosRaw);
     this.contenedor.innerHTML = "";
 
     if (!tecnicos.length) {
@@ -118,8 +118,11 @@ export default class TecnicosView {
       const tr = document.createElement("tr");
 
       const horariosTexto = (r._horariosRaw || [])
-      .map(h => `${DIAS_LABEL[h.dia_semana] ?? h.dia_semana} ${h.hora_inicio.slice(0, 5)}-${h.hora_fin.slice(0, 5)}`)
-      .join("<br>");
+        .map(h =>
+          `${DIAS_LABEL[h.dia_semana] ?? h.dia_semana} ` +
+          `${h.hora_inicio.slice(0, 5)}-${h.hora_fin.slice(0, 5)}`
+        )
+        .join("<br>");
 
       tr.innerHTML = `
         <td>${r.imagen ? `<img src="${r.imagen}" class="foto-tecnico" />` : "—"}</td>
@@ -141,11 +144,9 @@ export default class TecnicosView {
     });
   }
 
-  /** Rellena el formulario con los datos del técnico a editar. */
+  // ── Edición ───────────────────────────────────────────────────────────────────
+
   _prepararEdicion(tecnico) {
-    console.log("EDITAR tecnico:", tecnico);
-    console.log("horarios:", tecnico.horarios);
-    console.log("_horariosRaw:", tecnico._horariosRaw);
     this._editandoId   = tecnico.id;
     this._imagenActual = tecnico.imagen ?? tecnico.imagen_url ?? null;
 
@@ -157,34 +158,44 @@ export default class TecnicosView {
     this.inputs.imagen.value   = "";
 
     if (this._imagenActual) {
-      this.previewImagen.src          = this._imagenActual;
+      this.previewImagen.src           = this._imagenActual;
       this.previewImagen.style.display = "block";
     } else {
       this.previewImagen.style.display = "none";
     }
 
+    // Cargar horarios en formato API (con dia_semana / hora_inicio / hora_fin)
     this.horariosView.cargar(tecnico._horariosRaw || []);
 
-    this.btnSubmit.textContent      = "Actualizar";
-    this.btnCancel.style.display    = "inline-block";
+    this._horariosError.style.display = "none";
+
+    this.btnSubmit.textContent   = "Actualizar";
+    this.btnCancel.style.display = "inline-block";
+
+    this.form.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  /** Limpia el formulario y vuelve al estado inicial. */
+  // ── Reset ─────────────────────────────────────────────────────────────────────
+
   resetFormulario() {
     this.form.reset();
     this.horariosView.limpiar();
+    this.limpiarErrores();
 
     this._editandoId   = null;
     this._imagenActual = null;
 
-    this.previewImagen.src          = "";
+    this.previewImagen.src           = "";
     this.previewImagen.style.display = "none";
+
+    this._horariosError.style.display = "none";
 
     this.btnSubmit.textContent   = "Guardar";
     this.btnCancel.style.display = "none";
   }
 
-  /** Muestra un error de validación junto al campo correspondiente. */
+  // ── Errores de campos ─────────────────────────────────────────────────────────
+
   mostrarError(campo, mensaje) {
     const el = this.form.querySelector(`[data-error="${campo}"]`);
     if (el) el.textContent = mensaje;
