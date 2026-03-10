@@ -1,14 +1,50 @@
+// js/src/app/main.js
 import { requireAuth } from "@/core/auth/token.guard.js";
-import { initTurnos } from "@/modules/turnos";
-import { initClientes } from "@/modules/clientes";
-import { initTecnicos } from "@/modules/tecnicos";
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
-  if (!requireAuth()) return;
+  console.log("[main] DOMContentLoaded — arrancando");
 
-  if (document.querySelector("#turnosContainer")) initTurnos();
-  if (document.querySelector("#clientesTable")) initClientes();
-  if (document.querySelector("#formGeneral")) initTecnicos();
+  if (!requireAuth()) {
+    console.warn("[main] requireAuth falló — redirigiendo");
+    return;
+  }
+
+  console.log("[main] Auth OK");
+
+  // ── Turnos ────────────────────────────────────────────────
+  if (document.querySelector("#turnosContainer")) {
+    console.log("[main] Página de turnos detectada — cargando módulo...");
+    try {
+      const { initTurnos } = await import("@/modules/turnos/index.js");
+      console.log("[main] initTurnos importado OK");
+      await initTurnos();
+      console.log("[main] initTurnos ejecutado OK");
+    } catch (e) {
+      console.error("[main] ERROR en módulo turnos:", e);
+    }
+  }
+
+  // ── Clientes ──────────────────────────────────────────────
+  if (document.querySelector("#clientesTable")) {
+    console.log("[main] Página de clientes detectada — cargando módulo...");
+    try {
+      const { initClientes } = await import("@/modules/clientes/index.js");
+      await initClientes();
+    } catch (e) {
+      console.error("[main] ERROR en módulo clientes:", e);
+    }
+  }
+
+  // ── Técnicos ──────────────────────────────────────────────
+  if (document.querySelector("#formGeneral")) {
+    console.log("[main] Página de técnicos detectada — cargando módulo...");
+    try {
+      const { initTecnicos } = await import("@/modules/tecnicos/index.js");
+      await initTecnicos();
+    } catch (e) {
+      console.error("[main] ERROR en módulo técnicos:", e);
+    }
+  }
 
 });
