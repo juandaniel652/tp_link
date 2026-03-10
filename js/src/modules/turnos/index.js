@@ -4,11 +4,14 @@
 // Importa desde aquí para acceder al módulo desde afuera.
 // ============================================================
 
+// Entry point — llamado desde main.js
+export { initTurnos }               from "./controller/turnos.controller.js";
+
 // Modelo
-export { TurnoModel } from "./model/turno.model.js";
+export { TurnoModel }               from "./model/turno.model.js";
 
 // Mapper
-export { TurnosMapper } from "./mappers/turnos.mapper.js";
+export { TurnosMapper }             from "./mappers/turnos.mapper.js";
 
 // Servicios
 export {
@@ -17,7 +20,7 @@ export {
   guardarTurno,
   cancelarTurnoById,
   validarNuevoTurno,
-}  from "./service/turnos.service.js";
+}                                   from "./service/turnos.service.js";
 
 export {
   hayConflicto,
@@ -26,9 +29,9 @@ export {
   filtrarPorRango,
   obtenerHorariosDisponibles,
   obtenerFechasDisponibles,
-}  from "./service/disponibilidad.service.js";
+}                                   from "./service/disponibilidad.service.js";
 
-export { resolverCliente } from "./service/andros.service.js";
+export { resolverCliente }          from "./service/andros.service.js";
 
 export {
   getTurnos,
@@ -36,7 +39,7 @@ export {
   crearTurno,
   cancelarTurno,
   eliminarTurno,
-}  from "./service/turnos.api.js";
+}                                   from "./service/turnos.api.js";
 
 // Constantes
 export * from "./service/turnos.constants.js";
@@ -51,7 +54,7 @@ export {
   getEstadoActual,
   onEstadoCambia,
   resetEstado,
-} from "./state/turnos.state.js";
+}                                   from "./state/turnos.state.js";
 
 // Vistas
 export {
@@ -63,7 +66,7 @@ export {
   formatearEstado,
   formatearTipo,
   formatearTicket,
-} from "./view/turnos.historial.view.js";
+}                                   from "./view/turnos.historial.view.js";
 
 export {
   renderGrillaTurnos,
@@ -72,4 +75,4 @@ export {
   renderSelectGen,
   limpiarSelects,
   formatearRango,
-}from "./view/turnos.view.js";
+}                                   from "./view/turnos.view.js";

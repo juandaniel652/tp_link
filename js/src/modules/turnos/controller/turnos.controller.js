@@ -25,10 +25,10 @@ import { obtenerTecnicosBackend }       from "../../tecnico/tecnicoApi.js";
 import Tecnico                          from "../../tecnico/Tecnico.js";
 
 // ============================================================
-// Bootstrap — se ejecuta al cargar el DOM
+// Bootstrap — llamado desde main.js via initTurnos()
 // ============================================================
 
-document.addEventListener("DOMContentLoaded", async () => {
+export async function initTurnos() {
 
   // ----------------------------------------------------------
   // 1. Referencias DOM
@@ -177,4 +177,4 @@ document.addEventListener("DOMContentLoaded", async () => {
   await cargarTurnosIniciales();
 
   cambiarEstado(UI_STATE.DISPONIBILIDAD, _refs());
-});
+}
