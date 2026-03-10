@@ -43,6 +43,7 @@ export async function initTurnos() {
   const btnMostrarTurnos   = document.getElementById("btnMostrarTurnos");
 
   // Selects
+  const selectTicket       = document.getElementById("selectTicket");
   const selectCliente      = document.getElementById("selectCliente");
   const selectTecnico      = document.getElementById("selectTecnico");
   const selectT            = document.getElementById("selectT");
@@ -81,10 +82,11 @@ export async function initTurnos() {
   // 3. Init selects
   // ----------------------------------------------------------
 
+  renderSelectGen(selectTicket, [], "Seleccionar Ticket", "");
   renderSelectClientes(selectCliente, clientes, turnos);
   renderSelectTecnicos(selectTecnico, tecnicos);
   renderSelectGen(selectT, T_VALUES, "Seleccionar T", "T");
-  renderSelectGen(selectRango, RANGOS, "Seleccionar rango", "");
+  renderSelectGen(selectRango, RANGOS, "Seleccionar Rango", "");
   renderSelectGen(selectEstadoTicket, ["Abierto"], "Seleccionar estado", "");
 
   // ----------------------------------------------------------
