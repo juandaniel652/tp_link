@@ -35,12 +35,12 @@ export const DAYS = [
 
 /** Mapa tipo_turno (integer) → etiqueta legible */
 export const TIPOS_TURNO = {
-  1: "Instalación",
-  2: "Soporte técnico",
-  3: "Mantenimiento",
-  4: "Retiro",
-  5: "Revisión",
-  6: "Otro",
+  1: "T1",
+  2: "T2",
+  3: "T3",
+  4: "T4",
+  5: "T5",
+  6: "T6"
 };
 
 /** Estados válidos de un turno */
