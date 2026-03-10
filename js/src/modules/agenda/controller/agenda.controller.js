@@ -131,9 +131,7 @@ export class AgendaController {
       return;
     }
 
-    const tecnicoObj = this.state.tecnicos.find(t =>
-      [t.nombre, t.apellido].filter(Boolean).join(' ') === this.state.tecnicoFiltro
-    );
+    const tecnicoObj = this.state.tecnicos.find(t => t.id === this.state.tecnicoFiltro);
 
     if (!tecnicoObj) {
       alert('Técnico no encontrado');

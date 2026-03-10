@@ -98,7 +98,7 @@ export class AgendaTableView {
 
           const turnosBloque = (index[fStr]?.[hStr] || []).filter(t =>
             !tecnicoFiltro ||
-            `${t.tecnico?.nombre} ${t.tecnico?.apellido}`.trim() === tecnicoFiltro
+              t.tecnico?.id === tecnicoFiltro  
           );
 
           turnosBloque.forEach(t => div.appendChild(this._botonTurno(t)));

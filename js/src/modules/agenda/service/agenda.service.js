@@ -56,13 +56,12 @@ export class AgendaService {
     if (!tecnicoFiltro) return clientes;
 
     const nombres = turnos
-      .filter(t => {
-        if (!t.tecnico) return false;
-        return [t.tecnico.nombre, t.tecnico.apellido].filter(Boolean).join(' ') === tecnicoFiltro;
-      })
+      .filter(t => t.tecnico?.id === tecnicoFiltro)   // ← por id
       .map(t => [t.cliente?.nombre, t.cliente?.apellido].filter(Boolean).join(' '));
 
     const set = new Set(nombres);
-    return clientes.filter(c => set.has(`${c.nombre} ${c.apellido}`.trim()));
+    return clientes.filter(c =>
+      set.has([c.nombre, c.apellido].filter(Boolean).join(' '))
+    );
   }
 }
