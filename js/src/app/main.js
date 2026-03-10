@@ -47,4 +47,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  // ── Agenda ────────────────────────────────────────────────
+  if (document.querySelector("#agendaContainer")) {
+    console.log("[main] Página de agenda detectada — cargando módulo...");
+    try {
+      const { initAgenda } = await import("@/modules/agenda/index.js");
+      await initAgenda();
+    } catch (e) {
+      console.error("[main] ERROR en módulo agenda:", e);
+    }
+  }
+
 });
