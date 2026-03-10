@@ -69,7 +69,9 @@ export async function initTurnos() {
 
   const token        = tokenStorage.getToken();
   const clientes     = await fetchClientes(token);
+  console.log("CLIENTES RAW:", clientes);
   const tecnicosData = await tecnicosApi.obtenerTodos();
+  console.log("TECNICOS RAW:", tecnicosData);
   const tecnicos     = tecnicosData.map(t => new Tecnico(t));
 
   /** @type {Object[]} ViewModels de turnos activos */
