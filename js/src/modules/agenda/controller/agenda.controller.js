@@ -58,7 +58,7 @@ export class AgendaController {
     try {
       const [turnos, clientes, tecnicos] = await Promise.all([
         this.service.obtenerTodos(),
-        clienteService.obtenerClientes(tokenStorage.getToken()),
+        obtenerClientes(tokenStorage.getToken()),
         TecnicosService.obtenerTodos()
       ]);
 
