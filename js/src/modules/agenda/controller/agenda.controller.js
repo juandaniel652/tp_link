@@ -1,5 +1,8 @@
 import { AgendaService }    from '../service/agenda.service.js';
-import { AgendaNavView }    from '../view/agenda.nav.view.js';
+import { obtenerClientes }  from '@/modules/clientes/service/clientes.service.js';
+import TecnicosService      from '@/modules/tecnicos/service/tecnicos.service.js';
+import { tokenStorage }     from '@/core/storage/tokenStorage.js';
+import { AgendaNavView }    from '../view/agenda.nav.js';
 import { AgendaTableView }  from '../view/agenda.table.view.js';
 import { getFechaLunes, pad } from '../utils/agenda.utils.js';
 
@@ -17,13 +20,13 @@ export class AgendaController {
    * @param {string} containerId  - id del div donde se monta la agenda
    * @param {{ clienteService: Object, tecnicoService: Object }} deps
    */
-  constructor(containerId, { clienteService, tecnicoService }) {
+  constructor(containerId) {
     this.container = document.getElementById(containerId);
 
     /* servicios */
     this.service        = new AgendaService();
-    this.clienteService = clienteService;
-    this.tecnicoService = tecnicoService;
+
+
 
     /* estado */
     this.state = {
@@ -55,8 +58,8 @@ export class AgendaController {
     try {
       const [turnos, clientes, tecnicos] = await Promise.all([
         this.service.obtenerTodos(),
-        this.clienteService.obtenerTodos(),
-        this.tecnicoService.obtenerTodos()
+        clienteService.obtenerClientes(tokenStorage.getToken()),
+        TecnicosService.obtenerTodos()
       ]);
 
       this.state.turnos   = turnos   ?? [];
