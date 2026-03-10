@@ -133,17 +133,22 @@ export class AgendaTableView {
     btn.textContent = this._nombrePersona(turno.cliente);
     btn.disabled    = true;
     btn.classList.add('btn-ocupado');
-    btn.style.backgroundColor = turno.color || '#1E90FF';
 
-    btn.addEventListener('mouseenter', () => {
-      const contenido = `
-        <strong>Cliente:</strong> ${this._nombrePersona(turno.cliente)}<br>
-        <strong>Técnico:</strong> ${this._nombrePersona(turno.tecnico)}<br>
-        <strong>Inicio:</strong>  ${turno.hora_inicio}<br>
-        <strong>Fin:</strong>     ${turno.hora_fin}<br>
-        <strong>Estado:</strong>  ${turno.estado}
-      `;
-      this._mostrarTooltip(btn, contenido);
+    // Color de acento en franja izquierda si viene con color
+    if (turno.color) {
+      btn.style.borderLeftColor = turno.color;
+    }
+
+    btn.addEventListener('mouseenter', (e) => {
+      this._mostrarTooltip(e, turno);
+    });
+
+    btn.addEventListener('mousemove', (e) => {
+      this._posicionarTooltip(e);
+    });
+
+    btn.addEventListener('mouseleave', () => {
+      this._ocultarTooltip();
     });
 
     wrapper.appendChild(btn);
@@ -176,28 +181,98 @@ export class AgendaTableView {
   }
 
   /* ─────────────────────────────────────────────────────────────────
-   * TOOLTIP
+   * TOOLTIP PROFESIONAL
    * ───────────────────────────────────────────────────────────────── */
-  _mostrarTooltip(btn, contenido) {
+  _crearTooltip() {
+    const el = document.createElement('div');
+    el.classList.add('tooltip');
+
+    const header = document.createElement('div');
+    header.classList.add('tooltip-header');
+    header.textContent = 'Detalle del turno';
+
+    const body = document.createElement('div');
+    body.classList.add('tooltip-body');
+
+    el.appendChild(header);
+    el.appendChild(body);
+    document.body.appendChild(el);
+    return el;
+  }
+
+  _filaTooltip(label, value) {
+    if (!value) return null;
+    const row = document.createElement('div');
+    row.classList.add('tooltip-row');
+
+    const lbl = document.createElement('span');
+    lbl.classList.add('tooltip-label');
+    lbl.textContent = label;
+
+    const val = document.createElement('span');
+    val.classList.add('tooltip-value');
+    val.textContent = value;
+
+    row.appendChild(lbl);
+    row.appendChild(val);
+    return row;
+  }
+
+  _mostrarTooltip(e, turno) {
     if (!this.tooltip) {
-      this.tooltip = document.createElement('div');
-      this.tooltip.classList.add('tooltip');
-      document.body.appendChild(this.tooltip);
+      this.tooltip = this._crearTooltip();
     }
 
-    this.tooltip.innerHTML      = contenido;
-    this.tooltip.style.display  = 'block';
+    const body = this.tooltip.querySelector('.tooltip-body');
+    body.innerHTML = '';
 
-    const move = (e) => {
-      this.tooltip.style.top  = e.pageY + 15 + 'px';
-      this.tooltip.style.left = e.pageX + 15 + 'px';
-    };
+    const filas = [
+      this._filaTooltip('Cliente',  this._nombrePersona(turno.cliente)),
+      this._filaTooltip('Técnico',  this._nombrePersona(turno.tecnico)),
+      this._filaTooltip('Inicio',   turno.hora_inicio?.slice(0, 5)),
+      this._filaTooltip('Fin',      turno.hora_fin?.slice(0, 5)),
+      this._filaTooltip('Estado',   turno.estado),
+      this._filaTooltip('Ticket',   turno.numero_ticket ?? null),
+    ];
 
-    btn.addEventListener('mousemove', move);
-    btn.addEventListener('mouseleave', () => {
-      this.tooltip.style.display = 'none';
-      btn.removeEventListener('mousemove', move);
-    });
+    filas.forEach(f => f && body.appendChild(f));
+
+    this.tooltip.style.display = 'block';
+    this._posicionarTooltip(e);
+
+    // Forzar reflow para que la transición funcione
+    this.tooltip.offsetHeight;
+    this.tooltip.classList.add('visible');
+  }
+
+  _posicionarTooltip(e) {
+    if (!this.tooltip) return;
+    const offset = 14;
+    const tw = this.tooltip.offsetWidth;
+    const th = this.tooltip.offsetHeight;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    let x = e.clientX + offset;
+    let y = e.clientY + offset;
+
+    // Evitar que se salga de la pantalla
+    if (x + tw > vw - 8) x = e.clientX - tw - offset;
+    if (y + th > vh - 8) y = e.clientY - th - offset;
+
+    this.tooltip.style.left = `${x}px`;
+    this.tooltip.style.top  = `${y}px`;
+  }
+
+  _ocultarTooltip() {
+    if (!this.tooltip) return;
+    this.tooltip.classList.remove('visible');
+    // Esperar a que termine la transición para ocultar
+    this.tooltip.addEventListener('transitionend', () => {
+      if (this.tooltip && !this.tooltip.classList.contains('visible')) {
+        this.tooltip.style.display = 'none';
+      }
+    }, { once: true });
   }
 
   /* ─────────────────────────────────────────────────────────────────

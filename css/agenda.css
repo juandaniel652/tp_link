@@ -152,42 +152,45 @@ td button {
 .btn-libre:hover {
   background-color: var(--color-verde-hover);
 }
+
+/* ==============================
+   ======== CARD OCUPADO ========
+   ============================== */
 .btn-ocupado {
-  display: inline-block;
-  margin-bottom: 0;
-  font-weight: 700; /* similar a <strong> */
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: middle;
-  cursor: not-allowed;
-  background-image: none;
-  border: 1px solid var(--color-azul-header);
-  background-color: var(--color-azul-header);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 80px;
+  padding: 5px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-base);
+  letter-spacing: 0.3px;
   color: #fff;
-  padding: 1px 5px; /* igual a .btn-xs */
-  font-size: 12px;
-  line-height: 1.5;
+  background: linear-gradient(160deg, #1E3C72 0%, #2A5298 100%);
+  border: 1px solid rgba(255,255,255,0.15);
   border-radius: 3px;
-  box-sizing: border-box;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  background: linear-gradient(135deg, var(--color-azul-header), var(--color-azul-header-alt));
-  border: 1px solid var(--color-azul-header);
+  cursor: default;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    0 2px 4px rgba(0,0,0,0.35);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  /* franja izquierda corporativa */
+  border-left: 3px solid rgba(255,255,255,0.35);
 }
 
 .btn-ocupado:hover {
-  transform: scale(1.03);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    0 4px 10px rgba(0,0,0,0.45);
+  transform: translateY(-1px);
 }
 
-.btn-ocupado:active,
-.btn-ocupado:focus {
-  outline: none;
-  box-shadow: none;
-}
-
-
-
-/* tarjetas dentro de celda */
+/* tarjetas dentro de celda — sin uso actual, se mantiene por compatibilidad */
 .turno-card {
   background-color: var(--color-verde-hover);
   color: #fff;
@@ -210,22 +213,76 @@ td button {
 }
 
 /* ==============================
-   ======== TOOLTIP ========
+   ======== TOOLTIP PROFESIONAL ========
    ============================== */
-
 .tooltip {
-  position: absolute;
-  background: linear-gradient(135deg, var(--color-azul-header), var(--color-azul-header-alt));
-  color: #fff;
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  pointer-events: none;
+  position: fixed;
   z-index: 9999;
-  white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  pointer-events: none;
+
+  background: #fff;
+  border: 1px solid #d0d7e3;
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.10);
+
+  min-width: 200px;
+  max-width: 280px;
+  padding: 0;
+  overflow: hidden;
+
+  font-family: var(--font-base);
+  font-size: 12px;
+  color: #2d2d2d;
+
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
+.tooltip.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* cabecera azul del tooltip */
+.tooltip-header {
+  background: linear-gradient(135deg, var(--color-azul-header), var(--color-azul-header-alt));
+  color: #fff;
+  padding: 7px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+/* cuerpo del tooltip */
+.tooltip-body {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tooltip-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.tooltip-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-azul-header);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  min-width: 55px;
+  flex-shrink: 0;
+}
+
+.tooltip-value {
+  font-size: 12px;
+  color: #2d2d2d;
+}
 
 /* ==============================
    ======== SUB ETIQUETAS ========
@@ -244,8 +301,8 @@ td button {
   box-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
-.sub-etiqueta.ok { background-color: var(--color-verde); border: 1px solid #2e7d32; }
-.sub-etiqueta.nok { background-color: var(--color-rojo); border: 1px solid #b71c1c; }
+.sub-etiqueta.ok    { background-color: var(--color-verde);   border: 1px solid #2e7d32; }
+.sub-etiqueta.nok   { background-color: var(--color-rojo);    border: 1px solid #b71c1c; }
 .sub-etiqueta.repro { background-color: var(--color-naranja); border: 1px solid #ef6c00; }
 
 /* ==============================
@@ -278,18 +335,13 @@ td button {
   transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
 }
 
-/*==============================
-  ======== OPTIONS DE SELECTS AJUTADOS AL FONDO ========
-  ============================== */
-
 #selectSemana option,
 #selectTecnico option,
 #selectRango option {
-  background-color: #fff;  /* siempre fondo blanco */
-  color: #000;             /* siempre texto negro */
+  background-color: #fff;
+  color: #000;
   font-weight: bold;
 }
-
 
 #selectSemana:hover, #selectTecnico:hover, #selectRango:hover {
   transform: translateY(-2px);
