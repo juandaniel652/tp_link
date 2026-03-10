@@ -61,7 +61,7 @@ export class AgendaNavView {
 
     select.appendChild(new Option('Agenda Unificada', ''));
     (this.ctrl.state.tecnicos || []).forEach(t => {
-      const nombre = `${t.nombre} ${t.apellido}`.trim();
+      const nombre = [t.nombre, t.apellido].filter(Boolean).join(' ');
       select.appendChild(new Option(nombre, nombre));
     });
 

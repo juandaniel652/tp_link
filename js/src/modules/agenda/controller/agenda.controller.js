@@ -132,7 +132,7 @@ export class AgendaController {
     }
 
     const tecnicoObj = this.state.tecnicos.find(t =>
-      `${t.nombre} ${t.apellido ?? ''}`.trim() === this.state.tecnicoFiltro
+      [t.nombre, t.apellido].filter(Boolean).join(' ') === this.state.tecnicoFiltro
     );
 
     if (!tecnicoObj) {

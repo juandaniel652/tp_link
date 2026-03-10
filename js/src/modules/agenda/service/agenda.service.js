@@ -58,9 +58,9 @@ export class AgendaService {
     const nombres = turnos
       .filter(t => {
         if (!t.tecnico) return false;
-        return `${t.tecnico.nombre} ${t.tecnico.apellido}`.trim() === tecnicoFiltro;
+        return [t.tecnico.nombre, t.tecnico.apellido].filter(Boolean).join(' ') === tecnicoFiltro;
       })
-      .map(t => `${t.cliente?.nombre ?? ''} ${t.cliente?.apellido ?? ''}`.trim());
+      .map(t => [t.cliente?.nombre, t.cliente?.apellido].filter(Boolean).join(' '));
 
     const set = new Set(nombres);
     return clientes.filter(c => set.has(`${c.nombre} ${c.apellido}`.trim()));

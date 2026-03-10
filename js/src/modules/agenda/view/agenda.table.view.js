@@ -280,6 +280,6 @@ export class AgendaTableView {
    * ───────────────────────────────────────────────────────────────── */
   _nombrePersona(p) {
     if (!p) return '';
-    return `${p.nombre ?? ''} ${p.apellido ?? ''}`.trim();
+    return [p.nombre, p.apellido].filter(Boolean).join(' ');
   }
 }
