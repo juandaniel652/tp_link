@@ -1,33 +1,110 @@
-import { apiRequest } from "../../../core/api/apiRequest.js";
+// ============================================================
+// turnos.api.js — Acceso a la API REST de Turnos
+// ============================================================
+// Unifica apiTurnos.js + envioTicketPOST.js + storage.js
+// ============================================================
 
-const BASE = "/turnos";
+import { API_BASE_URL } from "./turnos.constants.js";
+import { getToken }     from "../../core/storage/tokenStorage.js";
 
-export function fetchTurnosPorFecha(fecha) {
-  return apiRequest(`${BASE}?fecha=${fecha}`);
+const TURNOS_ENDPOINT = `${API_BASE_URL}/turnos`;
+
+// ----------------------------------------------------------
+// Helpers
+// ----------------------------------------------------------
+
+function authHeaders() {
+  return {
+    "Content-Type":  "application/json",
+    "Authorization": `Bearer ${getToken()}`,
+  };
 }
 
-export function createTurno(data) {
-  return apiRequest(BASE, {
-    method: "POST",
-    body: JSON.stringify(data)
-  });
+async function handleResponse(response) {
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    throw new Error(body.detail || `HTTP ${response.status}`);
+  }
+  return response.json();
 }
 
-export function cancelarTurno(id) {
-  return apiRequest(`${BASE}/${id}/cancelar`, {
-    method: "PATCH"
+// ----------------------------------------------------------
+// GET
+// ----------------------------------------------------------
+
+/**
+ * Obtiene todos los turnos.
+ * @returns {Promise<Object[]>}
+ */
+export async function getTurnos() {
+  const response = await fetch(TURNOS_ENDPOINT, {
+    headers: authHeaders(),
   });
+  return handleResponse(response);
 }
 
-export function updateTurno(id, data) {
-  return apiRequest(`${BASE}/${id}`, {
-    method: "PUT",
-    body: JSON.stringify(data)
+/**
+ * Obtiene turnos filtrados por fecha.
+ * @param {string} fecha — "YYYY-MM-DD"
+ * @returns {Promise<Object[]>}
+ */
+export async function getTurnosPorFecha(fecha) {
+  const response = await fetch(`${TURNOS_ENDPOINT}?fecha=${fecha}`, {
+    headers: authHeaders(),
   });
+  return handleResponse(response);
 }
 
-export function deleteTurno(id) {
-  return apiRequest(`${BASE}/${id}`, {
-    method: "DELETE"
+// ----------------------------------------------------------
+// POST
+// ----------------------------------------------------------
+
+/**
+ * Crea un nuevo turno en el backend.
+ * @param {Object} payload — objeto ya formateado para el backend
+ * @returns {Promise<Object>} turno creado
+ */
+export async function crearTurno(payload) {
+  const response = await fetch(`${TURNOS_ENDPOINT}/`, {
+    method:  "POST",
+    headers: authHeaders(),
+    body:    JSON.stringify(payload),
   });
+  return handleResponse(response);
+}
+
+// ----------------------------------------------------------
+// PATCH — Cancelar
+// ----------------------------------------------------------
+
+/**
+ * Cancela (soft-delete) un turno por ID.
+ * @param {string|number} id
+ * @returns {Promise<boolean>}
+ */
+export async function cancelarTurno(id) {
+  const response = await fetch(`${TURNOS_ENDPOINT}/${id}/cancelar`, {
+    method:  "PATCH",
+    headers: authHeaders(),
+  });
+  await handleResponse(response);
+  return true;
+}
+
+// ----------------------------------------------------------
+// DELETE — Eliminación física (si el backend lo soporta)
+// ----------------------------------------------------------
+
+/**
+ * Elimina físicamente un turno por ID.
+ * @param {string|number} id
+ * @returns {Promise<boolean>}
+ */
+export async function eliminarTurno(id) {
+  const response = await fetch(`${TURNOS_ENDPOINT}/${id}`, {
+    method:  "DELETE",
+    headers: authHeaders(),
+  });
+  await handleResponse(response);
+  return true;
 }

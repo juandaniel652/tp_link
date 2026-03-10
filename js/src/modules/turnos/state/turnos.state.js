@@ -1,100 +1,122 @@
-// turnos.state.js
+// ============================================================
+// turnos.state.js — Estado de UI del módulo Turnos
+// ============================================================
+// Migrado desde uiState.js con soporte para múltiples
+// suscriptores y reset limpio de estado.
+// ============================================================
 
-export class TurnosState {
-  constructor() {
-    this.initialState = {
-      fechaSeleccionada: null,
-      turnos: [],
-      loading: false,
-      error: null // string simple, no objeto Error
-    };
+// ----------------------------------------------------------
+// Constantes de estado
+// ----------------------------------------------------------
 
-    this.state = structuredClone(this.initialState);
-    this.listeners = [];
+export const UI_STATE = Object.freeze({
+  DISPONIBILIDAD: "disponibilidad",
+  HISTORIAL:      "historial",
+});
+
+// ----------------------------------------------------------
+// Estado interno
+// ----------------------------------------------------------
+
+let _currentState = null;
+
+/** @type {Map<string, Function[]>} */
+const _listeners = new Map();
+
+// ----------------------------------------------------------
+// API pública
+// ----------------------------------------------------------
+
+/**
+ * Devuelve el estado actual de la UI.
+ * @returns {string|null}
+ */
+export function getEstadoActual() {
+  return _currentState;
+}
+
+/**
+ * Cambia el estado de la UI y aplica los efectos visuales
+ * sobre los elementos del DOM recibidos en `refs`.
+ *
+ * @param {string} nuevoEstado — valor de UI_STATE
+ * @param {{
+ *   turnosContainer:    HTMLElement,
+ *   historialContainer: HTMLElement,
+ *   selectorFecha:      HTMLElement,
+ *   titulo:             HTMLElement
+ * }} refs
+ */
+export function cambiarEstado(nuevoEstado, refs) {
+  if (_currentState === nuevoEstado) return;
+
+  _currentState = nuevoEstado;
+
+  const {
+    turnosContainer,
+    historialContainer,
+    selectorFecha,
+    titulo,
+  } = refs;
+
+  // Limpiar siempre ambos contenedores
+  turnosContainer.innerHTML   = "";
+  historialContainer.innerHTML = "";
+
+  switch (nuevoEstado) {
+
+    case UI_STATE.DISPONIBILIDAD:
+      turnosContainer.style.display    = "grid";
+      historialContainer.style.display = "none";
+      selectorFecha.style.display      = "none";
+      titulo.textContent               = "Turnos Disponibles";
+      break;
+
+    case UI_STATE.HISTORIAL:
+      turnosContainer.style.display    = "none";
+      historialContainer.style.display = "block";
+      selectorFecha.style.display      = "block";
+      titulo.textContent               = "Historial de Turnos";
+      break;
+
+    default:
+      console.warn(`[turnos.state] Estado desconocido: ${nuevoEstado}`);
   }
 
-  // --------------------
-  // Subscriptions
-  // --------------------
+  // Notificar suscriptores
+  _notificar(nuevoEstado);
+}
 
-  subscribe(listener) {
-    this.listeners.push(listener);
+/**
+ * Suscribe una función callback que se ejecuta al cambiar de estado.
+ * @param {string}   estado — UI_STATE a escuchar (o "*" para todos)
+ * @param {Function} fn
+ * @returns {Function} unsuscribe — llámalo para eliminar la suscripción
+ */
+export function onEstadoCambia(estado, fn) {
+  if (!_listeners.has(estado)) _listeners.set(estado, []);
+  _listeners.get(estado).push(fn);
 
-    return () => {
-      this.listeners = this.listeners.filter(l => l !== listener);
-    };
-  }
+  return () => {
+    const arr = _listeners.get(estado) ?? [];
+    const idx = arr.indexOf(fn);
+    if (idx !== -1) arr.splice(idx, 1);
+  };
+}
 
-  notify() {
-    const snapshot = this.getState();
-    this.listeners.forEach(listener => listener(snapshot));
-  }
+/**
+ * Resetea el estado interno (útil en tests).
+ */
+export function resetEstado() {
+  _currentState = null;
+  _listeners.clear();
+}
 
-  getState() {
-    return structuredClone(this.state);
-  }
+// ----------------------------------------------------------
+// Helpers
+// ----------------------------------------------------------
 
-  // --------------------
-  // Mutations
-  // --------------------
-
-  update(patch) {
-    this.state = {
-      ...this.state,
-      ...patch
-    };
-    this.notify();
-  }
-
-  setLoading(value) {
-    this.update({ loading: value });
-  }
-
-  setError(error) {
-    const message = error?.message ?? String(error);
-    this.update({ error: message });
-  }
-
-  clearError() {
-    this.update({ error: null });
-  }
-
-  setFecha(fecha) {
-    this.update({ fechaSeleccionada: fecha });
-  }
-
-  setTurnos(turnos) {
-    this.update({ turnos: [...turnos] });
-  }
-
-  addTurno(turno) {
-    this.update({ turnos: [...this.state.turnos, turno] });
-  }
-
-  cancelTurno(id) {
-      this.update({
-        turnos: this.state.turnos.map(t =>
-          t.id === id
-            ? { ...t, estado: "cancelado" }
-            : t
-        )
-      });
-    }
-
-  reset() {
-    this.state = structuredClone(this.initialState);
-    this.notify();
-  }
-
-  // --------------------
-  // Derived State
-  // --------------------
-
-  hasTurnos() {
-    return this.state.turnos.length > 0;
-  }
-
-  isEmpty() {
-    return !this.state.loading && this.state.turnos.length === 0;
-  }
+function _notificar(estado) {
+  (_listeners.get(estado) ?? []).forEach(fn => fn(estado));
+  (_listeners.get("*")    ?? []).forEach(fn => fn(estado));
 }
