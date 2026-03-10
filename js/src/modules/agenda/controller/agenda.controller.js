@@ -125,54 +125,17 @@ export class AgendaController {
     this._render();
   }
 
-  async onAsignarTurno(fecha, horaInicioStr) {
+  onAsignarTurno(fecha, horaInicioStr) {
     if (!this.state.tecnicoFiltro) {
       alert('Seleccione un técnico');
       return;
     }
-
-    const tecnicoObj = this.state.tecnicos.find(t => t.id === this.state.tecnicoFiltro);
-
-    if (!tecnicoObj) {
-      alert('Técnico no encontrado');
-      return;
-    }
-
-    const clienteNombre = prompt('Nombre cliente:');
-    if (!clienteNombre) return;
-
-    const clienteObj = this.state.clientes.find(c =>
-      `${c.nombre} ${c.apellido ?? ''}`.trim() === clienteNombre
-    );
-
-    if (!clienteObj) {
-      alert('Cliente no encontrado');
-      return;
-    }
-
-    const [h, m]    = horaInicioStr.split(':').map(Number);
-    const tmp       = new Date();
-    tmp.setHours(h);
-    tmp.setMinutes(m + this.state.minutosBloque);
-    const horaFinStr = `${pad(tmp.getHours())}:${pad(tmp.getMinutes())}:00`;
-
-    try {
-      await this.service.crear({
-        cliente_id:    clienteObj.id,
-        tecnico_id:    tecnicoObj.id,
-        tipo_turno:    1,
-        rango_horario: `${horaInicioStr} - ${horaFinStr}`,
-        estado:        'confirmado',
-        fecha,
-        hora_inicio:   horaInicioStr + ':00',
-        hora_fin:      horaFinStr
-      });
-
-      await this._refrescarCuerpo();
-    } catch (e) {
-      console.error(e);
-      alert(e.message || 'Error al asignar turno');
-    }
+    // Redirigir a turnos con el técnico y fecha preseleccionados
+    const params = new URLSearchParams({
+      tecnico_id: this.state.tecnicoFiltro,
+      fecha,
+    });
+    window.location.href = `/html/turno.html?${params.toString()}`;
   }
 
   /* ─────────────────────────────────────────────────────────────────

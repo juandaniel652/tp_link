@@ -90,6 +90,19 @@ export async function initTurnos() {
   renderSelectGen(selectEstadoTicket, ["Abierto"], "Seleccionar estado", "");
 
   // ----------------------------------------------------------
+  // 3b. Preseleccionar desde URL params (viene de Agenda)
+  // ----------------------------------------------------------
+
+  const urlParams  = new URLSearchParams(window.location.search);
+  const paramTecnico = urlParams.get("tecnico_id");
+  const paramFecha   = urlParams.get("fecha");
+
+  if (paramTecnico) {
+    // Preseleccionar técnico
+    selectTecnico.value = paramTecnico;
+  }
+
+  // ----------------------------------------------------------
   // 4. Carga inicial de turnos
   // ----------------------------------------------------------
 
@@ -183,4 +196,24 @@ export async function initTurnos() {
   await cargarTurnosIniciales();
 
   cambiarEstado(UI_STATE.DISPONIBILIDAD, _refs());
+
+  // ----------------------------------------------------------
+  // 8. Auto-disparar si viene de Agenda con params
+  // ----------------------------------------------------------
+  
+  if (paramTecnico) {
+    // Esperar a que los selects estén listos y simular el click
+    // El usuario solo elige el cliente y T, el técnico ya está
+    selectTecnico.value = paramTecnico;
+  
+    // Si además viene fecha, mostrarla en el selector de historial
+    // para referencia visual (opcional)
+    if (paramFecha) {
+      // Limpiar URL sin recargar para que quede prolijo
+      const url = new URL(window.location.href);
+      url.searchParams.delete("tecnico_id");
+      url.searchParams.delete("fecha");
+      window.history.replaceState({}, '', url);
+    }
+  }
 }
