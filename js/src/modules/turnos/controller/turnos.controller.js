@@ -20,9 +20,10 @@ import {
   renderSelectGen,
   renderGrillaTurnos,
 }                                       from "../view/turnos.view.js";
-import { obtenerClientesBackend }       from "../../cliente/clienteApi.js";
-import { obtenerTecnicosBackend }       from "../../tecnico/tecnicoApi.js";
-import Tecnico                          from "../../tecnico/Tecnico.js";
+import Tecnico          from "@/modules/tecnicos/model/tecnico.model.js";
+import { fetchClientes }           from "@/modules/clientes/service/clientes.api.js";
+import { tecnicosApi }             from "@/modules/tecnicos/service/tecnicos.api.js";
+import { tokenStorage }            from "@/core/storage/tokenStorage.js";
 
 // ============================================================
 // Bootstrap — llamado desde main.js via initTurnos()
@@ -66,8 +67,9 @@ export async function initTurnos() {
   // 2. Cargar datos maestros
   // ----------------------------------------------------------
 
-  const clientes     = await obtenerClientesBackend();
-  const tecnicosData = await obtenerTecnicosBackend();
+  const token        = tokenStorage.getToken();
+  const clientes     = await fetchClientes(token);
+  const tecnicosData = await tecnicosApi.obtenerTodos();
   const tecnicos     = tecnicosData.map(t => new Tecnico(t));
 
   /** @type {Object[]} ViewModels de turnos activos */
