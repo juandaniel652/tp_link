@@ -29,3 +29,24 @@ HECHO
 
     3. Pasarle a Darìo el enlace con mi API de turnos para trabajarlo con el backend y coordinarlo con la base
     de datos (tema de ticket)
+
+----------------------------------------------------
+
+10/03/26
+
+UX en agenda:
+
+
+a. Buscar a turnos por mes y año como en apps profesionales
+
+b. No se debe permitir que el cliente que ya tiene turno tome otro... solo 
+se puede editar cuando el turno ya esta tomado desde historial
+
+c. Boton editar en turnos que permita cambiar el estado de ticket y de alli si se hace si se puede
+cambiar horario y demas
+
+d. de los tecnicos eliminados no mostrar los turnos en agenda, osea en inactivo
+
+e. Ubicacion, esta muy abajo, subirlo y dejarlo bien.
+
+f. Un Toast en vez de alerts en nueva arquitectura usar coomo en la ui de agenda
