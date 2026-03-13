@@ -718,3 +718,76 @@ button, .btn-primary, .btnSeleccionarTurno, .btnEliminarTurno {
   text-transform: capitalize;
 
 }
+
+/* ================================
+   PICKER MES / AÑO
+================================ */
+.mes-anio-picker-wrapper {
+  align-items: center;
+}
+
+.mes-anio-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  padding: 6px 12px;
+  transition: border-color 0.2s;
+}
+
+.mes-anio-picker:focus-within,
+.mes-anio-picker:hover {
+  border-color: #1E3C72;
+  box-shadow: 0 0 8px rgba(30,60,114,0.12);
+}
+
+.mes-nav-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #1E3C72;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  min-height: unset;
+  transition: color 0.2s, transform 0.15s;
+}
+
+.mes-nav-btn:hover {
+  color: #2A5298;
+  transform: scale(1.2);
+}
+
+.mes-anio-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1E3C72;
+  min-width: 130px;
+  text-align: center;
+  font-family: 'AncizarSanzBold', sans-serif;
+  text-transform: capitalize;
+  cursor: default;
+  user-select: none;
+}
+
+/* Título de grupo por fecha dentro del historial */
+.historial-grupo-fecha {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1976d2;
+  margin: 20px 0 10px;
+  border-bottom: 2px solid #e3ecff;
+  padding-bottom: 4px;
+  text-transform: capitalize;
+}
+
+/* Spinner de carga del historial */
+.historial-loading {
+  text-align: center;
+  padding: 30px;
+  color: #2A5298;
+  font-size: 15px;
+  font-weight: 600;
+}

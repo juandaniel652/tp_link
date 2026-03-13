@@ -84,7 +84,13 @@
       </button>
     
       <!-- Selector de fecha para historial -->
-      <input type="date" id="selectorFechaHistorial" class="input-fecha-historial" placeholder="Seleccionar fecha">
+      <div id="mesAnioPickerWrapper" class="mes-anio-picker-wrapper" style="display:none">
+        <div class="mes-anio-picker">
+          <button type="button" id="btnMesAnterior" class="mes-nav-btn">&#8249;</button>
+          <span id="labelMesAnio" class="mes-anio-label">Marzo 2026</span>
+          <button type="button" id="btnMesSiguiente" class="mes-nav-btn">&#8250;</button>
+        </div>
+      </div>
     
     </div>
 

@@ -12,7 +12,6 @@ import { cargarTurnos, cargarTurnosPorFecha, guardarTurno }
                                         from "../service/turnos.service.js";
 import {
   renderHistorialTurnos,
-  inicializarSelectorFecha,
 }                                       from "../view/turnos.historial.view.js";
 import {
   renderSelectClientes,
@@ -39,8 +38,13 @@ export async function initTurnos() {
   const turnosContainer    = document.getElementById("turnosContainer");
   const historialContainer = document.getElementById("historialTurnos");
   const btnModoHistorial   = document.getElementById("btnModoHistorial");
-  const selectorFecha      = document.getElementById("selectorFechaHistorial");
+  const mesAnioWrapper  = document.getElementById("mesAnioPickerWrapper");
+  const labelMesAnio    = document.getElementById("labelMesAnio");
+  const btnMesAnterior  = document.getElementById("btnMesAnterior");
+  const btnMesSiguiente = document.getElementById("btnMesSiguiente");
   const btnMostrarTurnos   = document.getElementById("btnMostrarTurnos");
+
+  let _pickerDate = new Date();
 
   // Selects
   const selectTicket       = document.getElementById("selectTicket");
@@ -53,7 +57,7 @@ export async function initTurnos() {
   const _refs = () => ({
     turnosContainer,
     historialContainer,
-    selectorFecha,
+    selectorFecha: mesAnioWrapper,
     titulo: tituloSeccion,
   });
 
@@ -77,6 +81,7 @@ export async function initTurnos() {
 
   /** @type {Object[]} ViewModels de turnos activos */
   let turnos = [];
+  let _currentHistorialActivo = false;
 
   // ----------------------------------------------------------
   // 3. Init selects
@@ -138,25 +143,121 @@ export async function initTurnos() {
 
   // → Historial completo
   btnModoHistorial.onclick = () => {
-    cambiarEstado(UI_STATE.HISTORIAL, _refs());
-    renderHistorialTurnos(turnos, historialContainer, id => {
-      turnos = turnos.filter(t => String(t.id) !== String(id));
-    });
+    _currentHistorialActivo = true;   // ← afuera, al hacer click
+    _actualizarLabel();
+    _cargarMes();                     // ← carga el mes inmediatamente
   };
 
   // → Historial filtrado por fecha
-  selectorFecha.onchange = async () => {
-    const fecha = selectorFecha.value;
-    if (!fecha) return;
+  // ----------------------------------------------------------
+// Picker mes/año — helpers
+// ----------------------------------------------------------
+
+const MESES = [
+    "Enero","Febrero","Marzo","Abril","Mayo","Junio",
+    "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"
+  ];
+
+  function _actualizarLabel() {
+    labelMesAnio.textContent =
+      `${MESES[_pickerDate.getMonth()]} ${_pickerDate.getFullYear()}`;
+  }
+
+  /**
+   * Genera array de strings "YYYY-MM-DD" para cada día del mes.
+   */
+  function _diasDelMes(year, month) {
+    const dias = [];
+    const total = new Date(year, month + 1, 0).getDate();
+    for (let d = 1; d <= total; d++) {
+      const mm = String(month + 1).padStart(2, "0");
+      const dd = String(d).padStart(2, "0");
+      dias.push(`${year}-${mm}-${dd}`);
+    }
+    return dias;
+  }
+
+  /**
+   * Carga todos los turnos del mes seleccionado en paralelo
+   * y renderiza agrupados por fecha.
+   */
+  async function _cargarMes() {
+    cambiarEstado(UI_STATE.HISTORIAL, _refs());
+
+    historialContainer.innerHTML =
+      `<div class="historial-loading">⏳ Cargando turnos de ${labelMesAnio.textContent}...</div>`;
+
+    const year  = _pickerDate.getFullYear();
+    const month = _pickerDate.getMonth();
+    const dias  = _diasDelMes(year, month);
 
     try {
-      const turnosFecha = await cargarTurnosPorFecha(fecha);
-      cambiarEstado(UI_STATE.HISTORIAL, _refs());
-      renderHistorialTurnos(turnosFecha, historialContainer);
+      // Fetch paralelo de todos los días
+      const resultados = await Promise.all(
+        dias.map(fecha =>
+          cargarTurnosPorFecha(fecha).catch(() => []) // día sin turnos → []
+        )
+      );
+
+      // Agrupar: [ { fecha, turnos[] }, ... ] filtrando días vacíos
+      const grupos = dias
+        .map((fecha, i) => ({ fecha, turnos: resultados[i] }))
+        .filter(g => g.turnos.length > 0);
+
+      historialContainer.innerHTML = "";
+
+      if (!grupos.length) {
+        historialContainer.innerHTML =
+          `<p>No hay turnos en ${labelMesAnio.textContent}</p>`;
+        return;
+      }
+
+      grupos.forEach(({ fecha, turnos: turnosDia }) => {
+        // Título del día
+        const titulo = document.createElement("h3");
+        titulo.className = "historial-grupo-fecha";
+        // Usamos el formatter que ya tenés en historial.view.js
+        titulo.textContent = new Date(
+          ...fecha.split("-").map((n, i) => i === 1 ? Number(n) - 1 : Number(n))
+        ).toLocaleDateString("es-AR", {
+          weekday: "long", day: "numeric", month: "long", year: "numeric"
+        });
+        historialContainer.appendChild(titulo);
+
+        // Cards del día (reutilizás renderHistorialTurnos por día)
+        const wrapper = document.createElement("div");
+        wrapper.className = "historial-turnos";
+        historialContainer.appendChild(wrapper);
+
+        renderHistorialTurnos(turnosDia, wrapper, id => {
+          turnos = turnos.filter(t => String(t.id) !== String(id));
+          // Recargar el mes al eliminar
+          _actualizarLabel();
+          _cargarMes();
+        });
+      });
+
     } catch (e) {
-      console.error("[controller] Error historial por fecha:", e);
+      console.error("[controller] Error cargando mes:", e);
+      historialContainer.innerHTML =
+        `<p>Error al cargar los turnos. Intentá de nuevo.</p>`;
     }
-  };
+  }
+
+  // → Navegación del picker
+  _actualizarLabel();
+
+  btnMesAnterior.addEventListener("click", () => {
+    _pickerDate.setMonth(_pickerDate.getMonth() - 1);
+    _actualizarLabel();
+    if (_currentHistorialActivo) _cargarMes();
+  });
+
+  btnMesSiguiente.addEventListener("click", () => {
+    _pickerDate.setMonth(_pickerDate.getMonth() + 1);
+    _actualizarLabel();
+    if (_currentHistorialActivo) _cargarMes();
+  });
 
   // → Mostrar disponibilidad
   btnMostrarTurnos.onclick = async () => {
