@@ -150,10 +150,11 @@ export async function initTurnos() {
 
   // → Historial filtrado por fecha
   // ----------------------------------------------------------
-// Picker mes/año — helpers
-// ----------------------------------------------------------
+  // Picker mes/año — helpers
+  // ----------------------------------------------------------
 
-const MESES = [
+
+  const MESES = [
     "Enero","Febrero","Marzo","Abril","Mayo","Junio",
     "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"
   ];
@@ -163,9 +164,6 @@ const MESES = [
       `${MESES[_pickerDate.getMonth()]} ${_pickerDate.getFullYear()}`;
   }
 
-  /**
-   * Genera array de strings "YYYY-MM-DD" para cada día del mes.
-   */
   function _diasDelMes(year, month) {
     const dias = [];
     const total = new Date(year, month + 1, 0).getDate();
@@ -177,13 +175,8 @@ const MESES = [
     return dias;
   }
 
-  /**
-   * Carga todos los turnos del mes seleccionado en paralelo
-   * y renderiza agrupados por fecha.
-   */
   async function _cargarMes() {
     cambiarEstado(UI_STATE.HISTORIAL, _refs());
-
     historialContainer.innerHTML =
       `<div class="historial-loading">⏳ Cargando turnos de ${labelMesAnio.textContent}...</div>`;
 
@@ -192,14 +185,10 @@ const MESES = [
     const dias  = _diasDelMes(year, month);
 
     try {
-      // Fetch paralelo de todos los días
       const resultados = await Promise.all(
-        dias.map(fecha =>
-          cargarTurnosPorFecha(fecha).catch(() => []) // día sin turnos → []
-        )
+        dias.map(f => cargarTurnosPorFecha(f).catch(() => []))
       );
 
-      // Agrupar: [ { fecha, turnos[] }, ... ] filtrando días vacíos
       const grupos = dias
         .map((fecha, i) => ({ fecha, turnos: resultados[i] }))
         .filter(g => g.turnos.length > 0);
@@ -212,27 +201,14 @@ const MESES = [
         return;
       }
 
-      grupos.forEach(({ fecha, turnos: turnosDia }) => {
-        // Título del día
-        const titulo = document.createElement("h3");
-        titulo.className = "historial-grupo-fecha";
-        // Usamos el formatter que ya tenés en historial.view.js
-        titulo.textContent = new Date(
-          ...fecha.split("-").map((n, i) => i === 1 ? Number(n) - 1 : Number(n))
-        ).toLocaleDateString("es-AR", {
-          weekday: "long", day: "numeric", month: "long", year: "numeric"
-        });
-        historialContainer.appendChild(titulo);
-
-        // Cards del día (reutilizás renderHistorialTurnos por día)
+      // ← SIN títulos de fecha entre grupos, solo las cards
+      grupos.forEach(({ turnos: turnosDia }) => {
         const wrapper = document.createElement("div");
         wrapper.className = "historial-turnos";
         historialContainer.appendChild(wrapper);
 
         renderHistorialTurnos(turnosDia, wrapper, id => {
           turnos = turnos.filter(t => String(t.id) !== String(id));
-          // Recargar el mes al eliminar
-          _actualizarLabel();
           _cargarMes();
         });
       });
@@ -244,7 +220,80 @@ const MESES = [
     }
   }
 
-  // → Navegación del picker
+  // ----------------------------------------------------------
+  // Popup selector rápido mes/año (estilo corporativo)
+  // ----------------------------------------------------------
+
+  function _crearPopupMesAnio() {
+    // Evitar duplicados
+    document.getElementById("mesAnioPopup")?.remove();
+
+    const añoActual = _pickerDate.getFullYear();
+    let añoVista    = añoActual; // año que se está viendo en el popup
+
+    const popup = document.createElement("div");
+    popup.id = "mesAnioPopup";
+    popup.className = "mes-anio-popup";
+
+    function _renderPopup() {
+      popup.innerHTML = `
+        <div class="popup-header">
+          <button type="button" class="popup-anio-nav" id="popupAnioAnterior">&#8249;</button>
+          <span class="popup-anio-label">${añoVista}</span>
+          <button type="button" class="popup-anio-nav" id="popupAnioSiguiente">&#8250;</button>
+        </div>
+        <div class="popup-meses">
+          ${MESES.map((m, i) => `
+            <button type="button"
+              class="popup-mes-btn ${i === _pickerDate.getMonth() && añoVista === _pickerDate.getFullYear() ? 'popup-mes-activo' : ''}"
+              data-mes="${i}">
+              ${m.slice(0, 3)}
+            </button>
+          `).join("")}
+        </div>
+      `;
+
+      popup.querySelector("#popupAnioAnterior").onclick = (e) => {
+        e.stopPropagation();
+        añoVista--;
+        _renderPopup();
+      };
+      popup.querySelector("#popupAnioSiguiente").onclick = (e) => {
+        e.stopPropagation();
+        añoVista++;
+        _renderPopup();
+      };
+      popup.querySelectorAll(".popup-mes-btn").forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          _pickerDate.setFullYear(añoVista);
+          _pickerDate.setMonth(Number(btn.dataset.mes));
+          _actualizarLabel();
+          popup.remove();
+          if (_currentHistorialActivo) _cargarMes();
+        };
+      });
+    }
+
+    _renderPopup();
+
+    // Posicionar bajo el wrapper
+    const rect = mesAnioWrapper.getBoundingClientRect();
+    popup.style.top  = `${rect.bottom + window.scrollY + 6}px`;
+    popup.style.left = `${rect.left + window.scrollX}px`;
+
+    document.body.appendChild(popup);
+
+    // Cerrar al clickear afuera
+    setTimeout(() => {
+      document.addEventListener("click", function _cerrar() {
+        popup.remove();
+        document.removeEventListener("click", _cerrar);
+      });
+    }, 0);
+  }
+
+  // → Navegación del picker (flechas rápidas para ±1 mes)
   _actualizarLabel();
 
   btnMesAnterior.addEventListener("click", () => {
@@ -257,6 +306,12 @@ const MESES = [
     _pickerDate.setMonth(_pickerDate.getMonth() + 1);
     _actualizarLabel();
     if (_currentHistorialActivo) _cargarMes();
+  });
+
+  // → Ícono calendario abre popup
+  document.getElementById("btnCalendarioRapido").addEventListener("click", (e) => {
+    e.stopPropagation();
+    _crearPopupMesAnio();
   });
 
   // → Mostrar disponibilidad

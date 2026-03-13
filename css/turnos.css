@@ -791,3 +791,94 @@ button, .btn-primary, .btnSeleccionarTurno, .btnEliminarTurno {
   font-size: 15px;
   font-weight: 600;
 }
+
+
+/* ================================
+   POPUP SELECTOR RÁPIDO MES/AÑO
+================================ */
+.mes-cal-btn {
+  font-size: 18px;
+  margin-left: 4px;
+  opacity: 0.8;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.mes-cal-btn:hover {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+.mes-anio-popup {
+  position: absolute;
+  z-index: 9999;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(30,60,114,0.18);
+  padding: 16px;
+  min-width: 220px;
+  border: 1.5px solid #e3ecff;
+  animation: popupFadeIn 0.15s ease;
+}
+
+@keyframes popupFadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.popup-anio-label {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1E3C72;
+  font-family: 'AncizarSanzBold', sans-serif;
+}
+
+.popup-anio-nav {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #1E3C72;
+  cursor: pointer;
+  padding: 0 6px;
+  min-height: unset;
+  transition: color 0.2s, transform 0.15s;
+}
+.popup-anio-nav:hover {
+  color: #2A5298;
+  transform: scale(1.2);
+}
+
+.popup-meses {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.popup-mes-btn {
+  padding: 8px 4px;
+  border-radius: 8px;
+  border: 1.5px solid transparent;
+  background: #f4f6f8;
+  color: #333;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'AncizarSanzBold', sans-serif;
+  transition: all 0.15s ease;
+  min-height: unset;
+}
+.popup-mes-btn:hover {
+  background: #e3ecff;
+  border-color: #2A5298;
+  color: #1E3C72;
+}
+.popup-mes-activo {
+  background: linear-gradient(135deg, #1E3C72, #2A5298);
+  color: #fff !important;
+  border-color: transparent;
+}
