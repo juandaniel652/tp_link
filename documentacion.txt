@@ -83,4 +83,4 @@ o que cuando falten  minutos avisen que en ese tiempo culmina o en tiempos de in
 
 14/03/2026
 
-- Si el tecnico o cliente no existe eliminar turno
+- Si el tecnico o cliente no existe eliminar turno (HECHO)
