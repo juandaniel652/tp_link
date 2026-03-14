@@ -44,28 +44,35 @@ se puede editar cuando el turno ya esta tomado desde historial
 
 (HECHO)
 
+
 FALTA:
 
-Ver si cuando el turno esta reprogramado o cerrado puede tomar de nuevo
 
 ------------------------------------
+TURNOS
 
 c. Boton editar en turnos que permita cambiar el estado de ticket y de alli si se hace si se puede
 cambiar horario y demas
 
 (seria dentro de la card con boton ed itar azul abajo a la izquierda y derecha eliminar 
-(como el que esta a a izquierda)) (HECHO, FALTA)
+(como el que esta a a izquierda)) (HECHO)
+
+- Ver si cuando el turno esta reprogramado o cerrado puede tomar de nuevo
+
 
 FALTA
 1. Que en opciones sse encuentre abierto tambien por si quiero volver a que este asi
 
+2. f. Un Toast en vez de alerts en nueva arquitectura usar coomo en la ui de agenda
+(en turnos esta, volver a llevarlo a formulario tablas y luego a agenda si es necesario)
+
 ------------------------------------
+AGENDA
 
 d. de los tecnicos eliminados no mostrar los turnos en agenda, osea en inactivo
 
-e. Ubicacion, esta muy abajo, subirlo y dejarlo bien. aGENDA
+e. Ubicacion, esta muy abajo, subirlo y dejarlo bien. 
 
-f. Un Toast en vez de alerts en nueva arquitectura usar coomo en la ui de agenda
 
 e. cuando vence el token mostrar un toast que diga volviendo y que no tarrde en llevarlo al login, sino que lo lleve
 o que cuando falten  minutos avisen que en ese tiempo culmina o en tiempos de inactividad

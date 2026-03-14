@@ -1,4 +1,5 @@
 // modules/tecnicos/controller/tecnicos.controller.js
+import { ToastService } from "@/ui/ToastService.js";
 import TecnicosService from "../service/tecnicos.service.js";
 import TecnicosView    from "../view/tecnicos.view.js";
 import Tecnico         from "../model/tecnico.model.js";
@@ -41,19 +42,24 @@ export default class TecnicosController {
 
     } catch (err) {
       console.error("Error al guardar técnico:", err);
-      alert("Ocurrió un error al guardar. Revisá la consola.");
+      ToastService.error("Error al guardar. Revisá la consola.");
     }
   }
 
   async _eliminar(id) {
+    // confirm nativo reemplazado por toast de confirmación
+    // Si querés un confirm visual, avisame y lo implementamos
+    // Por ahora mantenemos confirm() ya que ToastService no tiene confirm
     if (!confirm("¿Eliminar técnico?")) return;
-
+  
     try {
       await this.service.eliminar(id);
+      ToastService.success("Técnico eliminado");
       await this._cargarTabla();
+    
     } catch (err) {
       console.error("Error al eliminar técnico:", err);
-      alert("Ocurrió un error al eliminar.");
+      ToastService.error("Error al eliminar técnico.");
     }
   }
 
@@ -64,7 +70,7 @@ export default class TecnicosController {
       const tecnicos = await this.service.obtenerTodos();
       this.view.renderTabla(tecnicos);
     } catch (err) {
-      console.error("Error al cargar técnicos:", err);
+      ToastService.error("Error al cargar la lista de técnicos.");
     }
   }
 
