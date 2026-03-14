@@ -186,11 +186,19 @@ async function _onEliminar(turno, container, onEliminado) {
   const id = turno.id;
   try {
     await cancelarTurnoById(id);
-
-    const turnos = await cargarTurnos();
-    renderHistorialTurnos(turnos, container, onEliminado);
-
+  
+    // ← Sacar la card del DOM en tiempo real sin recargar todo
+    const card = container.querySelector(`[data-id="${id}"]`)?.closest(".card-turno");
+    if (card) {
+      card.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+      card.style.opacity    = "0";
+      card.style.transform  = "translateX(20px)";
+      setTimeout(() => card.remove(), 300);
+    }
+  
+    // ← Notificar al controller para que refresque turnos y select
     onEliminado?.(id);
+  
   } catch (e) {
     console.error("[historial.view] Error eliminando turno:", e);
     ToastService.error("Error al eliminar el turno: " + e.message);

@@ -191,8 +191,8 @@ export async function initTurnos() {
 
         // ← async callback para poder usar await
         renderHistorialTurnos(turnosDia, wrapper, async id => {
-          await _refrescarTurnos(); // ← refresca desde backend
-          _cargarMes();
+          await _refrescarTurnos(); // ← actualiza turnos y select
+          // sin _cargarMes() — la card ya se sacó del DOM en tiempo real
         });
       });
 
