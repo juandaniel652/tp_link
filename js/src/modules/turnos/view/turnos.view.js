@@ -61,8 +61,7 @@ export function renderSelectClientes(selectEl, clientes, turnos = []) {
 
     if (clienteYaTieneTurno(c.id, turnos)) {
       option.disabled = true;
-      option.textContent += " (Ya tiene turno)";
-      option.classList.add("opcion-desactivada");
+      option.textContent += " (Ya tiene turno)";  // ← ya está
     }
 
     selectEl.appendChild(option);

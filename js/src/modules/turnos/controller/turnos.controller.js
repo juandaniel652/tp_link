@@ -119,6 +119,10 @@ export async function initTurnos() {
     try {
       turnos = await cargarTurnos();
       renderHistorialTurnos(turnos, historialContainer);
+
+      // ← Re-renderizar select DESPUÉS de tener los turnos cargados
+      renderSelectClientes(selectCliente, clientes, turnos);
+
     } catch (e) {
       console.error("[controller] Error cargando turnos:", e);
     }
