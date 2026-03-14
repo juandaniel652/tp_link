@@ -54,18 +54,19 @@ TURNOS
 c. Boton editar en turnos que permita cambiar el estado de ticket y de alli si se hace si se puede
 cambiar horario y demas
 
-(seria dentro de la card con boton ed itar azul abajo a la izquierda y derecha eliminar 
+(seria dentro de la card con boton editar azul abajo a la izquierda y derecha eliminar 
 (como el que esta a a izquierda)) (HECHO)
 
 - Ver si cuando el turno esta reprogramado o cerrado puede tomar de nuevo
 
 
 FALTA
-1. Que en opciones sse encuentre abierto tambien por si quiero volver a que este asi
+1. Que en opciones se encuentre abierto tambien por si quiero volver a que este asi
+(HECHO)
 
 2. f. Un Toast en vez de alerts en nueva arquitectura usar coomo en la ui de agenda
 (en turnos esta, volver a llevarlo a formulario tablas y luego a agenda si es necesario)
-
+(HECHO)
 ------------------------------------
 AGENDA
 

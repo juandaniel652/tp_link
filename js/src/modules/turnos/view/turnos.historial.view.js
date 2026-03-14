@@ -16,7 +16,7 @@ import { actualizarEstadoTurno } from "../service/turnos.api.js";
 // Constantes del módulo
 // ----------------------------------------------------------
 
-const ESTADOS_EDITABLES = ["Cerrado", "Reprogramación", "Cancelado"];
+const ESTADOS_EDITABLES = ["Abierto", "Cerrado", "Reprogramación", "Cancelado"];
 
 const _slug = e => e
   ?.toLowerCase()

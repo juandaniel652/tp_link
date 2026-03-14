@@ -96,7 +96,7 @@ export async function initTurnos() {
   renderSelectTecnicos(selectTecnico, tecnicos);
   renderSelectGen(selectT, T_VALUES, "Seleccionar T", "T");
   renderSelectGen(selectRango, RANGOS, "Seleccionar Rango", "");
-  renderSelectGen(selectEstadoTicket, ["Abierto"], "Seleccionar estado", "");
+  renderSelectGen(selectEstadoTicket, ["Abierto"], "Seleccionar Estado", "");
 
   // ----------------------------------------------------------
   // 3b. Preseleccionar desde URL params (viene de Agenda)
@@ -192,6 +192,10 @@ export async function initTurnos() {
       const resultados = await Promise.all(
         dias.map(f => cargarTurnosPorFecha(f).catch(() => []))
       );
+
+      const todosTurnos = resultados.flat();
+      console.log("TODOS LOS TURNOS DEL MES:", todosTurnos);
+      console.log("ESTADOS:", todosTurnos.map(t => ({ id: t.id, estado: t.estado, fecha: t.fecha })));
 
       const grupos = dias
         .map((fecha, i) => ({ fecha, turnos: resultados[i] }))
