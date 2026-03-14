@@ -24,20 +24,23 @@ export class AgendaService {
   indexarPorFechaHora(turnos, minutosBloque) {
     const index = {};
 
-    for (const turno of turnos) {
+    // ← Filtrar cancelados antes de indexar
+    const turnosActivos = turnos.filter(t =>
+      (t.estado ?? "").toLowerCase() !== "cancelado"
+    );
+
+    for (const turno of turnosActivos) {
       const fStr = turno.fecha.replace(/\//g, '-');
       const [hIni, mIni] = turno.hora_inicio.split(':').map(Number);
-
-      const inicio = new Date(`2000-01-01T${turno.hora_inicio}`);
-      const fin    = new Date(`2000-01-01T${turno.hora_fin}`);
+      const inicio  = new Date(`2000-01-01T${turno.hora_inicio}`);
+      const fin     = new Date(`2000-01-01T${turno.hora_fin}`);
       const bloques = (fin - inicio) / (minutosBloque * 60000);
 
       for (let b = 0; b < bloques; b++) {
         const totalMin  = hIni * 60 + mIni + b * minutosBloque;
         const bloqueKey = `${String(Math.floor(totalMin / 60)).padStart(2,'0')}:${String(totalMin % 60).padStart(2,'0')}`;
-
-        index[fStr]             ??= {};
-        index[fStr][bloqueKey]  ??= [];
+        index[fStr]            ??= {};
+        index[fStr][bloqueKey] ??= [];
         index[fStr][bloqueKey].push(turno);
       }
     }
@@ -54,11 +57,16 @@ export class AgendaService {
    */
   filtrarClientesPorTecnico(clientes, turnos, tecnicoFiltro) {
     if (!tecnicoFiltro) return clientes;
-
-    const nombres = turnos
-      .filter(t => t.tecnico?.id === tecnicoFiltro)   // ← por id
+    
+    // ← Solo turnos activos (no cancelados)
+    const turnosActivos = turnos.filter(t =>
+      (t.estado ?? "").toLowerCase() !== "cancelado"
+    );
+  
+    const nombres = turnosActivos
+      .filter(t => t.tecnico?.id === tecnicoFiltro)
       .map(t => [t.cliente?.nombre, t.cliente?.apellido].filter(Boolean).join(' '));
-
+  
     const set = new Set(nombres);
     return clientes.filter(c =>
       set.has([c.nombre, c.apellido].filter(Boolean).join(' '))

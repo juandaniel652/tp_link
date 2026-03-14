@@ -77,3 +77,4 @@ e. Ubicacion, esta muy abajo, subirlo y dejarlo bien.
 
 e. cuando vence el token mostrar un toast que diga volviendo y que no tarrde en llevarlo al login, sino que lo lleve
 o que cuando falten  minutos avisen que en ese tiempo culmina o en tiempos de inactividad
+(HECHO)

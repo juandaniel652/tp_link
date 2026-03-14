@@ -97,8 +97,8 @@ export class AgendaTableView {
           div.classList.add('bloques-container');
 
           const turnosBloque = (index[fStr]?.[hStr] || []).filter(t =>
-            !tecnicoFiltro ||
-              t.tecnico?.id === tecnicoFiltro  
+            (t.estado ?? "").toLowerCase() !== "cancelado" &&  // ← no mostrar cancelados
+            (!tecnicoFiltro || t.tecnico?.id === tecnicoFiltro)
           );
 
           turnosBloque.forEach(t => div.appendChild(this._botonTurno(t)));
