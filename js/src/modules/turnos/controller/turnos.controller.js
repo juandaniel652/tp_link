@@ -319,28 +319,27 @@ export async function initTurnos() {
 
   // → Mostrar disponibilidad
   btnMostrarTurnos.onclick = async () => {
-    const clienteId        = selectCliente.value;
-    const tecnicoId        = selectTecnico.value;
-    const tSeleccionado    = selectT.value;
+    const clienteId         = selectCliente.value;
+    const tecnicoId         = selectTecnico.value;
+    const tSeleccionado     = selectT.value;
     const rangoSeleccionado = selectRango.value;
-    const estadoTicket     = selectEstadoTicket.value;
-
-    console.log("TURNOS EN MEMORIA:", turnos);
-    console.log("CLIENTE SELECCIONADO:", clienteId);
-    console.log("TIENE TURNO?:", clienteYaTieneTurno(clienteId, turnos));
-    console.log("ESTADOS:", turnos.map(t => ({ id: t.clienteId ?? t.cliente?.id, estado: t.estado })));
-    // En btnMostrarTurnos.onclick, después de los logs que ya tenés
-    console.log("IDs en turnos:", turnos.map(t => t.clienteId ?? t.cliente?.id));
-
+    const estadoTicket      = selectEstadoTicket.value;
+    
     if (!clienteId || !tecnicoId || !tSeleccionado || !rangoSeleccionado || !estadoTicket) {
       alert("Complete todos los campos");
       return;
     }
-
+  
+    // ← Segunda capa: bloqueo por turno activo
+    if (clienteYaTieneTurno(clienteId, turnos)) {
+      alert("⚠️ Este cliente ya tiene un turno activo. Editalo desde el Historial.");
+      return; // ← este return es el que faltaba
+    }
+  
     cambiarEstado(UI_STATE.DISPONIBILIDAD, _refs());
-
+  
     const tecnico = tecnicos.find(t => String(t.id) === String(tecnicoId));
-
+  
     await renderGrillaTurnos({
       clienteId,
       tecnico,
