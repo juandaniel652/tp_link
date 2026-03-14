@@ -326,3 +326,8 @@ main {
   transition: max-height 0.3s ease, opacity 0.3s ease;
   overflow: hidden;
 }
+
+.session-countdown {
+  color: #e74c3c;
+  font-size: 18px;
+}

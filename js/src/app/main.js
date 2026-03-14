@@ -1,8 +1,7 @@
-// js/src/app/main.js
-import { requireAuth } from "@/core/auth/token.guard.js";
+import { requireAuth }    from "@/core/auth/token.guard.js";
+import { sessionManager } from "@/core/auth/session.manager.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
-
   console.log("[main] DOMContentLoaded — arrancando");
 
   if (!requireAuth()) {
@@ -11,6 +10,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   console.log("[main] Auth OK");
+
+  // ← Una sola línea — aplica a TODOS los módulos automáticamente
+  // Cambiá null por "/auth/refresh" cuando tengas el endpoint listo
+  sessionManager.init(null);
 
   // ── Turnos ────────────────────────────────────────────────
   if (document.querySelector("#turnosContainer")) {
@@ -57,5 +60,4 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.error("[main] ERROR en módulo agenda:", e);
     }
   }
-
 });
