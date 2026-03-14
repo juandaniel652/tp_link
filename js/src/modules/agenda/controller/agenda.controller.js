@@ -5,6 +5,7 @@ import { tokenStorage }     from '@/core/storage/tokenStorage.js';
 import { AgendaNavView }    from '../view/agenda.nav.js';
 import { AgendaTableView }  from '../view/agenda.table.view.js';
 import { getFechaLunes, pad } from '../utils/agenda.utils.js';
+import { ToastService } from "@/ui/ToastService.js";
 
 /**
  * Controlador del módulo Agenda.
@@ -127,7 +128,7 @@ export class AgendaController {
 
   onAsignarTurno(fecha, horaInicioStr) {
     if (!this.state.tecnicoFiltro) {
-      alert('Seleccione un técnico');
+      ToastService.info('Seleccione un técnico');
       return;
     }
     // Redirigir a turnos con el técnico y fecha preseleccionados
