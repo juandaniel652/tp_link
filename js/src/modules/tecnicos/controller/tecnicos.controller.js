@@ -47,16 +47,20 @@ export default class TecnicosController {
   }
 
   async _eliminar(id) {
-    // confirm nativo reemplazado por toast de confirmación
-    // Si querés un confirm visual, avisame y lo implementamos
-    // Por ahora mantenemos confirm() ya que ToastService no tiene confirm
-    if (!confirm("¿Eliminar técnico?")) return;
+    const confirmado = await ToastService.confirm({
+      title:       "¿Eliminar técnico?",
+      message:     "Esta acción no se puede deshacer.",
+      confirmText: "Sí, eliminar",
+      cancelText:  "Cancelar",
+      type:        "danger",
+    });
+  
+    if (!confirmado) return;
   
     try {
       await this.service.eliminar(id);
       ToastService.success("Técnico eliminado");
       await this._cargarTabla();
-    
     } catch (err) {
       console.error("Error al eliminar técnico:", err);
       ToastService.error("Error al eliminar técnico.");

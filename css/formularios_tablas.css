@@ -674,3 +674,106 @@ main {
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0,0,0,0.25);
 }
+
+/* ================================
+   MODAL DE CONFIRMACIÓN
+================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 99998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.modal-overlay.show {
+  opacity: 1;
+}
+
+.modal-box {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px 28px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  transform: translateY(-12px);
+  transition: transform 0.25s ease;
+  font-family: 'AncizarSanzBold', sans-serif;
+}
+
+.modal-overlay.show .modal-box {
+  transform: translateY(0);
+}
+
+.modal-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1E3C72;
+  margin: 0 0 8px;
+}
+
+.modal-message {
+  font-size: 14px;
+  color: #555;
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.modal-btn {
+  padding: 10px 24px;
+  border-radius: 10px;
+  border: none;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  min-width: 110px;
+  font-family: 'AncizarSanzBold', sans-serif;
+}
+
+.modal-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+}
+
+.modal-btn-cancel {
+  background: #f0f0f0;
+  color: #444;
+}
+
+.modal-btn-cancel:hover {
+  background: #e0e0e0;
+}
+
+/* Tipos */
+.modal-btn-danger {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: #fff;
+}
+
+.modal-btn-warning {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+  color: #fff;
+}
+
+.modal-btn-info {
+  background: linear-gradient(135deg, #1E3C72, #2A5298);
+  color: #fff;
+}
