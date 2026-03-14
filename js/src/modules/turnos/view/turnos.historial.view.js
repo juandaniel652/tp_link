@@ -237,7 +237,7 @@ async function _confirmarEdicionEstado(card, turno, editor) {
   const msgEl       = editor.querySelector(".mensaje-editor");
 
   if (!nuevoEstado) {
-    ToastService.error(msgEl, "⚠️ Seleccioná un estado", "error");
+    ToastService.error("⚠️ Seleccioná un estado", "error");
     return;
   }
 
@@ -251,10 +251,10 @@ async function _confirmarEdicionEstado(card, turno, editor) {
     turno.estado = nuevoEstado;
 
     editor.style.display = "none";
-    ToastService.success(msgEl, "✅ Estado actualizado", "ok");
+    ToastService.success("✅ Estado actualizado", "ok");
 
   } catch (e) {
-    ToastService.error(msgEl, "❌ Error: " + e.message, "error");
+    ToastService.error("❌ Error: " + e.message, "error");
   }
 }
 
