@@ -88,7 +88,7 @@ body {
 
 
 .main-content {
-  padding-top: calc(var(--header-height) + 16px); /* respira justo bajo el header */
+  padding-top: 0;/* respira justo bajo el header */
   gap: 0; /* el nav de agenda ya tiene su propio margin */
 }
 
