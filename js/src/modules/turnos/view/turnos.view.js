@@ -290,7 +290,7 @@ function _configurarSeleccionAutomatica(
         cliente.id ?? cliente.numero_cliente,
         NumeroT,
       )) {
-        ToastService.error(card, "⚠️ Horario ocupado");
+        ToastService.error("⚠️ Horario ocupado");
         return;
       }
 
@@ -349,7 +349,7 @@ function _configurarSeleccionManual(
         cliente.id ?? cliente.numero_cliente,
         NumeroT,
       )) {
-        ToastService.error(card, "⚠️ Horario ocupado");
+        ToastService.error("⚠️ Horario ocupado");
         return;
       }
 
@@ -376,7 +376,7 @@ async function _confirmarTurno({
 }) {
 
   if (clienteYaTieneTurno(cliente.id ?? cliente.numero_cliente, turnos)) {
-    ToastService.error(card, "⚠️ Este cliente ya tiene un turno activo", "error");
+    ToastService.error("⚠️ Este cliente ya tiene un turno activo", "error");
     return;
   }
   
@@ -393,10 +393,10 @@ async function _confirmarTurno({
     }
 
     turnosContainer.innerHTML = "";
-    ToastService.success(card, "✅ Turno creado", "ok");
+    ToastService.success("✅ Turno creado", "ok");
     limpiarSelects(selects);
 
   } catch (error) {
-    ToastService.error(card, error.message);
+    ToastService.error(error.message);
   }
 }
