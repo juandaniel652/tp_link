@@ -22,7 +22,7 @@
   --font-header: 'RobotoMonoBold', monospace;
 
   /* Tamaños */
-  --header-height: 100px;
+  --header-height: 110px;
   --logo-height: 60px;
   --gap-base: 20px;
   --btn-padding: 2px 4px;
@@ -86,15 +86,12 @@ body {
   flex: 1;
 }
 
-/* ==============================
-   ======== MAIN CONTENT ========
-   ============================== */
+
 .main-content {
-  padding-top: var(--header-height);
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
+  padding-top: calc(var(--header-height) + 16px); /* respira justo bajo el header */
+  gap: 0; /* el nav de agenda ya tiene su propio margin */
 }
+
 
 /* ==============================
    ======== TABLAS ========
@@ -320,7 +317,7 @@ td button {
    ============================== */
 #agendaContainer > div {
   text-align: center;
-  margin: 20px 0;
+  margin: 8px 0 12px;
 }
 
 #selectSemana, #selectTecnico, #selectRango {

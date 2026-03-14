@@ -62,8 +62,32 @@
     });
   </script>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Menú toggle
+      const menuToggle = document.querySelector('.menu-toggle');
+      const nav        = document.querySelector('.top-nav');
+      menuToggle.addEventListener('click', () => {
+        nav.classList.toggle('show');
+        menuToggle.classList.toggle('open');
+      });
+    
+      // ← Ajustar padding-top del main al alto real del header
+      const header = document.querySelector('.header');
+      const main   = document.querySelector('.main-content');
+      if (header && main) {
+        const ajustar = () => {
+          main.style.paddingTop = (header.offsetHeight + 16) + 'px';
+        };
+        ajustar();
+        window.addEventListener('resize', ajustar);
+      }
+    });
+  </script>
+
   <!-- Script al final del body ✅ -->
   <script type="module" src="../js/src/app/main.js"></script>
+
 
 </body>
 </html>
