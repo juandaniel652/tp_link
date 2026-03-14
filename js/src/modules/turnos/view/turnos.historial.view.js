@@ -1,24 +1,32 @@
 // ============================================================
 // turnos.historial.view.js — Vista del Historial de Turnos
 // ============================================================
-// Migrado desde historial.js + formatoTurno.js
-// ============================================================
 
 import {
   cargarTurnos,
   cargarTurnosPorFecha,
   cancelarTurnoById,
 } from "../service/turnos.service.js";
+
 import { TIPOS_TURNO } from "../service/turnos.constants.js";
+import { actualizarEstadoTurno } from "../service/turnos.api.js";
 
 // ----------------------------------------------------------
-// Formatters (anteriormente formatoTurno.js)
+// Constantes del módulo
 // ----------------------------------------------------------
 
-/**
- * Crea un objeto Date local a partir de "YYYY-MM-DD"
- * sin desfase de zona horaria.
- */
+const ESTADOS_EDITABLES = ["Cerrado", "Reprogramación", "Cancelado"];
+
+const _slug = e => e
+  ?.toLowerCase()
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "")
+  .replace(/\s+/g, "-") ?? "";
+
+// ----------------------------------------------------------
+// Formatters
+// ----------------------------------------------------------
+
 export function crearFechaLocal(fechaISO) {
   const [y, m, d] = fechaISO.split("-").map(Number);
   return new Date(y, m - 1, d);
@@ -54,14 +62,6 @@ export function formatearTicket(numero_ticket) {
 // Render principal
 // ----------------------------------------------------------
 
-/**
- * Renderiza la lista de turnos como cards dentro de `container`.
- * Acepta ViewModels (camelCase) o respuestas crudas del backend.
- *
- * @param {Object[]}  turnos
- * @param {HTMLElement} container
- * @param {Function}  [onEliminado] — callback (id) => void
- */
 export function renderHistorialTurnos(turnos, container, onEliminado) {
   if (!container) {
     console.error("[historial.view] container no definido");
@@ -75,39 +75,23 @@ export function renderHistorialTurnos(turnos, container, onEliminado) {
     return;
   }
 
-  turnos.forEach(t => {
-    const card = _crearCardHistorial(t);
-    container.appendChild(card);
-
-    card.querySelector(".btnEliminarTurno")
-      .addEventListener("click", () => _onEliminar(t, container, onEliminado));
-  });
+  turnos.forEach(t => container.appendChild(_crearCardHistorial(t, onEliminado)));
 }
 
-/**
- * Agrega un único turno recién creado al tope del historial.
- * @param {Object}    turno
- * @param {HTMLElement} container
- */
 export function agregarTurnoAlHistorial(turno, container) {
   const card = _crearCardHistorialMinimo(turno);
   container.prepend(card);
 }
 
 // ----------------------------------------------------------
-// Inicialización del selector de fecha
+// Inicialización del selector de fecha (legacy — mantenido
+// por compatibilidad con otros módulos que lo importen)
 // ----------------------------------------------------------
 
-/**
- * Configura el selector de fecha para recargar el historial.
- * @param {HTMLElement} selectorEl
- * @param {HTMLElement} container
- */
 export function inicializarSelectorFecha(selectorEl, container) {
   selectorEl.addEventListener("change", async () => {
     const fecha = selectorEl.value;
     if (!fecha) return;
-
     try {
       const turnos = await cargarTurnosPorFecha(fecha);
       renderHistorialTurnos(turnos, container);
@@ -118,24 +102,23 @@ export function inicializarSelectorFecha(selectorEl, container) {
 }
 
 // ----------------------------------------------------------
-// Helpers privados
+// Cards
 // ----------------------------------------------------------
 
-function _crearCardHistorial(t) {
+function _crearCardHistorial(t, onEliminado) {
   const card = document.createElement("div");
   card.className = "card-turno";
 
-  // Soporta ViewModel (camelCase) y raw backend (snake_case)
-  const fechaISO       = t.fecha;
-  const numeroTicket   = t.numeroTicket   ?? t.numero_ticket;
-  const clienteNum     = t.clienteNumero  ?? t.cliente?.numero_cliente;
-  const clienteNombre  = t.clienteNombre  ?? t.cliente?.nombre;
-  const tecnicoNombre  = t.tecnicoNombre  ?? t.tecnico?.nombre;
-  const tipoTurno      = t.tipoTurno      ?? t.tipo_turno;
-  const rangoHorario   = t.rangoHorario   ?? t.rango_horario;
-  const horaInicio     = t.horaInicio     ?? t.hora_inicio;
-  const horaFin        = t.horaFin        ?? t.hora_fin;
-  const estado         = t.estado;
+  const fechaISO      = t.fecha;
+  const numeroTicket  = t.numeroTicket  ?? t.numero_ticket;
+  const clienteNum    = t.clienteNumero ?? t.cliente?.numero_cliente;
+  const clienteNombre = t.clienteNombre ?? t.cliente?.nombre;
+  const tecnicoNombre = t.tecnicoNombre ?? t.tecnico?.nombre;
+  const tipoTurno     = t.tipoTurno     ?? t.tipo_turno;
+  const rangoHorario  = t.rangoHorario  ?? t.rango_horario;
+  const horaInicio    = t.horaInicio    ?? t.hora_inicio;
+  const horaFin       = t.horaFin       ?? t.hora_fin;
+  const estado        = t.estado;
 
   card.innerHTML = `
     <h3 class="card-fecha-turno">${formatearFecha(fechaISO)}</h3>
@@ -145,9 +128,25 @@ function _crearCardHistorial(t) {
     <p><strong>Tipo Turno:</strong> ${formatearTipo(tipoTurno)}</p>
     <p><strong>Rango Horario:</strong> ${rangoHorario}</p>
     <p><strong>Horario:</strong> ${formatearHora(horaInicio)} - ${formatearHora(horaFin)}</p>
-    <p><strong>Estado:</strong> ${formatearEstado(estado)}</p>
-    <button class="btnEliminarTurno" data-id="${t.id}">Eliminar</button>
+    <p class="estado-label"><strong>Estado:</strong>
+      <span class="badge-estado badge-${_slug(estado)}">${formatearEstado(estado)}</span>
+    </p>
+    <div class="card-acciones">
+      <button class="btnEditarTurno"  data-id="${t.id}">Editar</button>
+      <button class="btnEliminarTurno" data-id="${t.id}">Eliminar</button>
+    </div>
+    <div class="editorEstado" style="display:none"></div>
   `;
+
+  card.querySelector(".btnEditarTurno")
+    .addEventListener("click", () => _toggleEditorEstado(card, t));
+
+  card.querySelector(".btnEliminarTurno")
+    .addEventListener("click", () => _onEliminar(
+      t,
+      card.closest(".historial-turnos") ?? card.parentElement,
+      onEliminado,
+    ));
 
   return card;
 }
@@ -162,37 +161,102 @@ function _crearCardHistorialMinimo(turno) {
   const horaInicio    = turno.horaInicio    ?? turno.hora_inicio;
   const horaFin       = turno.horaFin       ?? turno.hora_fin;
   const ticket        = turno.numeroTicket  ?? turno.numero_ticket;
+  const estado        = turno.estado;
 
   card.innerHTML = `
     <p><strong>Ticket:</strong> ${formatearTicket(ticket)}</p>
     <p><strong>Cliente:</strong> ${clienteNum} - ${clienteNombre}</p>
     <p><strong>Técnico:</strong> ${tecnicoNombre}</p>
     <p><strong>Horario:</strong> ${formatearHora(horaInicio)} - ${formatearHora(horaFin)}</p>
-    <p><strong>Estado:</strong> ${formatearEstado(turno.estado)}</p>
+    <p class="estado-label"><strong>Estado:</strong>
+      <span class="badge-estado badge-${_slug(estado)}">${formatearEstado(estado)}</span>
+    </p>
     <button class="btnEliminarTurno" data-id="${turno.id}">Eliminar</button>
   `;
 
   return card;
 }
 
+// ----------------------------------------------------------
+// Eliminar
+// ----------------------------------------------------------
+
 async function _onEliminar(turno, container, onEliminado) {
   const id = turno.id;
   try {
     await cancelarTurnoById(id);
 
-    // Recargar historial del día si hay selector activo
-    const selector = document.getElementById("selectorFechaHistorial");
-    if (selector?.value) {
-      const turnos = await cargarTurnosPorFecha(selector.value);
-      renderHistorialTurnos(turnos, container, onEliminado);
-    } else {
-      const turnos = await cargarTurnos();
-      renderHistorialTurnos(turnos, container, onEliminado);
-    }
+    const turnos = await cargarTurnos();
+    renderHistorialTurnos(turnos, container, onEliminado);
 
     onEliminado?.(id);
   } catch (e) {
     console.error("[historial.view] Error eliminando turno:", e);
     alert("Error al eliminar el turno: " + e.message);
   }
+}
+
+// ----------------------------------------------------------
+// Editor de estado inline
+// ----------------------------------------------------------
+
+function _toggleEditorEstado(card, turno) {
+  const editor = card.querySelector(".editorEstado");
+  const estaAbierto = editor.style.display === "block";
+
+  editor.style.display = estaAbierto ? "none" : "block";
+  if (estaAbierto) return;
+
+  editor.innerHTML = `
+    <select class="select-horarios-manual select-estado-editor">
+      <option value="">Seleccionar nuevo estado</option>
+      ${ESTADOS_EDITABLES.map(e =>
+        `<option value="${e}" ${turno.estado === e ? "selected" : ""}>${e}</option>`
+      ).join("")}
+    </select>
+    <button class="btnConfirmarManual btnConfirmarEstado">Confirmar</button>
+    <p class="mensaje-editor" style="display:none"></p>
+  `;
+
+  editor.querySelector(".btnConfirmarEstado")
+    .addEventListener("click", () => _confirmarEdicionEstado(card, turno, editor));
+}
+
+async function _confirmarEdicionEstado(card, turno, editor) {
+  const select      = editor.querySelector(".select-estado-editor");
+  const nuevoEstado = select.value;
+  const msgEl       = editor.querySelector(".mensaje-editor");
+
+  if (!nuevoEstado) {
+    _mostrarMensajeEditor(msgEl, "⚠️ Seleccioná un estado", "error");
+    return;
+  }
+
+  try {
+    await actualizarEstadoTurno(turno.id, nuevoEstado);
+
+    const badge     = card.querySelector(".badge-estado");
+    badge.textContent = formatearEstado(nuevoEstado);
+    badge.className   = `badge-estado badge-${_slug(nuevoEstado)}`;
+
+    turno.estado = nuevoEstado;
+
+    editor.style.display = "none";
+    _mostrarMensajeEditor(msgEl, "✅ Estado actualizado", "ok");
+
+  } catch (e) {
+    _mostrarMensajeEditor(msgEl, "❌ Error: " + e.message, "error");
+  }
+}
+
+// ----------------------------------------------------------
+// Mensajes inline
+// ----------------------------------------------------------
+
+function _mostrarMensajeEditor(el, texto, tipo) {
+  el.style.display    = "block";
+  el.textContent      = texto;
+  el.style.color      = tipo === "error" ? "#e74c3c" : "#27ae60";
+  el.style.fontWeight = "bold";
+  el.style.marginTop  = "6px";
 }

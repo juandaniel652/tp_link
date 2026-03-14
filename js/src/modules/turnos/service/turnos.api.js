@@ -73,6 +73,28 @@ export async function crearTurno(payload) {
   return handleResponse(response);
 }
 
+
+// ----------------------------------------------------------
+// PATCH — Actualizar estado
+// ----------------------------------------------------------
+
+/**
+ * Actualiza el estado de un turno.
+ * @param {string|number} id
+ * @param {string} estado — "Cerrado" | "Reprogramación" | "Cancelado"
+ * @returns {Promise<Object>} turno actualizado
+ */
+export async function actualizarEstadoTurno(id, estado) {
+  const response = await fetch(`${TURNOS_ENDPOINT}/${id}/estado`, {
+    method:  "PATCH",
+    headers: authHeaders(),
+    body:    JSON.stringify({ estado }),
+  });
+  return handleResponse(response);
+}
+
+
+
 // ----------------------------------------------------------
 // PATCH — Cancelar
 // ----------------------------------------------------------
