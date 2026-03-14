@@ -295,7 +295,7 @@ function _configurarSeleccionAutomatica(
       await _confirmarTurno({
         card, cliente, tecnico, fechaISO: opcion.fechaISO,
         horaInicio: horaStr, NumeroT, rangoSeleccionado, estadoTicket,
-        guardarTurno, turnosContainer, selects,
+        guardarTurno, turnosContainer, selects, turnos
       });
     });
 }
@@ -354,7 +354,7 @@ function _configurarSeleccionManual(
       await _confirmarTurno({
         card, cliente, tecnico, fechaISO: opcion.fechaISO,
         horaInicio, NumeroT, rangoSeleccionado, estadoTicket,
-        guardarTurno, turnosContainer, selects,
+        guardarTurno, turnosContainer, selects, turnos
       });
     };
 
@@ -370,8 +370,14 @@ function _configurarSeleccionManual(
 async function _confirmarTurno({
   card, cliente, tecnico, fechaISO, horaInicio,
   NumeroT, rangoSeleccionado, estadoTicket,
-  guardarTurno, turnosContainer, selects,
+  guardarTurno, turnosContainer, selects,turnos
 }) {
+
+  if (clienteYaTieneTurno(cliente.id ?? cliente.numero_cliente, turnos)) {
+    _mostrarMensaje(card, "⚠️ Este cliente ya tiene un turno activo", "error");
+    return;
+  }
+  
   try {
     const turnoUI = _construirTurnoUI({
       cliente, tecnico, fechaISO, horaInicio, NumeroT, rangoSeleccionado,

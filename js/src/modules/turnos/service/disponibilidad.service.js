@@ -11,6 +11,15 @@ import { DURACION_BLOQUE_MIN, LIMITES_RANGO } from "./turnos.constants.js";
 // ----------------------------------------------------------
 
 /**
+ * Considera un turno inactivo si su estado es Cancelado.
+ * Soporta ViewModel (camelCase) y raw backend (snake_case).
+ */
+function _esCancelado(turno) {
+  const estado = turno.estado ?? "";
+  return estado.toLowerCase() === "cancelado";
+}
+
+/**
  * Expande una hora de inicio en `t` bloques de 15 min.
  * @param {string} horaInicio — "HH:MM"
  * @param {number} t          — cantidad de bloques
@@ -89,6 +98,7 @@ function normalizarTexto(texto) {
  */
 export function clienteYaTieneTurno(clienteId, turnos) {
   return turnos.some(t => {
+    if (_esCancelado(t)) return false;
     const id = t.clienteId ?? t.cliente?.id;
     return String(id) === String(clienteId);
   });
@@ -272,7 +282,8 @@ export function obtenerFechasDisponibles(
     // Saltar si el cliente ya tiene turno ese día
     const conflictoCliente = turnos.some(
       turno =>
-        String(turno.clienteId ?? turno.cliente_id) === String(clienteId) &&
+        !_esCancelado(turno) &&
+        String(turno.clienteId ?? turno.cliente?.id ?? turno.cliente_id) === String(clienteId) &&
         turno.fecha === fechaISO
     );
     if (conflictoCliente) continue;

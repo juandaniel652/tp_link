@@ -40,17 +40,20 @@ UX en agenda:
 a. Buscar a turnos por mes y año como en apps profesionales (HECHO)
 
 b. No se debe permitir que el cliente que ya tiene turno tome otro... solo 
-se puede editar cuando el turno ya esta tomado desde historial
+se puede editar cuando el turno ya esta tomado desde historial 
 
 c. Boton editar en turnos que permita cambiar el estado de ticket y de alli si se hace si se puede
 cambiar horario y demas
 
-(seria dentro de la card con boton editar azul abajo a la izquierda y derecha eliminar 
-(como el que esta a a izquierda))
+(seria dentro de la card con boton ed itar azul abajo a la izquierda y derecha eliminar 
+(como el que esta a a izquierda)) (HECHO, FALTA)
+
+FALTA
+1. Que en opciones sse encuentre abierto tambien por si quiero volver a que este asi
 
 d. de los tecnicos eliminados no mostrar los turnos en agenda, osea en inactivo
 
-e. Ubicacion, esta muy abajo, subirlo y dejarlo bien.
+e. Ubicacion, esta muy abajo, subirlo y dejarlo bien. aGENDA
 
 f. Un Toast en vez de alerts en nueva arquitectura usar coomo en la ui de agenda
 

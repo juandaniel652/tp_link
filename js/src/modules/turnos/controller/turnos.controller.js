@@ -209,6 +209,7 @@ export async function initTurnos() {
 
         renderHistorialTurnos(turnosDia, wrapper, id => {
           turnos = turnos.filter(t => String(t.id) !== String(id));
+          renderSelectClientes(selectCliente, clientes, turnos);
           _cargarMes();
         });
       });
