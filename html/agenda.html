@@ -51,7 +51,7 @@
   <!-- Toast container — dentro del body, antes de scripts ✅ -->
   <div id="toast-container"></div>
 
-  <script>
+ <script>
     document.addEventListener('DOMContentLoaded', () => {
       // Menú toggle
       const menuToggle = document.querySelector('.menu-toggle');
@@ -61,19 +61,9 @@
         menuToggle.classList.toggle('open');
       });
     
-      // Padding dinámico exacto al alto del header
-      const header = document.querySelector('.header');
-      const main   = document.querySelector('.main-content');
-      if (header && main) {
-        const ajustar = () => {
-          // Mover el contenido justo bajo el header sin padding extra en main
-          main.style.paddingTop = '0';
-          document.getElementById('agendaContainer').style.marginTop =
-            header.offsetHeight + 'px';
-        };
-        ajustar();
-        window.addEventListener('resize', ajustar);
-      }
+      // ← Sacar el marginTop del agendaContainer — header es sticky, no necesita offset
+      const container = document.getElementById('agendaContainer');
+      if (container) container.style.marginTop = '0';
     });
   </script>
 
