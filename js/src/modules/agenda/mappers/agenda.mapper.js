@@ -23,10 +23,17 @@ export function mapTurnoFromApi(raw) {
     fecha:         raw.fecha,
     hora_inicio:   raw.hora_inicio.slice(0, 5),
     hora_fin:      raw.hora_fin.slice(0, 5),
-    cliente:       raw.cliente  ?? null,
-    tecnico:       raw.tecnico  ?? null,
-    estado:        raw.estado,
-    color:         colorPorEstado(raw.estado)
+    cliente:       raw.cliente ?? null,
+    tecnico: raw.tecnico
+      ? {
+          id:       raw.tecnico.id,
+          nombre:   raw.tecnico.nombre,
+          apellido: raw.tecnico.apellido,
+          activo:   raw.tecnico.activo ?? true,  // ← dentro del objeto tecnico
+        }
+      : null,
+    estado: raw.estado,
+    color:  colorPorEstado(raw.estado),
   });
 }
 

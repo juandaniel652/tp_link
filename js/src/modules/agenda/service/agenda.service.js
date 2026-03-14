@@ -23,19 +23,19 @@ export class AgendaService {
    */
   indexarPorFechaHora(turnos, minutosBloque) {
     const index = {};
-
-    // ← Filtrar cancelados antes de indexar
-    const turnosActivos = turnos.filter(t =>
-      (t.estado ?? "").toLowerCase() !== "cancelado"
+    
+    const turnosValidos = turnos.filter(t =>
+      (t.estado ?? "").toLowerCase() !== "cancelado" &&
+      t.tecnico?.activo !== false  // ← excluir técnicos inactivos
     );
-
-    for (const turno of turnosActivos) {
+  
+    for (const turno of turnosValidos) {
       const fStr = turno.fecha.replace(/\//g, '-');
       const [hIni, mIni] = turno.hora_inicio.split(':').map(Number);
       const inicio  = new Date(`2000-01-01T${turno.hora_inicio}`);
       const fin     = new Date(`2000-01-01T${turno.hora_fin}`);
       const bloques = (fin - inicio) / (minutosBloque * 60000);
-
+    
       for (let b = 0; b < bloques; b++) {
         const totalMin  = hIni * 60 + mIni + b * minutosBloque;
         const bloqueKey = `${String(Math.floor(totalMin / 60)).padStart(2,'0')}:${String(totalMin % 60).padStart(2,'0')}`;
@@ -44,26 +44,19 @@ export class AgendaService {
         index[fStr][bloqueKey].push(turno);
       }
     }
-
+  
     return index;
   }
-
-  /**
-   * Filtra clientes que tienen al menos un turno con el técnico indicado
-   * @param {Object[]} clientes
-   * @param {TurnoAgenda[]} turnos
-   * @param {string} tecnicoFiltro  - "Nombre Apellido"
-   * @returns {Object[]}
-   */
+  
   filtrarClientesPorTecnico(clientes, turnos, tecnicoFiltro) {
     if (!tecnicoFiltro) return clientes;
-    
-    // ← Solo turnos activos (no cancelados)
-    const turnosActivos = turnos.filter(t =>
-      (t.estado ?? "").toLowerCase() !== "cancelado"
+  
+    const turnosValidos = turnos.filter(t =>
+      (t.estado ?? "").toLowerCase() !== "cancelado" &&
+      t.tecnico?.activo !== false  // ← excluir técnicos inactivos
     );
   
-    const nombres = turnosActivos
+    const nombres = turnosValidos
       .filter(t => t.tecnico?.id === tecnicoFiltro)
       .map(t => [t.cliente?.nombre, t.cliente?.apellido].filter(Boolean).join(' '));
   

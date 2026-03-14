@@ -127,7 +127,13 @@ export async function initTurnos() {
   // ----------------------------------------------------------
 
   async function _guardarTurno(turnoUI) {
-    const tecnico    = tecnicos.find(t => String(t.id) === String(turnoUI.tecnico_id));
+    const tecnico = tecnicos.find(t => String(t.id) === String(turnoUI.tecnico_id));
+    
+    if (!tecnico) {
+      ToastService.error("El técnico seleccionado ya no está disponible.");
+      return;
+    }
+  
     const nuevoTurno = await guardarTurno(turnoUI, turnos, tecnico);
     turnos.push(nuevoTurno);
     return nuevoTurno;
