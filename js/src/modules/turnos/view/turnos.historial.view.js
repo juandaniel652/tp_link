@@ -2,6 +2,7 @@
 // turnos.historial.view.js — Vista del Historial de Turnos
 // ============================================================
 
+import { ToastService } from "@/ui/ToastService.js";
 import {
   cargarTurnos,
   cargarTurnosPorFecha,
@@ -192,7 +193,7 @@ async function _onEliminar(turno, container, onEliminado) {
     onEliminado?.(id);
   } catch (e) {
     console.error("[historial.view] Error eliminando turno:", e);
-    alert("Error al eliminar el turno: " + e.message);
+    ToastService.error("Error al eliminar el turno: " + e.message);
   }
 }
 
@@ -228,7 +229,7 @@ async function _confirmarEdicionEstado(card, turno, editor) {
   const msgEl       = editor.querySelector(".mensaje-editor");
 
   if (!nuevoEstado) {
-    _mostrarMensajeEditor(msgEl, "⚠️ Seleccioná un estado", "error");
+    ToastService.error(msgEl, "⚠️ Seleccioná un estado", "error");
     return;
   }
 
@@ -242,21 +243,10 @@ async function _confirmarEdicionEstado(card, turno, editor) {
     turno.estado = nuevoEstado;
 
     editor.style.display = "none";
-    _mostrarMensajeEditor(msgEl, "✅ Estado actualizado", "ok");
+    ToastService.success(msgEl, "✅ Estado actualizado", "ok");
 
   } catch (e) {
-    _mostrarMensajeEditor(msgEl, "❌ Error: " + e.message, "error");
+    ToastService.error(msgEl, "❌ Error: " + e.message, "error");
   }
 }
 
-// ----------------------------------------------------------
-// Mensajes inline
-// ----------------------------------------------------------
-
-function _mostrarMensajeEditor(el, texto, tipo) {
-  el.style.display    = "block";
-  el.textContent      = texto;
-  el.style.color      = tipo === "error" ? "#e74c3c" : "#27ae60";
-  el.style.fontWeight = "bold";
-  el.style.marginTop  = "6px";
-}

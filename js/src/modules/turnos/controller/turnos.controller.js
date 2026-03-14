@@ -7,6 +7,8 @@
 // ============================================================
 
 // En turnos.controller.js, en los imports de disponibilidad
+// Agregar al bloque de imports
+import { ToastService } from "@/ui/ToastService.js";
 import { clienteYaTieneTurno } from "../service/disponibilidad.service.js";
 import { T_VALUES, RANGOS }            from "../service/turnos.constants.js";
 import { UI_STATE, cambiarEstado }     from "../state/turnos.state.js";
@@ -324,22 +326,22 @@ export async function initTurnos() {
     const tSeleccionado     = selectT.value;
     const rangoSeleccionado = selectRango.value;
     const estadoTicket      = selectEstadoTicket.value;
-    
+
     if (!clienteId || !tecnicoId || !tSeleccionado || !rangoSeleccionado || !estadoTicket) {
-      alert("Complete todos los campos");
+      ToastService.error("Complete todos los campos");
       return;
     }
-  
+
     // ← Segunda capa: bloqueo por turno activo
     if (clienteYaTieneTurno(clienteId, turnos)) {
-      alert("⚠️ Este cliente ya tiene un turno activo. Editalo desde el Historial.");
+      ToastService.error("⚠️ Este cliente ya tiene un turno activo. Editalo desde el Historial.");
       return; // ← este return es el que faltaba
     }
-  
+
     cambiarEstado(UI_STATE.DISPONIBILIDAD, _refs());
-  
+
     const tecnico = tecnicos.find(t => String(t.id) === String(tecnicoId));
-  
+
     await renderGrillaTurnos({
       clienteId,
       tecnico,

@@ -4,7 +4,9 @@
 // Migrado desde grilla.js + render_selects.js + formateo.js
 // ============================================================
 
-import { DURACION_BLOQUE_MIN, LIMITES_RANGO } from "../service/turnos.constants.js";
+// Agregar al bloque de imports
+import { ToastService } from "@/ui/ToastService.js";
+import { DURACION_BLOQUE_MIN} from "../service/turnos.constants.js";
 import {
   hayConflicto,
   obtenerHorariosDisponibles,
@@ -144,12 +146,12 @@ export async function renderGrillaTurnos({
   try {
     cliente = await resolverCliente(clientes, clienteId);
   } catch (e) {
-    alert(e.message);
+    ToastService.error(e.message);
     return;
   }
 
   if (!tecnico) {
-    alert("⚠️ No se encontró el técnico.");
+    ToastService.error("⚠️ No se encontró el técnico.");
     return;
   }
 
@@ -162,7 +164,7 @@ export async function renderGrillaTurnos({
   );
 
   if (!fechasOpciones.length) {
-    alert("No hay fechas disponibles según el técnico en los próximos 30 días");
+    ToastService.error("No hay fechas disponibles según el técnico en los próximos 30 días");
     return;
   }
 
@@ -280,7 +282,7 @@ function _configurarSeleccionAutomatica(
 ) {
   card.querySelector(".btnSeleccionarTurno")
     .addEventListener("click", async () => {
-      if (horaStr === "Sin horario") { alert("No hay horarios disponibles"); return; }
+      if (horaStr === "Sin horario") { ToastService.error("No hay horarios disponibles"); return; }
 
       if (hayConflicto(
         turnos, opcion.fechaISO, horaStr,
@@ -288,7 +290,7 @@ function _configurarSeleccionAutomatica(
         cliente.id ?? cliente.numero_cliente,
         NumeroT,
       )) {
-        _mostrarMensaje(card, "⚠️ Horario ocupado");
+        ToastService.error(card, "⚠️ Horario ocupado");
         return;
       }
 
@@ -347,7 +349,7 @@ function _configurarSeleccionManual(
         cliente.id ?? cliente.numero_cliente,
         NumeroT,
       )) {
-        _mostrarMensaje(card, "⚠️ Horario ocupado");
+        ToastService.error(card, "⚠️ Horario ocupado");
         return;
       }
 
@@ -374,7 +376,7 @@ async function _confirmarTurno({
 }) {
 
   if (clienteYaTieneTurno(cliente.id ?? cliente.numero_cliente, turnos)) {
-    _mostrarMensaje(card, "⚠️ Este cliente ya tiene un turno activo", "error");
+    ToastService.error(card, "⚠️ Este cliente ya tiene un turno activo", "error");
     return;
   }
   
@@ -391,27 +393,10 @@ async function _confirmarTurno({
     }
 
     turnosContainer.innerHTML = "";
-    _mostrarMensaje(card, "✅ Turno creado", "ok");
+    ToastService.error(card, "✅ Turno creado", "ok");
     limpiarSelects(selects);
 
   } catch (error) {
-    _mostrarMensaje(card, error.message);
+    ToastService.error(card, error.message);
   }
-}
-
-// ----------------------------------------------------------
-// Mensajes inline en card
-// ----------------------------------------------------------
-
-function _mostrarMensaje(card, texto, tipo = "error") {
-  let el = card.querySelector(".mensaje-turno");
-  if (!el) {
-    el = document.createElement("div");
-    el.className = "mensaje-turno";
-    card.appendChild(el);
-  }
-  el.textContent   = texto;
-  el.style.color   = tipo === "error" ? "red" : "green";
-  el.style.fontWeight = "bold";
-  el.style.marginTop  = "6px";
 }

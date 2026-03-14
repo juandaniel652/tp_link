@@ -42,6 +42,14 @@ a. Buscar a turnos por mes y año como en apps profesionales (HECHO)
 b. No se debe permitir que el cliente que ya tiene turno tome otro... solo 
 se puede editar cuando el turno ya esta tomado desde historial 
 
+(HECHO)
+
+FALTA:
+
+Ver si cuando el turno esta reprogramado o cerrado puede tomar de nuevo
+
+------------------------------------
+
 c. Boton editar en turnos que permita cambiar el estado de ticket y de alli si se hace si se puede
 cambiar horario y demas
 
@@ -50,6 +58,8 @@ cambiar horario y demas
 
 FALTA
 1. Que en opciones sse encuentre abierto tambien por si quiero volver a que este asi
+
+------------------------------------
 
 d. de los tecnicos eliminados no mostrar los turnos en agenda, osea en inactivo
 
