@@ -62,7 +62,7 @@ export class AgendaNavView {
     const fill = () => {
       select.innerHTML = '';
       const s = this.ctrl.state.semanaSeleccionada;
-      const optActual = new Option('⏪ Semana Actual', 0);
+      const optActual = new Option('Semana Actual', 0);
       if (s === 0) optActual.selected = true;
       select.appendChild(optActual);
       for (let i = s - 4; i <= s + 4; i++) {
@@ -87,8 +87,8 @@ export class AgendaNavView {
   _selectRango() {
     const select = crearSelectBase();
     select.id = 'selectRango';
-    select.appendChild(new Option('☀️ Mañana (09:00 - 13:00)', 'AM'));
-    select.appendChild(new Option('🌆 Tarde (14:00 - 18:00)', 'PM'));
+    select.appendChild(new Option('Mañana (09:00 - 13:00)', 'AM'));
+    select.appendChild(new Option('Tarde (14:00 - 18:00)', 'PM'));
     select.value = this.ctrl.state.rangoSeleccionado;
     select.addEventListener('change', e => this.ctrl.onRangoChange(e.target.value));
     return select;
