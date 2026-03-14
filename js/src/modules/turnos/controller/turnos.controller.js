@@ -6,6 +6,8 @@
 // y vistas.
 // ============================================================
 
+// En turnos.controller.js, en los imports de disponibilidad
+import { clienteYaTieneTurno } from "../service/disponibilidad.service.js";
 import { T_VALUES, RANGOS }            from "../service/turnos.constants.js";
 import { UI_STATE, cambiarEstado }     from "../state/turnos.state.js";
 import { cargarTurnos, cargarTurnosPorFecha, guardarTurno }
@@ -327,6 +329,8 @@ export async function initTurnos() {
     console.log("CLIENTE SELECCIONADO:", clienteId);
     console.log("TIENE TURNO?:", clienteYaTieneTurno(clienteId, turnos));
     console.log("ESTADOS:", turnos.map(t => ({ id: t.clienteId ?? t.cliente?.id, estado: t.estado })));
+    // En btnMostrarTurnos.onclick, después de los logs que ya tenés
+    console.log("IDs en turnos:", turnos.map(t => t.clienteId ?? t.cliente?.id));
 
     if (!clienteId || !tecnicoId || !tSeleccionado || !rangoSeleccionado || !estadoTicket) {
       alert("Complete todos los campos");
