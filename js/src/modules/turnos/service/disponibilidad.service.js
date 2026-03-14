@@ -14,9 +14,10 @@ import { DURACION_BLOQUE_MIN, LIMITES_RANGO } from "./turnos.constants.js";
  * Considera un turno inactivo si su estado es Cancelado.
  * Soporta ViewModel (camelCase) y raw backend (snake_case).
  */
-function _esCancelado(turno) {
-  const estado = turno.estado ?? "";
-  return estado.toLowerCase() === "cancelado";
+function _turnoBloqueante(turno) {
+  const estado = (turno.estado ?? "").toLowerCase();
+  // Solo "cancelado" libera al cliente — el resto bloquea
+  return estado !== "cancelado";
 }
 
 /**
@@ -98,9 +99,8 @@ function normalizarTexto(texto) {
  */
 export function clienteYaTieneTurno(clienteId, turnos) {
   return turnos.some(t => {
-    if (_esCancelado(t)) return false;
+    if (!_turnoBloqueante(t)) return false;  // cancelado → no bloquea
     const id = t.clienteId ?? t.cliente?.id;
-    console.log("comparando:", String(id), "===", String(clienteId), "→", String(id) === String(clienteId));
     return String(id) === String(clienteId);
   });
 }
@@ -283,7 +283,7 @@ export function obtenerFechasDisponibles(
     // Saltar si el cliente ya tiene turno ese día
     const conflictoCliente = turnos.some(
       turno =>
-        !_esCancelado(turno) &&
+        _turnoBloqueante(turno) &&  // ← solo bloquea si no está cancelado
         String(turno.clienteId ?? turno.cliente?.id ?? turno.cliente_id) === String(clienteId) &&
         turno.fecha === fechaISO
     );
