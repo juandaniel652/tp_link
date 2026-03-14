@@ -323,6 +323,11 @@ export async function initTurnos() {
     const rangoSeleccionado = selectRango.value;
     const estadoTicket     = selectEstadoTicket.value;
 
+    console.log("TURNOS EN MEMORIA:", turnos);
+    console.log("CLIENTE SELECCIONADO:", clienteId);
+    console.log("TIENE TURNO?:", clienteYaTieneTurno(clienteId, turnos));
+    console.log("ESTADOS:", turnos.map(t => ({ id: t.clienteId ?? t.cliente?.id, estado: t.estado })));
+
     if (!clienteId || !tecnicoId || !tSeleccionado || !rangoSeleccionado || !estadoTicket) {
       alert("Complete todos los campos");
       return;

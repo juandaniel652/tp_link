@@ -100,6 +100,7 @@ export function clienteYaTieneTurno(clienteId, turnos) {
   return turnos.some(t => {
     if (_esCancelado(t)) return false;
     const id = t.clienteId ?? t.cliente?.id;
+    console.log("comparando:", String(id), "===", String(clienteId), "→", String(id) === String(clienteId));
     return String(id) === String(clienteId);
   });
 }
