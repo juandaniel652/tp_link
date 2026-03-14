@@ -101,6 +101,11 @@ export async function initTurnos() {
 
   async function _refrescarTurnos() {
     turnos = await cargarTurnos();
+
+    console.log("TURNOS TRAS REFRESH:", turnos.map(t => ({ 
+      clienteId: t.clienteId, 
+      estado: t.estado 
+    })));
     renderSelectClientes(selectCliente, clientes, turnos);
   }
 
