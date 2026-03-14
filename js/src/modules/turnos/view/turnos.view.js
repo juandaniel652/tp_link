@@ -52,6 +52,7 @@ export function formatearRango(horaBase, tNum) {
  * ya tienen turno.
  */
 export function renderSelectClientes(selectEl, clientes, turnos = []) {
+  
   selectEl.innerHTML = `<option value="">Seleccionar Cliente</option>`;
 
   clientes.forEach(c => {
@@ -392,7 +393,7 @@ async function _confirmarTurno({
     }
 
     turnosContainer.innerHTML = "";
-    ToastService.error(card, "✅ Turno creado", "ok");
+    ToastService.success(card, "✅ Turno creado", "ok");
     limpiarSelects(selects);
 
   } catch (error) {
