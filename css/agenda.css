@@ -345,9 +345,9 @@ td button {
 .agenda-select {
   padding: 8px 28px 8px 12px;
   border-radius: 8px;
-  border: 1px solid #dcdde1;
-  background: #ffffff;
-  color: #2f3640;
+  border: 1px solid #1E3C72;
+  background: linear-gradient(135deg, #1E3C72, #2A5298);
+  color: #ffffff;
   font-size: 13px;
   font-weight: 600;
   font-family: 'RobotoMonoBold', monospace;
@@ -356,46 +356,50 @@ td button {
   min-width: 155px;
   appearance: none;
   -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%231E3C72'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  background-image:
+    linear-gradient(135deg, #1E3C72, #2A5298),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23ffffff'/%3E%3C/svg%3E");
+  background-repeat: no-repeat, no-repeat;
+  background-position: 0 0, right 10px center;
+  background-size: 100% 100%, 10px 6px;
+  transition: border-color 0.2s, box-shadow 0.2s, opacity 0.2s;
 }
 
 .agenda-select:hover {
-  border-color: #1E3C72;
+  opacity: 0.9;
+  border-color: #2A5298;
 }
 
 .agenda-select:focus {
-  border-color: #1E3C72;
-  box-shadow: 0 0 0 3px rgba(30,60,114,0.08);
+  box-shadow: 0 0 0 3px rgba(30,60,114,0.2);
+  outline: none;
 }
 
 .agenda-select option {
+  background: #ffffff;
   color: #2f3640;
   font-weight: 600;
-  background: #fff;
 }
 
 .agenda-btn-nav {
   padding: 8px 18px;
   border-radius: 8px;
-  border: 1px solid #dcdde1;
-  background: #ffffff;
-  color: #2f3640;
+  border: 1px solid #1E3C72;
+  background: linear-gradient(135deg, #1E3C72, #2A5298);
+  color: #ffffff;
   font-size: 13px;
   font-weight: 600;
   font-family: 'RobotoMonoBold', monospace;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   transition: all 0.2s ease;
 }
 
 .agenda-btn-nav:hover {
-  background: #1E3C72;
+  background: linear-gradient(135deg, #2A5298, #1E3C72);
   color: #ffffff;
   border-color: #1E3C72;
-  box-shadow: 0 4px 12px rgba(30,60,114,0.15);
+  box-shadow: 0 4px 12px rgba(30,60,114,0.25);
   transform: translateY(-1px);
 }
 
@@ -403,6 +407,30 @@ td button {
   transform: scale(0.97);
 }
 
+/* ================================
+   FIX LAYOUT AGENDA
+================================ */
+html, body {
+  display: block !important;
+  height: auto !important;
+}
+
+main.main-content {
+  padding-top: 0 !important;
+  flex: none !important;
+}
+
+.agenda-nav {
+  margin-top: 0 !important;
+}
+
+#agendaContainer > div.agenda-nav {
+  margin: 0 0 8px !important;
+}
+
+/* ================================
+   RESPONSIVE
+================================ */
 @media (max-width: 768px) {
   .agenda-nav { padding: 12px 16px; }
   .agenda-nav-selects {
@@ -410,11 +438,19 @@ td button {
     align-items: stretch;
     width: 100%;
   }
-  .agenda-select { width: 100%; min-width: unset; }
-  .agenda-nav-botones { width: 100%; justify-content: space-between; }
-  .agenda-btn-nav { flex: 1; text-align: center; }
+  .agenda-select {
+    width: 100%;
+    min-width: unset;
+  }
+  .agenda-nav-botones {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .agenda-btn-nav {
+    flex: 1;
+    text-align: center;
+  }
 }
-
 
 /* ==============================
    ======== RESPONSIVE ========
