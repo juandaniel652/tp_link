@@ -52,13 +52,6 @@
   <div id="toast-container"></div>
 
   <script>
-    // Ver el margen del primer hijo dentro del main
-    const container = document.querySelector('#agendaContainer');
-    const firstChild = container.firstElementChild;
-    console.log('margin-top agendaContainer:', getComputedStyle(container).marginTop);
-    console.log('margin-top primer hijo:', getComputedStyle(firstChild).marginTop);
-    console.log('gap del main:', getComputedStyle(document.querySelector('.main-content')).gap);
-    
     document.addEventListener('DOMContentLoaded', () => {
       // Menú toggle
       const menuToggle = document.querySelector('.menu-toggle');
@@ -67,7 +60,7 @@
         nav.classList.toggle('show');
         menuToggle.classList.toggle('open');
       });
-
+    
       // Padding dinámico exacto al alto del header
       const header = document.querySelector('.header');
       const main   = document.querySelector('.main-content');

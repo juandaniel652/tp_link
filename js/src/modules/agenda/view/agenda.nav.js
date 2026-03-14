@@ -1,82 +1,59 @@
 import { getFechaLunes } from '../utils/agenda.utils.js';
 
-/* ─── helpers de estilos ──────────────────────────────────────────── */
-
 function crearSelectBase() {
   const sel = document.createElement('select');
-  Object.assign(sel.style, {
-    padding:      '8px 14px',
-    borderRadius: '12px',
-    border:       'none',
-    fontWeight:   'bold',
-    fontSize:     '14px',
-    color:        '#f0f0f0',
-    background:   'linear-gradient(135deg, #1E3C72, #2A5298)',
-    cursor:       'pointer',
-    transition:   '0.3s'
-  });
+  sel.className = 'agenda-select';
   return sel;
 }
 
 function crearBotonNavegar(texto, onClick) {
   const btn = document.createElement('button');
   btn.textContent = texto;
-  Object.assign(btn.style, {
-    padding:      '8px 14px',
-    borderRadius: '12px',
-    border:       'none',
-    fontWeight:   'bold',
-    fontSize:     '14px',
-    cursor:       'pointer',
-    background:   'linear-gradient(135deg, #2A5298, #1E3C72)',
-    color:        '#ffffff'
-  });
+  btn.className = 'agenda-btn-nav';
   btn.addEventListener('click', onClick);
   return btn;
 }
 
-/* ─── Vista de navegación ─────────────────────────────────────────── */
-
 export class AgendaNavView {
-  /**
-   * @param {import('../controller/agenda.controller.js').AgendaController} ctrl
-   */
   constructor(ctrl) {
     this.ctrl = ctrl;
   }
 
   render() {
     const nav = document.createElement('div');
-    nav.appendChild(this._selectTecnico());
-    nav.appendChild(this._selectSemana());
-    nav.appendChild(this._selectRango());
-    nav.appendChild(this._botones());
+    nav.className = 'agenda-nav';
+
+    // Fila 1 — selects
+    const filaSelects = document.createElement('div');
+    filaSelects.className = 'agenda-nav-selects';
+    filaSelects.appendChild(this._selectTecnico());
+    filaSelects.appendChild(this._selectSemana());
+    filaSelects.appendChild(this._selectRango());
+
+    // Fila 2 — botones
+    const filaBotones = document.createElement('div');
+    filaBotones.className = 'agenda-nav-botones';
+    filaBotones.appendChild(crearBotonNavegar('← Semana Anterior', () => this.ctrl.onSemanaAnterior()));
+    filaBotones.appendChild(crearBotonNavegar('Semana Siguiente →', () => this.ctrl.onSemanaSiguiente()));
+
+    nav.appendChild(filaSelects);
+    nav.appendChild(filaBotones);
     return nav;
   }
 
-  /* ── select técnico ── */
   _selectTecnico() {
     const select = crearSelectBase();
     select.id = 'selectTecnico';
-
     select.appendChild(new Option('Agenda Unificada', ''));
     (this.ctrl.state.tecnicos || []).forEach(t => {
       const nombre = [t.nombre, t.apellido].filter(Boolean).join(' ');
-      select.appendChild(new Option(nombre, t.id));  // ← value = id
+      select.appendChild(new Option(nombre, t.id));
     });
-
-    if (this.ctrl.state.tecnicoFiltro) {
-      select.value = this.ctrl.state.tecnicoFiltro;
-    }
-
-    select.addEventListener('change', e => {
-      this.ctrl.onTecnicoChange(e.target.value);
-    });
-
+    if (this.ctrl.state.tecnicoFiltro) select.value = this.ctrl.state.tecnicoFiltro;
+    select.addEventListener('change', e => this.ctrl.onTecnicoChange(e.target.value));
     return select;
   }
 
-  /* ── select semana ── */
   _selectSemana() {
     const select = crearSelectBase();
     select.id = 'selectSemana';
@@ -85,11 +62,9 @@ export class AgendaNavView {
     const fill = () => {
       select.innerHTML = '';
       const s = this.ctrl.state.semanaSeleccionada;
-
       const optActual = new Option('⏪ Semana Actual', 0);
       if (s === 0) optActual.selected = true;
       select.appendChild(optActual);
-
       for (let i = s - 4; i <= s + 4; i++) {
         if (i === 0) continue;
         const ini = new Date(lunesActual);
@@ -97,8 +72,7 @@ export class AgendaNavView {
         const fin = new Date(ini);
         fin.setDate(fin.getDate() + 6);
         const opt = new Option(
-          `Del ${ini.toLocaleDateString('es-ES')} al ${fin.toLocaleDateString('es-ES')}`,
-          i
+          `Del ${ini.toLocaleDateString('es-ES')} al ${fin.toLocaleDateString('es-ES')}`, i
         );
         if (i === s) opt.selected = true;
         select.appendChild(opt);
@@ -106,34 +80,17 @@ export class AgendaNavView {
     };
 
     fill();
-
-    select.addEventListener('change', e => {
-      this.ctrl.onSemanaChange(parseInt(e.target.value));
-    });
-
+    select.addEventListener('change', e => this.ctrl.onSemanaChange(parseInt(e.target.value)));
     return select;
   }
 
-  /* ── select rango ── */
   _selectRango() {
     const select = crearSelectBase();
     select.id = 'selectRango';
-    select.appendChild(new Option('Mañana (09:00 - 13:00)', 'AM'));
-    select.appendChild(new Option('Tarde (14:00 - 18:00)', 'PM'));
+    select.appendChild(new Option('☀️ Mañana (09:00 - 13:00)', 'AM'));
+    select.appendChild(new Option('🌆 Tarde (14:00 - 18:00)', 'PM'));
     select.value = this.ctrl.state.rangoSeleccionado;
-
-    select.addEventListener('change', e => {
-      this.ctrl.onRangoChange(e.target.value);
-    });
-
+    select.addEventListener('change', e => this.ctrl.onRangoChange(e.target.value));
     return select;
-  }
-
-  /* ── botones prev / next ── */
-  _botones() {
-    const frag = document.createDocumentFragment();
-    frag.appendChild(crearBotonNavegar('← Semana Anterior', () => this.ctrl.onSemanaAnterior()));
-    frag.appendChild(crearBotonNavegar('Semana Siguiente →', () => this.ctrl.onSemanaSiguiente()));
-    return frag;
   }
 }
