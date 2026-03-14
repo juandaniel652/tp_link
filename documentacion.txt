@@ -70,7 +70,7 @@ FALTA
 ------------------------------------
 AGENDA
 
-d. de los tecnicos eliminados no mostrar los turnos en agenda, osea en inactivo
+d. de los tecnicos eliminados no mostrar los turnos en agenda, osea en inactivo (HECHO)
 
 e. Ubicacion, esta muy abajo, subirlo y dejarlo bien. 
 
