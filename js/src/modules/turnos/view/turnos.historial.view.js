@@ -2,9 +2,9 @@
 // turnos.historial.view.js — Vista del Historial de Turnos
 // ============================================================
 
+import { tokenStorage } from "@/core/storage/tokenStorage.js";
 import { ToastService } from "@/ui/ToastService.js";
 import {
-  cargarTurnos,
   cargarTurnosPorFecha,
   cancelarTurnoById,
 } from "../service/turnos.service.js";
@@ -23,6 +23,19 @@ const _slug = e => e
   .normalize("NFD")
   .replace(/[\u0300-\u036f]/g, "")
   .replace(/\s+/g, "-") ?? "";
+
+
+// ----------------------------------------------------------
+// Formatters
+// ----------------------------------------------------------
+// Helper para leer el rol (igual que en main.js)
+function getRoleFromToken() {
+  try {
+    const token = tokenStorage.getToken();
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.role ?? null;
+  } catch { return null; }
+}
 
 // ----------------------------------------------------------
 // Formatters
@@ -107,6 +120,7 @@ export function inicializarSelectorFecha(selectorEl, container) {
 // ----------------------------------------------------------
 
 function _crearCardHistorial(t, onEliminado) {
+  const role = getRoleFromToken();
   const card = document.createElement("div");
   card.className = "card-turno";
 
@@ -133,14 +147,16 @@ function _crearCardHistorial(t, onEliminado) {
       <span class="badge-estado badge-${_slug(estado)}">${formatearEstado(estado)}</span>
     </p>
     <div class="card-acciones">
-      <button class="btnEditarTurno"  data-id="${t.id}">Editar</button>
+      ${role === "admin" ? `<button class="btnEditarTurno" data-id="${t.id}">Editar</button>` : ""}
       <button class="btnEliminarTurno" data-id="${t.id}">Eliminar</button>
     </div>
     <div class="editorEstado" style="display:none"></div>
   `;
 
-  card.querySelector(".btnEditarTurno")
-    .addEventListener("click", () => _toggleEditorEstado(card, t));
+  const btnEditar = card.querySelector(".btnEditarTurno");
+  if (btnEditar) {
+    btnEditar.addEventListener("click", () => _toggleEditorEstado(card, t));
+  }
 
   card.querySelector(".btnEliminarTurno")
     .addEventListener("click", () => _onEliminar(
