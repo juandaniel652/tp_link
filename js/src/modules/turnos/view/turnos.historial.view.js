@@ -148,7 +148,7 @@ function _crearCardHistorial(t, onEliminado) {
     </p>
     <div class="card-acciones">
       ${role === "admin" ? `<button class="btnEditarTurno" data-id="${t.id}">Editar</button>` : ""}
-      <button class="btnEliminarTurno" data-id="${t.id}">Eliminar</button>
+      ${role === "admin" ? `<button class="btnEliminarTurno" data-id="${t.id}">Eliminar</button>` : ""}
     </div>
     <div class="editorEstado" style="display:none"></div>
   `;
@@ -158,12 +158,14 @@ function _crearCardHistorial(t, onEliminado) {
     btnEditar.addEventListener("click", () => _toggleEditorEstado(card, t));
   }
 
-  card.querySelector(".btnEliminarTurno")
-    .addEventListener("click", () => _onEliminar(
+  const btnEliminar = card.querySelector(".btnEliminarTurno");
+  if (btnEliminar) {
+    btnEliminar.addEventListener("click", () => _onEliminar(
       t,
       card.closest(".historial-turnos") ?? card.parentElement,
       onEliminado,
     ));
+  }
 
   return card;
 }
