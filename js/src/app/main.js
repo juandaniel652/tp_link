@@ -1,5 +1,17 @@
+// js/src/app/main.js
 import { requireAuth }    from "@/core/auth/token.guard.js";
 import { sessionManager } from "@/core/auth/session.manager.js";
+import { tokenStorage }   from "@/core/storage/tokenStorage.js";
+
+function getRoleFromToken() {
+  try {
+    const token = tokenStorage.getToken();
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.role ?? null;
+  } catch {
+    return null;
+  }
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("[main] DOMContentLoaded — arrancando");
@@ -10,10 +22,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   console.log("[main] Auth OK");
-
-  // ← Una sola línea — aplica a TODOS los módulos automáticamente
-  // Cambiá null por "/auth/refresh" cuando tengas el endpoint listo
   sessionManager.init(null);
+
+  const role = getRoleFromToken();
+  console.log("[main] Rol detectado:", role);
 
   // ── Turnos ────────────────────────────────────────────────
   if (document.querySelector("#turnosContainer")) {
@@ -29,7 +41,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ── Clientes ──────────────────────────────────────────────
-  if (document.querySelector("#clientesTable")) {
+  if (role === "admin" && document.querySelector("#clientesTable")) {
     console.log("[main] Página de clientes detectada — cargando módulo...");
     try {
       const { initClientes } = await import("@/modules/clientes/index.js");
@@ -40,7 +52,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ── Técnicos ──────────────────────────────────────────────
-  if (document.querySelector("#formGeneral")) {
+  if (role === "admin" && document.querySelector("#formGeneral")) {
     console.log("[main] Página de técnicos detectada — cargando módulo...");
     try {
       const { initTecnicos } = await import("@/modules/tecnicos/index.js");
@@ -51,7 +63,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ── Agenda ────────────────────────────────────────────────
-  if (document.querySelector("#agendaContainer")) {
+  if (role === "admin" && document.querySelector("#agendaContainer")) {
     console.log("[main] Página de agenda detectada — cargando módulo...");
     try {
       const { initAgenda } = await import("@/modules/agenda/index.js");
