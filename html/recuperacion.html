@@ -121,68 +121,64 @@
 
   </main>
 
+  <!-- Reemplazá el <script> completo de recuperacion.html por este -->
   <script>
-    // Iniciar transición elegante
+    const API_BASE_URL = "https://agenda-1-zomu.onrender.com/api/v1";
+  
     document.addEventListener("DOMContentLoaded", () => {
-        const recoveryContainer = document.getElementById("recoveryContainer");
-        setTimeout(() => {
-            recoveryContainer.classList.remove("initial-hidden");
-            recoveryContainer.classList.add("show-form");
-        }, 10);
+      const recoveryContainer = document.getElementById("recoveryContainer");
+      setTimeout(() => {
+        recoveryContainer.classList.remove("initial-hidden");
+        recoveryContainer.classList.add("show-form");
+      }, 10);
     });
-
-    const form = document.getElementById("recoveryForm");
+  
+    const form       = document.getElementById("recoveryForm");
     const emailInput = document.getElementById("email");
     const messageDiv = document.getElementById("message");
     const buttonText = document.getElementById("buttonText");
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    form.addEventListener("submit", (e) => {
+  
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
       hideMessage();
-
+    
       const email = emailInput.value.trim();
-
-      if (!email) {
-        showMessage("El correo electrónico es obligatorio.", "error");
-        return;
-      }
-
-      if (!emailRegex.test(email)) {
-        showMessage("Por favor, ingrese un correo electrónico válido.", "error");
-        return;
-      }
-
-      // Simulación de envío
+    
+      if (!email) { showMessage("El correo es obligatorio.", "error"); return; }
+      if (!emailRegex.test(email)) { showMessage("Correo inválido.", "error"); return; }
+    
       buttonText.textContent = "Enviando...";
-      const originalButtonText = "Enviar Instrucciones";
-
-      setTimeout(() => {
-        // Simulación exitosa
-        showMessage(
-          "¡Enviado! Revisá tu bandeja de entrada para continuar.",
-          "success"
-        );
-        buttonText.textContent = originalButtonText;
+      form.querySelector("button").disabled = true;
+    
+      try {
+        const res = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+      
+        // El backend siempre devuelve 200 por seguridad (no revela si el email existe)
+        showMessage("¡Enviado! Revisá tu bandeja de entrada.", "success");
         form.reset();
-      }, 2000); // 2 segundos de carga simulada
+      } catch {
+        showMessage("Error de conexión. Intentá de nuevo.", "error");
+      } finally {
+        buttonText.textContent = "Enviar Instrucciones";
+        form.querySelector("button").disabled = false;
+      }
     });
-
+  
     function showMessage(mensaje, type) {
       messageDiv.textContent = mensaje;
-      messageDiv.classList.remove("hidden", "bg-red-100", "text-red-700", "bg-green-100", "text-green-700");
-
-      if (type === "error") {
-        messageDiv.classList.add("bg-red-100", "text-red-700");
-      } else if (type === "success") {
-        messageDiv.classList.add("bg-green-100", "text-green-700");
-      }
+      messageDiv.classList.remove("hidden","bg-red-100","text-red-700","bg-green-100","text-green-700");
+      messageDiv.classList.add(
+        type === "error" ? "bg-red-100" : "bg-green-100",
+        type === "error" ? "text-red-700" : "text-green-700"
+      );
     }
-
-    function hideMessage() {
-        messageDiv.classList.add("hidden");
-    }
+  
+    function hideMessage() { messageDiv.classList.add("hidden"); }
   </script>
 
 </body>
