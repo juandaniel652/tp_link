@@ -66,6 +66,25 @@ export async function initTurnos() {
   });
 
   // ----------------------------------------------------------
+  // 1b. Rol del usuario
+  // ----------------------------------------------------------
+
+  function getRoleFromToken() {
+    try {
+      const token = tokenStorage.getToken();
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload.role ?? null;
+    } catch { return null; }
+  }
+
+    const role = getRoleFromToken();  // ← agregar
+
+    // Si no es admin, ocultar todo el panel de creación
+    if (role !== "admin") {           // ← agregar
+      document.querySelector(".sidebar").style.display = "none";
+    }
+
+  // ----------------------------------------------------------
   // 2. Cargar datos maestros
   // ----------------------------------------------------------
 
