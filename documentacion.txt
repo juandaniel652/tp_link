@@ -72,7 +72,7 @@ AGENDA
 
 d. de los tecnicos eliminados no mostrar los turnos en agenda, osea en inactivo (HECHO)
 
-e. Ubicacion, esta muy abajo, subirlo y dejarlo bien. 
+e. Ubicacion, esta muy abajo, subirlo y dejarlo bien.  (HECHO)
 
 
 e. cuando vence el token mostrar un toast que diga volviendo y que no tarrde en llevarlo al login, sino que lo lleve
