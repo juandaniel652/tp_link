@@ -2,15 +2,13 @@
 import { requireAuth }    from "@/core/auth/token.guard.js";
 import { sessionManager } from "@/core/auth/session.manager.js";
 import { tokenStorage }   from "@/core/storage/tokenStorage.js";
+import { ToastService }   from "@/ui/ToastService.js";
 
-function getRoleFromToken() {
+function getPayloadFromToken() {
   try {
     const token = tokenStorage.getToken();
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    return payload.role ?? null;
-  } catch {
-    return null;
-  }
+    return JSON.parse(atob(token.split(".")[1]));
+  } catch { return null; }
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -24,8 +22,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   console.log("[main] Auth OK");
   sessionManager.init(null);
 
-  const role = getRoleFromToken();
+  const payload = getPayloadFromToken();
+  const role    = payload?.role ?? null;
   console.log("[main] Rol detectado:", role);
+
+  // Toast de bienvenida — solo una vez por sesión
+  if (!sessionStorage.getItem("welcomed")) {
+    const nombre = payload?.email?.split("@")[0] ?? "Usuario";
+    ToastService.success(`¡Bienvenido, ${nombre}!`);
+    sessionStorage.setItem("welcomed", "1");
+  }
 
   // ── Turnos ────────────────────────────────────────────────
   if (document.querySelector("#turnosContainer")) {
