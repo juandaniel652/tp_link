@@ -168,6 +168,34 @@ export async function renderGrillaTurnos({
     return;
   }
 
+  // ── LOG disponibilidad ──────────────────────────────────────
+  console.log(
+    '[disponibilidad] Opciones ofrecidas:',
+    JSON.stringify(
+      fechasOpciones.map(opcion => {
+        const horarios = filtrarPorRango(
+          obtenerHorariosDisponibles(
+            turnos, opcion.fechaISO, tecnico,
+            opcion.diaNombre,
+            cliente.id ?? cliente.numero_cliente,
+            NumeroT
+          ),
+          rangoSeleccionado,
+          NumeroT
+        );
+        return {
+          fecha:    opcion.fechaISO,
+          dia:      opcion.diaNombre,
+          horarios: horarios,
+          primerHorarioSugerido: horarios[0] ?? null
+        };
+      }),
+      null,
+      2
+    )
+  );
+  // ────────────────────────────────────────────────────────────
+
   fechasOpciones.forEach(opcion => {
     let horariosDisponibles = obtenerHorariosDisponibles(
       turnos,
