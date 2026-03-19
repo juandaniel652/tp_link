@@ -3,7 +3,7 @@
 // ============================================================
 
 import { ToastService }            from "@/ui/ToastService.js";
-import { clienteYaTieneTurno }     from "../service/disponibilidad.service.js";
+import { clienteYaTieneTurno, obtenerDisponibilidadBackend }     from "../service/disponibilidad.service.js";
 import { T_VALUES, RANGOS }        from "../service/turnos.constants.js";
 import { UI_STATE, cambiarEstado } from "../state/turnos.state.js";
 import { cargarTurnos, cargarTurnosPorFecha, guardarTurno }
@@ -327,21 +327,27 @@ export async function initTurnos() {
     const tSeleccionado     = selectT.value;
     const rangoSeleccionado = selectRango.value;
     const estadoTicket      = selectEstadoTicket.value;
-
+    
     if (!clienteId || !tecnicoId || !tSeleccionado || !rangoSeleccionado || !estadoTicket) {
       ToastService.error("Complete todos los campos");
       return;
     }
-
+  
     if (clienteYaTieneTurno(clienteId, turnos)) {
-      ToastService.error("Este cliente ya tiene un turno activo. Editalo desde el Historial.");
+      ToastService.error("Este cliente ya tiene un turno activo.");
       return;
     }
-
+  
     cambiarEstado(UI_STATE.DISPONIBILIDAD, _refs());
-
+  
     const tecnico = tecnicos.find(t => String(t.id) === String(tecnicoId));
-
+  
+    const fecha = new Date().toISOString().slice(0, 10);
+  
+    const slots = await obtenerDisponibilidadBackend(tecnicoId, fecha);
+  
+    console.log("Slots backend:", slots);
+  
     await renderGrillaTurnos({
       clienteId,
       tecnico,
@@ -352,7 +358,8 @@ export async function initTurnos() {
       turnosContainer,
       estadoTicket,
       guardarTurno: _guardarTurno,
-      selects:      _selects(),
+      selects: _selects(),
+      slotsBackend: slots   // 🔥 IMPORTANTE
     });
   };
 

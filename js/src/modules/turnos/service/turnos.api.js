@@ -130,3 +130,11 @@ export async function eliminarTurno(id) {
   await handleResponse(response);
   return true;
 }
+
+
+export async function obtenerDisponibilidad(tecnicoId, fecha) {
+  return await apiRequest({
+    url: `/turnos/disponibilidad?tecnico_id=${tecnicoId}&fecha=${fecha}`,
+    method: "GET",
+  });
+}

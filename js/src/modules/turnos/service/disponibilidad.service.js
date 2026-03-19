@@ -5,6 +5,7 @@
 // ============================================================
 
 import { DURACION_BLOQUE_MIN, LIMITES_RANGO } from "./turnos.constants.js";
+import { obtenerDisponibilidad } from "./turnos.api.js";
 
 // ----------------------------------------------------------
 // Helpers internos
@@ -196,36 +197,13 @@ export function filtrarPorRango(horarios, rango, tNum = 1) {
  * @param {number}        [t=1]
  * @returns {string[]}   array de "HH:MM" disponibles
  */
-export function obtenerHorariosDisponibles(
-  turnos,
-  fechaISO,
-  tecnico,
-  diaNombre,
-  clienteId = null,
-  t = 1
+export async function obtenerHorariosDisponiblesBackend(
+  tecnicoId,
+  fechaISO
 ) {
-  const diaNorm = normalizarTexto(diaNombre);
+  const data = await obtenerDisponibilidad(tecnicoId, fechaISO);
 
-  // Normalizar claves del mapa de bloques del técnico
-  const bloquesPorDia = Object.fromEntries(
-    Object.entries(tecnico.generarBloques()).map(([k, v]) => [
-      normalizarTexto(k),
-      v,
-    ])
-  );
-
-  const bloquesDia = bloquesPorDia[diaNorm] ?? [];
-
-  return bloquesDia.filter(hora =>
-    !hayConflicto(
-      turnos,
-      fechaISO,
-      hora,
-      `${tecnico.nombre} ${tecnico.apellido}`,
-      clienteId,
-      t
-    )
-  );
+  return data.slots_disponibles || [];
 }
 
 /**
@@ -293,4 +271,10 @@ export function obtenerFechasDisponibles(
   }
 
   return fechasOpciones;
+}
+
+
+export async function obtenerDisponibilidadBackend(tecnicoId, fecha) {
+  const data = await obtenerDisponibilidad(tecnicoId, fecha);
+  return data.slots_disponibles || [];
 }

@@ -138,10 +138,10 @@ export async function renderGrillaTurnos({
   guardarTurno,
   estadoTicket,
   selects,
+  slotsBackend // <-- aquí llega el array del backend
 }) {
   turnosContainer.innerHTML = "";
 
-  // Resolver cliente (local o Andros)
   let cliente;
   try {
     cliente = await resolverCliente(clientes, clienteId);
@@ -157,64 +157,22 @@ export async function renderGrillaTurnos({
 
   const NumeroT = Number(tSeleccionado);
 
-  const fechasOpciones = obtenerFechasDisponibles(
-    tecnico,
-    turnos,
-    cliente.id ?? cliente.numero_cliente,
-  );
-
-  if (!fechasOpciones.length) {
-    ToastService.error("No hay fechas disponibles según el técnico en los próximos 30 días");
+  if (!slotsBackend.length) {
+    ToastService.error("No hay horarios disponibles según el backend");
     return;
   }
 
-  // ── LOG disponibilidad ──────────────────────────────────────
-  console.log(
-    '[disponibilidad] Opciones ofrecidas:',
-    JSON.stringify(
-      fechasOpciones.map(opcion => {
-        const horarios = filtrarPorRango(
-          obtenerHorariosDisponibles(
-            turnos, opcion.fechaISO, tecnico,
-            opcion.diaNombre,
-            cliente.id ?? cliente.numero_cliente,
-            NumeroT
-          ),
-          rangoSeleccionado,
-          NumeroT
-        );
-        return {
-          fecha:    opcion.fechaISO,
-          dia:      opcion.diaNombre,
-          horarios: horarios,
-          primerHorarioSugerido: horarios[0] ?? null
-        };
-      }),
-      null,
-      2
-    )
-  );
-  // ────────────────────────────────────────────────────────────
-
-  fechasOpciones.forEach(opcion => {
-    let horariosDisponibles = obtenerHorariosDisponibles(
-      turnos,
-      opcion.fechaISO,
-      tecnico,
-      opcion.diaNombre,
-      cliente.id ?? cliente.numero_cliente,
-      NumeroT,
-    );
-
-    horariosDisponibles = filtrarPorRango(horariosDisponibles, rangoSeleccionado, NumeroT);
+  slotsBackend.forEach(slot => {
+    // slot: { fecha: '2026-03-20', hora_inicio: '09:00', duracion: 1, rango: 'AM' }
+    if (slot.rango !== rangoSeleccionado) return; // filtrar por rango
 
     const card = _crearCardTurno({
       cliente,
       tecnico,
       NumeroT,
       rangoSeleccionado,
-      opcion,
-      horariosDisponibles,
+      opcion: { fecha: new Date(slot.fecha), fechaISO: slot.fecha, diaNombre: new Date(slot.fecha).toLocaleDateString("es-ES", { weekday: "long" }) },
+      horariosDisponibles: [slot.hora_inicio],
       estadoTicket,
       guardarTurno,
       turnos,
