@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Sistema dewhich git gestión S-Link: clientes, técnicos, turnos, puntos de acceso y agenda.">
+  <meta name="description" content="Sistema de gestión S-Link: clientes, técnicos, turnos, puntos de acceso y agenda.">
   <meta name="author" content="Juan Dominguez">
   <meta name="robots" content="index, follow">
 
@@ -17,15 +17,14 @@
 
   <link rel="shortcut icon" href="img/logo-transparente-tp-link-blanco.png?v=2" type="image/x-icon">
 
-
-  <!-- Estilos -->
-  <link rel="stylesheet" href="/css/general.css">
-  <link rel="stylesheet" href="/css/menu.css">
+  <!-- Estilos (rutas relativas para producción) -->
+  <link rel="stylesheet" href="css/general.css">
+  <link rel="stylesheet" href="css/menu.css">
 </head>
 <body>
 
-  <script type="module" src="/js/src/core/auth/token.guard.js"></script>
-
+  <!-- JS: usar archivos compilados en dist/assets para evitar 404 / MIME error -->
+  <script type="module" src="dist/assets/token.guard-CQbhYxkz.js"></script>
 
   <!-- HEADER -->
   <header class="header">
@@ -41,7 +40,7 @@
 
       <nav class="top-nav" aria-label="Menú principal">
         <ul>
-          <li><a href="../index.html" class="active">Menú</a></li>
+          <li><a href="index.html" class="active">Menú</a></li>
           <li><a href="html/cliente.html">Clientes</a></li>
           <li><a href="html/tecnico.html">Técnicos</a></li>
           <li><a href="html/turno.html">Turnos</a></li>
@@ -53,7 +52,6 @@
 
   <!-- CONTENIDO PRINCIPAL -->
   <main class="main-container">
-    <!-- Menú tipo dashboard -->
     <section class="menu-principal">
       <a href="html/cliente.html" class="menu-button" target="_blank" rel="noopener noreferrer">
         <img src="img/clientes.png" alt="Clientes">
@@ -86,18 +84,17 @@
   <!-- JS MENÚ HAMBURGUESA -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-    const menuToggle = document.querySelector('.menu-toggle');
-    const nav = document.querySelector('.top-nav');
+      const menuToggle = document.querySelector('.menu-toggle');
+      const nav = document.querySelector('.top-nav');
       
-    menuToggle.addEventListener('click', () => {
-      if(nav.style.display === 'flex') {
-        nav.style.display = 'none';
-      } else {
-        nav.style.display = 'flex';
-      }
+      menuToggle.addEventListener('click', () => {
+        if(nav.style.display === 'flex') {
+          nav.style.display = 'none';
+        } else {
+          nav.style.display = 'flex';
+        }
+      });
     });
-  });
-
   </script>
 </body>
 </html>
