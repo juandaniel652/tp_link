@@ -51,7 +51,7 @@ export const ESTADOS_TURNO = {
 };
 
 /** URL base de la API propia */
-export const API_BASE_URL = "https://agenda-1-zomu.onrender.com/api/v1";
+export const API_BASE_URL = "https://agenda.andros-net.com.ar/api/v1";
 
 /** URL base de la API de Andros */
-export const ANDROS_API_URL = "https://andros-api.ejemplo.com/api/clientes/";
+export const ANDROS_API_URL = "https://andros-net.com.ar/api/v1";

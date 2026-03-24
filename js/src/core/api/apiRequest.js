@@ -2,7 +2,7 @@
 
 import { tokenStorage } from "@/core/storage/tokenStorage.js";
 
-const API_BASE_URL = "https://agenda-1-zomu.onrender.com/api/v1";
+const API_BASE_URL = "https://agenda.andros-net.com.ar/api/v1";
 
 export async function apiRequest(endpoint, options = {}) {
   const token = tokenStorage.getToken();

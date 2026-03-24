@@ -1,4 +1,4 @@
-const API_BASE = "https://agenda-1-zomu.onrender.com/api/v1";
+const API_BASE = "https://agenda.andros-net.com.ar/api/v1";
 
 export async function fetchClientes(token) {
   const response = await fetch(`${API_BASE}/clientes/`, {
