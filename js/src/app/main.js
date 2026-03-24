@@ -1,8 +1,8 @@
 // js/src/app/main.js
-import { requireAuth }    from "@/core/auth/token.guard.js";
-import { sessionManager } from "@/core/auth/session.manager.js";
-import { tokenStorage }   from "@/core/storage/tokenStorage.js";
-import { ToastService }   from "@/ui/ToastService.js";
+import { requireAuth }    from "../core/auth/token.guard.js";
+import { sessionManager } from "../core/auth/session.manager.js";
+import { tokenStorage }   from "../core/storage/tokenStorage.js";
+import { ToastService }   from "../ui/ToastService.js";
 
 function getPayloadFromToken() {
   try {

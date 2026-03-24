@@ -1,6 +1,6 @@
 // core/api/apiRequest.js
 
-import { tokenStorage } from "@/core/storage/tokenStorage.js";
+import { tokenStorage } from "../storage/tokenStorage.js";
 
 const API_BASE_URL = "https://agenda.andros-net.com.ar/api/v1";
 

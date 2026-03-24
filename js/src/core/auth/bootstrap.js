@@ -1,5 +1,5 @@
-import { requireAuth }    from "@/core/auth/token.guard.js";
-import { sessionManager } from "@/core/auth/session.manager.js";
+import { requireAuth }    from "./token.guard.js";
+import { sessionManager } from "./session.manager.js";
 
 export async function bootstrapProtectedPage(initFunction) {
   const isAuthenticated = await requireAuth();
