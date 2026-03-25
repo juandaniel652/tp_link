@@ -1,11 +1,11 @@
 import { AgendaService }    from '../service/agenda.service.js';
-import { obtenerClientes }  from '@/modules/clientes/service/clientes.service.js';
-import TecnicosService      from '@/modules/tecnicos/service/tecnicos.service.js';
-import { tokenStorage }     from '@/core/storage/tokenStorage.js';
+import { obtenerClientes }  from '../../clientes/service/clientes.service.js';
+import TecnicosService      from '../../tecnicos/service/tecnicos.service';
+import { tokenStorage }     from '../../../core/storage/tokenStorage.js';
 import { AgendaNavView }    from '../view/agenda.nav.js';
 import { AgendaTableView }  from '../view/agenda.table.view.js';
-import { getFechaLunes, pad } from '../utils/agenda.utils.js';
-import { ToastService } from "@/ui/ToastService.js";
+import { getFechaLunes } from '../utils/agenda.utils.js';
+import { ToastService } from "../../../ui/ToastService.js";
 
 /**
  * Controlador del módulo Agenda.

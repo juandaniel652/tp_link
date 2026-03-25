@@ -1,4 +1,4 @@
-import { apiRequest } from '@/core/api/apiRequest.js';
+import { apiRequest } from '../../../core/api/apiRequest.js';
 import { mapTurnoFromApi, mapTurnoToApi } from '../mappers/agenda.mapper.js';
 
 /**
