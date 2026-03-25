@@ -1,5 +1,5 @@
 import { loginRequest } from "../service/login.service.js";
-import { tokenStorage } from "@/core/storage/tokenStorage.js";
+import { tokenStorage } from "../../../core/storage/tokenStorage.js";
 
 export function initLogin() {
 

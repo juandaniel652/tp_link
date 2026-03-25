@@ -2,7 +2,7 @@
 // turnos.controller.js — Controller principal del módulo
 // ============================================================
 
-import { ToastService }            from "@/ui/ToastService.js";
+import { ToastService }            from "../../../ui/ToastService.js";
 import { clienteYaTieneTurno, obtenerDisponibilidadBackend }     from "../service/disponibilidad.service.js";
 import { T_VALUES, RANGOS }        from "../service/turnos.constants.js";
 import { UI_STATE, cambiarEstado } from "../state/turnos.state.js";
@@ -15,10 +15,10 @@ import {
   renderSelectGen,
   renderGrillaTurnos,
 }                                  from "../view/turnos.view.js";
-import Tecnico         from "@/modules/tecnicos/model/tecnico.model.js";
-import { fetchClientes }      from "@/modules/clientes/service/clientes.api.js";
-import { tecnicosApi }        from "@/modules/tecnicos/service/tecnicos.api.js";
-import { tokenStorage }       from "@/core/storage/tokenStorage.js";
+import Tecnico         from "../../../modules/tecnicos/model/tecnico.model.js";
+import { fetchClientes }      from "../../../modules/clientes/service/clientes.api.js";
+import { tecnicosApi }        from "../../../modules/tecnicos/service/tecnicos.api.js";
+import { tokenStorage }       from "../../../core/storage/tokenStorage.js";
 
 // ============================================================
 // Bootstrap

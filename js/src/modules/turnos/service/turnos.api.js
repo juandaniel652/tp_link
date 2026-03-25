@@ -5,7 +5,7 @@
 // ============================================================
 
 import { API_BASE_URL } from "./turnos.constants.js";
-import { tokenStorage } from "@/core/storage/tokenStorage.js";
+import { tokenStorage } from "../../../core/storage/tokenStorage.js";
 
 const TURNOS_ENDPOINT = `${API_BASE_URL}/turnos`;
 

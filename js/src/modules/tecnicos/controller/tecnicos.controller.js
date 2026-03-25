@@ -1,5 +1,5 @@
 // modules/tecnicos/controller/tecnicos.controller.js
-import { ToastService } from "@/ui/ToastService.js";
+import { ToastService } from "../../../ui/ToastService.js";
 import TecnicosService from "../service/tecnicos.service.js";
 import TecnicosView    from "../view/tecnicos.view.js";
 import Tecnico         from "../model/tecnico.model.js";

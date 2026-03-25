@@ -5,13 +5,11 @@
 // ============================================================
 
 // Agregar al bloque de imports
-import { ToastService } from "@/ui/ToastService.js";
+import { ToastService } from "../../../ui/ToastService.js";
 import { DURACION_BLOQUE_MIN} from "../service/turnos.constants.js";
 import {
   hayConflicto,
-  obtenerHorariosDisponibles,
-  filtrarPorRango,
-  obtenerFechasDisponibles,
+
 } from "../service/disponibilidad.service.js";
 import { clienteYaTieneTurno }   from "../service/disponibilidad.service.js";
 import { resolverCliente }       from "../service/andros.service.js";
