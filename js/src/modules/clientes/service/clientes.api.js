@@ -1,7 +1,8 @@
-const API_BASE = "https://agenda.andros-net.com.ar/api/v1";
+
+import {API_URL} from "../../../core/config/api"
 
 export async function fetchClientes(token) {
-  const response = await fetch(`${API_BASE}/clientes/`, {
+  const response = await fetch(`${API_URL}/clientes/`, {
     headers: {
       "Authorization": `Bearer ${token}`,
       "Content-Type": "application/json"
@@ -17,7 +18,7 @@ export async function fetchClientes(token) {
 }
 
 export async function createCliente(payload, token) {
-  const response = await fetch(`${API_BASE}/clientes/`, {
+  const response = await fetch(`${API_URL}/clientes/`, {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${token}`,
@@ -35,7 +36,7 @@ export async function createCliente(payload, token) {
 }
 
 export async function updateCliente(id, payload, token) {
-  const response = await fetch(`${API_BASE}/clientes/${id}`, {
+  const response = await fetch(`${API_URL}/clientes/${id}`, {
     method: "PUT",
     headers: {
       "Authorization": `Bearer ${token}`,
@@ -53,7 +54,7 @@ export async function updateCliente(id, payload, token) {
 }
 
 export async function deleteCliente(id, token) {
-  const response = await fetch(`${API_BASE}/clientes/${id}`, {
+  const response = await fetch(`${API_URL}/clientes/${id}`, {
     method: "DELETE",
     headers: {
       "Authorization": `Bearer ${token}`,

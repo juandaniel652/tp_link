@@ -1,8 +1,8 @@
 // core/api/apiRequest.js
 
 import { tokenStorage } from "../storage/tokenStorage.js";
+import {API_URL} from "../../core/config/api.js";
 
-const API_BASE_URL = "https://agenda.andros-net.com.ar/api/v1";
 
 export async function apiRequest(endpoint, options = {}) {
   const token = tokenStorage.getToken();
@@ -15,7 +15,7 @@ export async function apiRequest(endpoint, options = {}) {
     ...options.headers
   };
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+  const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers
   });

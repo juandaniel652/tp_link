@@ -1,1 +1,1 @@
-export const API_URL = "https://agenda.andros-net.com.ar/api/v1";
+export const API_URL = "https://andros-net.com.ar/api/api/v1";
