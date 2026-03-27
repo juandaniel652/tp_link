@@ -48,7 +48,14 @@ export function initLogin() {
 
         console.log("TOKEN GUARDADO:", localStorage.getItem("access_token"));
 
-        window.location.href = "/index.html";
+        const isProduction = window.location.hostname !== 'localhost';
+        
+        const REDIRECT_PATH = isProduction ? '/agenda/index.html' : '/index.html';
+
+        if (response.ok) {
+            // ... guardar token ...
+            window.location.href = REDIRECT_PATH;
+        }
 
     } catch (err) {
       mostrarError(err.message);
