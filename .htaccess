@@ -5,12 +5,12 @@
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
-  # Esto asegura que si el archivo EXISTE (como login.html), el servidor lo entregue y no redireccione
+  RewriteBase /agenda/
+
+  # Si el archivo existe físicamente, no hagas nada (déjalo pasar)
   RewriteCond %{REQUEST_FILENAME} -f
   RewriteRule ^ - [L]
 
-  # Solo si el archivo NO existe, podrías mandarlo al index (opcional)
-  # RewriteCond %{REQUEST_FILENAME} !-f
-  # RewriteCond %{REQUEST_FILENAME} !-d
-  # RewriteRule . /agenda/index.html [L]
+  # Si NO existe, podrías redirigir al index (opcional para SPA)
+  # RewriteRule . index.html [L]
 </IfModule>
