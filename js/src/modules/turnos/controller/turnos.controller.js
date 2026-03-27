@@ -88,9 +88,9 @@ export async function initTurnos() {
 
     const role = getRoleFromToken();  
 
-    //if (role !== "admin") {          
-    //  document.querySelector(".sidebar").style.display = "none";
-    //}
+    if (role !== "admin") {          
+      document.querySelector(".sidebar").style.display = "none";
+    }
 
   // ----------------------------------------------------------
   // 2. Cargar datos maestros
