@@ -30,34 +30,19 @@ export default class TecnicosController {
   // ── Seguridad ────────────────────────────────────────────────────────────────
 
   _aplicarSeguridadSegunRol() {
-    const token = tokenStorage.getToken();
-    let role = 'user';
-
-    try {
-      // Decodificamos el payload del token
-      const payload = JSON.parse(decodeURIComponent(escape(atob(token.split(".")[1]))));
-      role = payload?.role || 'user';
-    } catch (e) {
-      console.error("[TecnicosController] Error al decodificar rol:", e);
-    }
+    const role = this._getRole();
 
     if (role !== 'admin') {
-      console.log("[TecnicosController] Aplicando modo lectura para usuario");
+      console.log("[TecnicosController] Aplicando modo lectura");
       
-      // Ocultamos el contenedor del formulario (usamos el selector que recibe la vista)
       const formElement = document.querySelector(this.view.formSelector);
       if (formElement) {
-        // Buscamos el contenedor padre (usualmente un .box o la sección que quieres ocultar)
+        // Buscamos el div .box que lo envuelve para que no quede el hueco blanco
         const container = formElement.closest('.box') || formElement;
-        container.style.display = "none";
-        
-        // Si hay un título antes del formulario, también lo ocultamos
-        if (container.previousElementSibling?.tagName.startsWith('H')) {
-            container.previousElementSibling.style.display = "none";
-        }
+        container.style.setProperty('display', 'none', 'important');
       }
-
-      // Añadimos la clase al body para que el CSS oculte los botones de la tabla
+      
+      // Reforzamos la clase en el body
       document.body.classList.add("user-readonly");
     }
   }

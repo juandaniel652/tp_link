@@ -44,6 +44,15 @@ function getPayloadFromToken() {
   const role    = payload?.role ?? null;
   console.log("[main] Rol detectado:", role);
 
+  // --- NUEVO: Marcamos el body globalmente ---
+  if (role === "admin") {
+    document.body.classList.add("is-admin");
+    document.body.classList.remove("user-readonly");
+  } else {
+    document.body.classList.add("user-readonly");
+    document.body.classList.remove("is-admin");
+  }
+
   // Toast de bienvenida — solo una vez por sesión
   if (!sessionStorage.getItem("welcomed")) {
     const nombre = payload?.email?.split("@")[0] ?? "Usuario";
