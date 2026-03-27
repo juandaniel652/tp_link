@@ -1,24 +1,22 @@
-// agenda/js/src/core/auth/token.guard.js
-
 import { tokenStorage } from "../storage/tokenStorage.js";
+
+// Definimos la ruta base una sola vez para evitar errores
+const LOGIN_URL = "/agenda/html/login.html";
 
 export function requireAuth() {
   const token = tokenStorage.getToken();
 
-  // Si no hay token o es inválido
+  // 1. Si no existe el token
   if (!token || token === "null" || token === "undefined") {
-    console.warn("[Guard] No hay token — Redirigiendo a Login");
     tokenStorage.removeToken();
-    // USAMOS LA RUTA QUE CONFIRMASTE QUE FUNCIONA
-    window.location.replace("https://andros-net.com.ar/agenda/html/login.html");
+    window.location.replace(LOGIN_URL);
     return false;
   }
 
-  // Verificar si expiró
+  // 2. Si el token está vencido
   if (_tokenVencido(token)) {
-    console.warn("[Guard] Token expirado — Redirigiendo a Login");
     tokenStorage.removeToken();
-    window.location.replace("https://andros-net.com.ar/agenda/html/login.html");
+    window.location.replace(LOGIN_URL);
     return false;
   }
 
@@ -27,7 +25,7 @@ export function requireAuth() {
 
 export function logout() {
   tokenStorage.removeToken();
-  window.location.href = "https://andros-net.com.ar/agenda/html/login.html";
+  window.location.href = LOGIN_URL;
 }
 
 function _tokenVencido(token) {
