@@ -2,7 +2,7 @@
    FUENTES
 ================================ */
 @font-face {
-  font-family: 'RobotoMonoBold'; 
+  font-family: 'Roboto Mono', monospace;
   src: url('../fuentes/RobotoMono/RobotoMono-Bold.ttf') format('truetype'); 
   font-weight: normal; 
   font-style: normal;  
