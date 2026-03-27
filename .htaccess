@@ -1,0 +1,11 @@
+# 1. Forzar el tipo MIME correcto para JS y fuentes
+AddType application/javascript .js
+AddType font/ttf .ttf
+
+# 2. Permitir que los módulos se carguen sin bloqueos
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+</IfModule>
+
+# 3. Evitar que las carpetas devuelvan un 404 HTML en lugar del archivo
+Options -Indexes
