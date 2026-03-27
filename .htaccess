@@ -3,14 +3,7 @@
   AddType application/javascript .mjs
 </IfModule>
 
+# Desactivamos el motor de redirección para que no toque tus URLs
 <IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /agenda/
-
-  # Si el archivo existe físicamente, no hagas nada (déjalo pasar)
-  RewriteCond %{REQUEST_FILENAME} -f
-  RewriteRule ^ - [L]
-
-  # Si NO existe, podrías redirigir al index (opcional para SPA)
-  # RewriteRule . index.html [L]
+  RewriteEngine Off
 </IfModule>
