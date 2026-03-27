@@ -3,7 +3,7 @@ name: Deploy a cPanel
 on:
   push:
     branches:
-      - backend_php # Se dispara cuando pusheas a esta rama
+      - backend_php
 
 jobs:
   build-and-deploy:
@@ -11,12 +11,12 @@ jobs:
 
     steps:
       - name: 🚚 Obtener código de GitHub
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # Actualizado a v4
 
       - name: 🛠️ Instalar Node.js y dependencias
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4 # Actualizado a v4
         with:
-          node-version: 18
+          node-version: 22 # <--- CAMBIADO A 22
 
       - name: 🏗️ Ejecutar Build de Vite
         run: |
@@ -29,7 +29,5 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          # Subimos SOLO lo que generó Vite
           local-dir: ./dist/ 
-          # Carpeta de destino en tu hosting
           server-dir: public_html/agenda/
