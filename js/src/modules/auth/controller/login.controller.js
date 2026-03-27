@@ -21,7 +21,7 @@ export function initLogin() {
 
   const token = tokenStorage.getToken();
   if (token) {
-    window.location.href = "/index.html";
+    window.location.href = "../../../../../index.html";
     return;
   }
 
