@@ -2,22 +2,18 @@ import { loginRequest } from "../service/login.service.js";
 import { tokenStorage } from "../../../core/storage/tokenStorage.js";
 
 export function initLogin() {
-
   const container = document.getElementById("loginContainer");
   const form = document.getElementById("loginForm");
   const usuario = document.getElementById("usuario");
   const password = document.getElementById("password");
   const errorDiv = document.getElementById("error");
 
-  if (!form) return; // Seguridad
+  if (!form) return;
 
   const button = form.querySelector("button");
   const buttonText = document.getElementById("buttonText");
 
-  // Animación segura
-  if (container) {
-    container.classList.add("animate-in");
-  }
+  if (container) container.classList.add("animate-in");
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -26,28 +22,31 @@ export function initLogin() {
     const email = usuario.value.trim();
     const pass = password.value.trim();
 
-    if (!email || !pass) {
-      return mostrarError("Todos los campos son obligatorios.");
-    }
+    if (!email || !pass) return mostrarError("Todos los campos son obligatorios.");
 
     buttonText.textContent = "Verificando...";
     button.disabled = true;
 
     try {
       const data = await loginRequest(email, pass);
-      console.log("LOGIN RESPONSE:", data);
-          
-      if (data && data.access_token) {
-          tokenStorage.setToken(data.access_token);
-          
-          const isProduction = window.location.hostname !== 'localhost';
-          // Aseguramos que en producción vaya a /agenda/index.html
-          const REDIRECT_PATH = isProduction ? '/agenda/index.html' : '/index.html';
-          
-          console.log("Login exitoso, redirigiendo a:", REDIRECT_PATH);
-          window.location.replace(REDIRECT_PATH); // replace es mejor para no volver atrás al login
-      }
       
+      if (data && data.access_token) {
+        tokenStorage.setToken(data.access_token);
+
+        // --- LÓGICA DE REDIRECCIÓN INTELIGENTE ---
+        const isProduction = window.location.hostname !== 'localhost';
+        const defaultPath = isProduction ? '/agenda/index.html' : '/index.html';
+        
+        // Intentamos obtener la ruta guardada por el guardián
+        const savedPath = sessionStorage.getItem("redirect_after_login");
+        const REDIRECT_PATH = savedPath || defaultPath;
+
+        // Limpiamos la variable para que no afecte futuros logins
+        sessionStorage.removeItem("redirect_after_login");
+
+        console.log("Login exitoso. Redirigiendo a:", REDIRECT_PATH);
+        window.location.replace(REDIRECT_PATH);
+      }
     } catch (err) {
       mostrarError(err.message);
       buttonText.textContent = "ACCEDER";
