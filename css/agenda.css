@@ -718,3 +718,16 @@ main.main-content {
 #agendaContainer > div.agenda-nav {
   margin: 0 0 8px !important;
 }
+
+
+/* Si es modo lectura, los huecos vacíos de la agenda no deben parecer clickeables */
+body.user-readonly .agenda-cell-empty {
+    cursor: default !important;
+    background-color: #f9f9f9 !important;
+}
+
+/* Ocultar cualquier botón de "Nuevo Turno" o similar que aparezca en la vista de agenda */
+body.user-readonly .btn-add-turno,
+body.user-readonly .agenda-actions {
+    display: none !important;
+}

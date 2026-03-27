@@ -97,8 +97,9 @@ function getPayloadFromToken() {
     } catch (e) { console.error(e); }
   }
 
-  // ── Agenda ────────────────────────────────────────────────
-  if (role === "admin" && document.querySelector("#agendaContainer")) {
+  /// ── Agenda ────────────────────────────────────────────────
+  if (document.querySelector("#agendaContainer")) { 
+    // Quitamos el check de role === "admin" para que cargue la UI
     console.log("[main] Página de agenda detectada — cargando módulo...");
     try {
       const { initAgenda } = await import("../modules/agenda/index.js");

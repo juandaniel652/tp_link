@@ -41,7 +41,8 @@ export class AgendaController {
       numDias:           6,
       semanaSeleccionada: 0,
       tecnicoFiltro:     '',
-      fechaInicioSemana: getFechaLunes(new Date())
+      fechaInicioSemana: getFechaLunes(new Date()),
+      role: 'user'
     };
 
     /* vistas */
@@ -57,6 +58,18 @@ export class AgendaController {
    * ───────────────────────────────────────────────────────────────── */
   async _init() {
     try {
+      // 1. Detectar Rol
+      const token = tokenStorage.getToken();
+      try {
+        const payload = JSON.parse(decodeURIComponent(escape(atob(token.split(".")[1]))));
+        this.state.role = payload?.role || 'user';
+      } catch (e) { this.state.role = 'user'; }
+
+      // 2. Aplicar clase visual si no es admin
+      if (this.state.role !== 'admin') {
+          document.body.classList.add("user-readonly");
+      }
+
       const [turnos, clientes, tecnicos] = await Promise.all([
         this.service.obtenerTodos(),
         obtenerClientes(tokenStorage.getToken()),
@@ -127,17 +140,25 @@ export class AgendaController {
   }
 
   onAsignarTurno(fecha, horaInicioStr) {
+    // BLOQUEO PARA USUARIOS
+    if (this.state.role !== 'admin') {
+      ToastService.info('Solo los administradores pueden asignar turnos desde la agenda.');
+      return;
+    }
+
     if (!this.state.tecnicoFiltro) {
       ToastService.info('Seleccione un técnico');
       return;
     }
-    // Redirigir a turnos con el técnico y fecha preseleccionados
+    
     const params = new URLSearchParams({
       tecnico_id: this.state.tecnicoFiltro,
       fecha,
     });
+    // Redirigir a turnos (esto se mantiene solo para admins)
     window.location.href = `/html/turno.html?${params.toString()}`;
   }
+
 
   /* ─────────────────────────────────────────────────────────────────
    * SELECT CLIENTES EXTERNO
