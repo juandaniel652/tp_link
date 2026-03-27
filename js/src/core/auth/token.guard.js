@@ -5,14 +5,14 @@ export function requireAuth() {
 
   if (!token || token === "null" || token === "undefined") {
     tokenStorage.removeToken();
-    window.location.replace("../html/login.html");
+    window.location.replace("../../../../html/login.html");
     return false;
   }
 
   // ← Verificar expiración del JWT
   if (_tokenVencido(token)) {
     tokenStorage.removeToken();
-    window.location.replace("../html/login.html");
+    window.location.replace("../../../../html/login.html");
     return false;
   }
 
@@ -21,7 +21,7 @@ export function requireAuth() {
 
 export function logout() {
   tokenStorage.removeToken();
-  window.location.href = "../html/login.html";
+  window.location.href = "../../../../html/login.html";
 }
 
 // ----------------------------------------------------------
