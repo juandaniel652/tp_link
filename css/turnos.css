@@ -121,9 +121,15 @@ main {
 /* ================================ */
 .layout {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 24px;
+  grid-template-columns: 300px 1fr; /* Un poquito más de aire al sidebar */
+  gap: 30px;
   padding: 24px;
+  align-items: start; /* Importante para que no se estire el formulario */
+}
+
+.content {
+  min-width: 0; /* Evita que la grilla rompa el layout */
+  flex: 1;
 }
 
 /* ================================ */
@@ -1094,41 +1100,4 @@ button, .btn-primary, .btnSeleccionarTurno, .btnEliminarTurno {
 .modal-btn-info {
   background: linear-gradient(135deg, #1E3C72, #2A5298);
   color: #fff;
-}
-
-/* Diseño para cPanel en cuerpo para contenido visible */
-
-/* Corrección de emergencia para Selects y Layout */
-.layout {
-    display: flex;
-    gap: 20px;
-    padding: 20px;
-    align-items: flex-start;
-}
-
-.sidebar {
-    flex: 0 0 300px; /* Ancho fijo para el formulario */
-    background: #f4f4f4;
-    padding: 20px;
-    border-radius: 8px;
-}
-
-.form-turno select {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: white !important; /* Asegura que no sea transparente */
-    color: #333 !important;
-}
-
-@media (max-width: 768px) {
-    .layout {
-        flex-direction: column;
-    }
-    .sidebar {
-        width: 100%;
-    }
 }
