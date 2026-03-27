@@ -1,11 +1,14 @@
-# 1. Forzar el tipo MIME correcto para JS y fuentes
-AddType application/javascript .js
-AddType font/ttf .ttf
-
-# 2. Permitir que los módulos se carguen sin bloqueos
-<IfModule mod_headers.c>
-    Header set Access-Control-Allow-Origin "*"
+<IfModule mod_mime.c>
+  AddType application/javascript .js
+  AddType application/javascript .mjs
 </IfModule>
 
-# 3. Evitar que las carpetas devuelvan un 404 HTML en lugar del archivo
-Options -Indexes
+# Esto ayuda a que las rutas de la app (SPA) no den 404
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /agenda/
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /agenda/index.html [L]
+</IfModule>
