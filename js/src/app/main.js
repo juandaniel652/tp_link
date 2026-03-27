@@ -13,14 +13,25 @@ function getPayloadFromToken() {
 
   document.addEventListener("DOMContentLoaded", async () => {
   const path = window.location.pathname;
+  const isAuthPage = path.includes("login.html") || path.includes("register.html") || path.includes("recuperacion.html");
 
-  // SI ES LOGIN O REGISTRO, NO EJECUTAMOS EL GUARDIÁN NI EL RESTO DE MAIN
-  if (path.includes("login.html") || path.includes("register.html") || path.includes("recuperacion.html")) {
-    console.log("[main] Página de acceso detectada — omitiendo requireAuth");
-    return; 
+  // 1. MANEJO DE PÁGINAS DE ACCESO (Login, Register, etc.)
+  if (isAuthPage) {
+    console.log("[main] Página de acceso detectada — activando controlador...");
+    if (path.includes("login.html")) {
+      try {
+        // Importamos dinámicamente el módulo de auth y ejecutamos initLogin
+        const { initLogin } = await import("../modules/auth/index.js");
+        initLogin();
+      } catch (e) {
+        console.error("[main] Error cargando initLogin:", e);
+      }
+    }
+    return; // Salimos para no ejecutar validación de token aquí
   }
 
-  console.log("[main] DOMContentLoaded — arrancando");
+  // 2. MANEJO DE PÁGINAS PROTEGIDAS (Index, Clientes, etc.)
+  console.log("[main] Página protegida — validando sesión");
   if (!requireAuth()) {
     console.warn("[main] requireAuth falló — redirigiendo");
     return;
