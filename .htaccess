@@ -3,12 +3,14 @@
   AddType application/javascript .mjs
 </IfModule>
 
-# Esto ayuda a que las rutas de la app (SPA) no den 404
 <IfModule mod_rewrite.c>
   RewriteEngine On
-  RewriteBase /agenda/
-  RewriteRule ^index\.html$ - [L]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /agenda/index.html [L]
+  # Esto asegura que si el archivo EXISTE (como login.html), el servidor lo entregue y no redireccione
+  RewriteCond %{REQUEST_FILENAME} -f
+  RewriteRule ^ - [L]
+
+  # Solo si el archivo NO existe, podrías mandarlo al index (opcional)
+  # RewriteCond %{REQUEST_FILENAME} !-f
+  # RewriteCond %{REQUEST_FILENAME} !-d
+  # RewriteRule . /agenda/index.html [L]
 </IfModule>
