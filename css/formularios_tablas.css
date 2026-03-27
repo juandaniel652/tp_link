@@ -805,3 +805,21 @@ body:not(.is-admin) #formCliente {
   opacity: 0.6;
   pointer-events: none;
 }
+
+/* --- SEGURIDAD DE VISTA PARA USUARIOS --- */
+
+/* Cuando el body tiene la clase user-readonly, escondemos todo lo que sea edición */
+body.user-readonly .btn-edit, 
+body.user-readonly .btn-delete, 
+body.user-readonly .btn-save,
+body.user-readonly .action-buttons,
+body.user-readonly #btnNuevoTecnico,
+body.user-readonly .column-actions { /* Ajusta según la clase de tu celda de acciones */
+    display: none !important;
+}
+
+/* Si usas una columna de "Acciones" en la tabla, podemos ocultar la última celda de cada fila */
+body.user-readonly table tr th:last-child,
+body.user-readonly table tr td:last-child {
+    display: none !important;
+}

@@ -1,5 +1,6 @@
 // modules/tecnicos/controller/tecnicos.controller.js
 import { ToastService } from "../../../ui/ToastService.js";
+import { tokenStorage } from "../../../core/storage/tokenStorage.js"; // Importamos el storage
 import TecnicosService from "../service/tecnicos.service.js";
 import TecnicosView    from "../view/tecnicos.view.js";
 import Tecnico         from "../model/tecnico.model.js";
@@ -19,22 +20,66 @@ export default class TecnicosController {
   // ── Ciclo de vida ────────────────────────────────────────────────────────────
 
   async init() {
+    // 1. Verificar Seguridad antes de mostrar nada
+    this._aplicarSeguridadSegunRol();
+
+    // 2. Cargar datos
     await this._cargarTabla();
+  }
+
+  // ── Seguridad ────────────────────────────────────────────────────────────────
+
+  _aplicarSeguridadSegunRol() {
+    const token = tokenStorage.getToken();
+    let role = 'user';
+
+    try {
+      // Decodificamos el payload del token
+      const payload = JSON.parse(decodeURIComponent(escape(atob(token.split(".")[1]))));
+      role = payload?.role || 'user';
+    } catch (e) {
+      console.error("[TecnicosController] Error al decodificar rol:", e);
+    }
+
+    if (role !== 'admin') {
+      console.log("[TecnicosController] Aplicando modo lectura para usuario");
+      
+      // Ocultamos el contenedor del formulario (usamos el selector que recibe la vista)
+      const formElement = document.querySelector(this.view.formSelector);
+      if (formElement) {
+        // Buscamos el contenedor padre (usualmente un .box o la sección que quieres ocultar)
+        const container = formElement.closest('.box') || formElement;
+        container.style.display = "none";
+        
+        // Si hay un título antes del formulario, también lo ocultamos
+        if (container.previousElementSibling?.tagName.startsWith('H')) {
+            container.previousElementSibling.style.display = "none";
+        }
+      }
+
+      // Añadimos la clase al body para que el CSS oculte los botones de la tabla
+      document.body.classList.add("user-readonly");
+    }
   }
 
   // ── Handlers privados ────────────────────────────────────────────────────────
 
   async _guardar(payload) {
-    console.log("GUARDAR payload:", payload);
-    console.log("_validar:", this._validar(payload));
-    // Validación básica antes de ir al servidor
+    // Protección extra por si alguien habilita el botón por consola
+    if (this._getRole() !== 'admin') {
+        ToastService.error("No tenés permisos para realizar esta acción.");
+        return;
+    }
+
     if (!this._validar(payload)) return;
 
     try {
       if (payload.id !== undefined) {
         await this.service.actualizar(payload.id, payload);
+        ToastService.success("Técnico actualizado");
       } else {
         await this.service.crear(payload);
+        ToastService.success("Técnico creado");
       }
 
       this.view.resetFormulario();
@@ -47,6 +92,8 @@ export default class TecnicosController {
   }
 
   async _eliminar(id) {
+    if (this._getRole() !== 'admin') return;
+
     const confirmado = await ToastService.confirm({
       title:       "¿Eliminar técnico?",
       message:     "Esta acción no se puede deshacer.",
@@ -69,6 +116,14 @@ export default class TecnicosController {
 
   // ── Helpers ──────────────────────────────────────────────────────────────────
 
+  _getRole() {
+    try {
+        const token = tokenStorage.getToken();
+        const payload = JSON.parse(decodeURIComponent(escape(atob(token.split(".")[1]))));
+        return payload?.role || 'user';
+    } catch { return 'user'; }
+  }
+
   async _cargarTabla() {
     try {
       const tecnicos = await this.service.obtenerTodos();
@@ -80,7 +135,6 @@ export default class TecnicosController {
 
   _validar(payload) {
     this.view.limpiarErrores();
-
     const campos = ["nombre", "apellido", "telefono", "email"];
     let valido = true;
 
