@@ -7,7 +7,7 @@ import { ToastService }   from "../ui/ToastService.js";
 function getPayloadFromToken() {
   try {
     const token = tokenStorage.getToken();
-    return JSON.parse(atob(token.split(".")[1]));
+  return JSON.parse(decodeURIComponent(escape(atob(token.split(".")[1]))));
   } catch { return null; }
 }
 

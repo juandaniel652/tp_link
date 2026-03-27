@@ -1,5 +1,5 @@
 
-import {API_URL} from "../../../core/config/api"
+import {API_URL} from "../../../core/config/api.js"
 
 export async function fetchClientes(token) {
   const response = await fetch(`${API_URL}/clientes/`, {
