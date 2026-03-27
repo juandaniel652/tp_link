@@ -1,19 +1,24 @@
+// agenda/js/src/core/auth/token.guard.js
+
 import { tokenStorage } from "../storage/tokenStorage.js";
 
 export function requireAuth() {
   const token = tokenStorage.getToken();
 
+  // Si no hay token o es inválido
   if (!token || token === "null" || token === "undefined") {
+    console.warn("[Guard] No hay token — Redirigiendo a Login");
     tokenStorage.removeToken();
-    // CAMBIO: Ruta absoluta desde la raíz del sitio
-    window.location.replace("/agenda/html/login.html");
+    // USAMOS LA RUTA QUE CONFIRMASTE QUE FUNCIONA
+    window.location.replace("https://andros-net.com.ar/agenda/html/login.html");
     return false;
   }
 
+  // Verificar si expiró
   if (_tokenVencido(token)) {
+    console.warn("[Guard] Token expirado — Redirigiendo a Login");
     tokenStorage.removeToken();
-    // CAMBIO: Ruta absoluta
-    window.location.replace("/agenda/html/login.html");
+    window.location.replace("https://andros-net.com.ar/agenda/html/login.html");
     return false;
   }
 
@@ -22,19 +27,15 @@ export function requireAuth() {
 
 export function logout() {
   tokenStorage.removeToken();
-  // CAMBIO: Ruta absoluta
-  window.location.href = "/agenda/html/login.html";
+  window.location.href = "https://andros-net.com.ar/agenda/html/login.html";
 }
 
-// ----------------------------------------------------------
-// Helper — decodifica exp del JWT sin librerías
-// ----------------------------------------------------------
 function _tokenVencido(token) {
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
     if (!payload.exp) return false;
     return payload.exp < Math.floor(Date.now() / 1000);
   } catch {
-    return true; // si no se puede decodificar → tratar como vencido
+    return true; 
   }
 }
