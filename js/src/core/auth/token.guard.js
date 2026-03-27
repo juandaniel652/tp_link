@@ -1,7 +1,7 @@
 import { tokenStorage } from "../storage/tokenStorage.js";
 
 // Definimos la ruta base una sola vez para evitar errores
-const LOGIN_URL = "/html/login.html";
+const LOGIN_URL = "../html/login.html";
 
 export function requireAuth() {
   const token = tokenStorage.getToken();
