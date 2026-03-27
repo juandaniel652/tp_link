@@ -47,25 +47,27 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ── Clientes ──────────────────────────────────────────────
-  if (role === "admin" && document.querySelector("#clientesTable")) {
+  if (document.querySelector("#clientesTable")) { 
     console.log("[main] Página de clientes detectada — cargando módulo...");
     try {
       const { initClientes } = await import("../modules/clientes/index.js");
       await initClientes();
+      
+      // Tip: Agregamos la clase al body aquí para el CSS
+      if (role === "admin") {
+        document.body.classList.add("is-admin");
+      }
     } catch (e) {
       console.error("[main] ERROR en módulo clientes:", e);
     }
   }
 
   // ── Técnicos ──────────────────────────────────────────────
-  if (role === "admin" && document.querySelector("#formGeneral")) {
-    console.log("[main] Página de técnicos detectada — cargando módulo...");
+  if (document.querySelector("#tecnicosTable") || document.querySelector("#formGeneral")) {
     try {
       const { initTecnicos } = await import("../modules/tecnicos/index.js");
       await initTecnicos();
-    } catch (e) {
-      console.error("[main] ERROR en módulo técnicos:", e);
-    }
+    } catch (e) { console.error(e); }
   }
 
   // ── Agenda ────────────────────────────────────────────────

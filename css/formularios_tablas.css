@@ -1,12 +1,7 @@
 /* ================================
    FUENTES
 ================================ */
-@font-face {
-  font-family: 'Roboto Mono', monospace;
-  src: url('../fuentes/RobotoMono/RobotoMono-Bold.ttf') format('truetype'); 
-  font-weight: normal; 
-  font-style: normal;  
-}
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
 
 @font-face {
   font-family: 'AncizarSanzBold'; 
@@ -30,7 +25,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh; /* footer abajo si hay poco contenido */
-  font-family: 'AncizarSanzBold', sans-serif;
+  font-family: 'AncizarSanzBold', 'Segoe UI', sans-serif;
 }
 
 main {
@@ -781,4 +776,32 @@ main {
 .session-countdown {
   color: #e74c3c;
   font-size: 18px;
+}
+
+/* Bloqueo global de acciones para no-admins */
+body:not(.is-admin) .btn-action,
+body:not(.is-admin) .btn-edit,
+body:not(.is-admin) .btn-delete {
+  display: none !important;
+}
+
+/* Ajuste para que la tabla no se vea vacía en la columna de acciones */
+body:not(.is-admin) td[data-label="Acciones"] {
+  color: #999;
+  font-style: italic;
+}
+
+/* Si el body NO tiene la clase 'is-admin', ocultamos lo prohibido */
+body:not(.is-admin) .form-actions, 
+body:not(.is-admin) .btn-submit,
+body:not(.is-admin) .actions, /* La celda de la tabla */
+body:not(.is-admin) .btn-edit, 
+body:not(.is-admin) .btn-delete {
+  display: none !important;
+}
+
+/* Opcional: que el formulario se vea gris como lectura */
+body:not(.is-admin) #formCliente {
+  opacity: 0.6;
+  pointer-events: none;
 }
