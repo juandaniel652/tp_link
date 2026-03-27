@@ -88,8 +88,19 @@ export async function initTurnos() {
 
     const role = getRoleFromToken();  
 
-    if (role !== "admin") {          
-      document.querySelector(".sidebar").style.display = "none";
+    const sidebar = document.querySelector(".sidebar");
+
+    if (role !== "admin") {
+      // 1. Agregamos una clase para darle un estilo visual de "bloqueado"
+      sidebar.classList.add("sidebar-readonly");
+      
+      // 2. Deshabilitamos todos los select y botones dentro del form
+      const inputs = sidebar.querySelectorAll("select, button");
+      inputs.forEach(el => el.disabled = true);
+      
+      // 3. Cambiamos el título para que el usuario sepa por qué no puede usarlo
+      const h2 = sidebar.querySelector("h2");
+      if (h2) h2.textContent = "Consulta de Disponibilidad";
     }
 
   // ----------------------------------------------------------
