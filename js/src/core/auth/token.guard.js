@@ -1,22 +1,33 @@
-// js/src/core/auth/token.guard.js
 import { tokenStorage } from "../storage/tokenStorage.js";
 
-// Detectamos si estamos en producción (cPanel) o local
 const isProduction = window.location.hostname !== 'localhost';
 const BASE_PATH = isProduction ? '/agenda' : '';
 const LOGIN_PAGE = `${BASE_PATH}/html/login.html`;
 
 export function requireAuth() {
+  // --- CLAVE PARA ROMPER EL BUCLE ---
+  // Si ya estamos en login o registro, no validamos nada, salimos de la función.
+  const pathActual = window.location.pathname;
+  if (pathActual.includes("login.html") || pathActual.includes("register.html") || pathActual.includes("recuperacion.html")) {
+    return true; 
+  }
+
   const token = tokenStorage.getToken();
 
+  // Si no hay token o está vencido
   if (!token || token === "null" || token === "undefined" || _tokenVencido(token)) {
     tokenStorage.removeToken();
-    // Usamos replace para no ensuciar el historial
-    window.location.replace(LOGIN_PAGE);
+    
+    // Evitamos redirección infinita si ya estamos intentando ir al login
+    if (!pathActual.includes("login.html")) {
+        window.location.replace(LOGIN_PAGE);
+    }
     return false;
   }
+
   return true;
 }
+
 
 export function logout() {
   tokenStorage.removeToken();

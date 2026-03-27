@@ -19,12 +19,6 @@ export function initLogin() {
     container.classList.add("animate-in");
   }
 
-  const token = tokenStorage.getToken();
-  if (token) {
-    window.location.href = "../../../../../index.html";
-    return;
-  }
-
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     ocultarError();
@@ -40,23 +34,20 @@ export function initLogin() {
     button.disabled = true;
 
     try {
-        const data = await loginRequest(email, pass);
-
-        console.log("LOGIN RESPONSE:", data);
-
-        tokenStorage.setToken(data.access_token);
-
-        console.log("TOKEN GUARDADO:", localStorage.getItem("access_token"));
-
-        const isProduction = window.location.hostname !== 'localhost';
-        
-        const REDIRECT_PATH = isProduction ? '/agenda/index.html' : '/index.html';
-
-        if (response.ok) {
-            // ... guardar token ...
-            window.location.href = REDIRECT_PATH;
-        }
-
+      const data = await loginRequest(email, pass);
+      console.log("LOGIN RESPONSE:", data);
+      
+      // Guardamos el token
+      tokenStorage.setToken(data.access_token);
+      
+      const isProduction = window.location.hostname !== 'localhost';
+      const REDIRECT_PATH = isProduction ? '/agenda/index.html' : '/index.html';
+      
+      // CAMBIO CLAVE: Usamos 'data' porque 'response' no está definido aquí
+      if (data && data.access_token) {
+          window.location.href = REDIRECT_PATH;
+      }
+      
     } catch (err) {
       mostrarError(err.message);
       buttonText.textContent = "ACCEDER";

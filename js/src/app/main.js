@@ -11,9 +11,16 @@ function getPayloadFromToken() {
   } catch { return null; }
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-  console.log("[main] DOMContentLoaded — arrancando");
+  document.addEventListener("DOMContentLoaded", async () => {
+  const path = window.location.pathname;
 
+  // SI ES LOGIN O REGISTRO, NO EJECUTAMOS EL GUARDIÁN NI EL RESTO DE MAIN
+  if (path.includes("login.html") || path.includes("register.html") || path.includes("recuperacion.html")) {
+    console.log("[main] Página de acceso detectada — omitiendo requireAuth");
+    return; 
+  }
+
+  console.log("[main] DOMContentLoaded — arrancando");
   if (!requireAuth()) {
     console.warn("[main] requireAuth falló — redirigiendo");
     return;
