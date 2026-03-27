@@ -86,16 +86,11 @@ export async function initTurnos() {
     }
   }
 
-    const role = getRoleFromToken();  // ← agregar
+    const role = getRoleFromToken();  
 
-
-    console.log("Mi rol es:", role); // Mira qué sale en la consola
-
-    // Si no es admin, ocultar todo el panel de creación
-
-    //if (role !== "admin") {           // ← agregar
-    //  document.querySelector(".sidebar").style.display = "none";
-    //}
+    if (role !== "admin") {          
+      document.querySelector(".sidebar").style.display = "none";
+    }
 
   // ----------------------------------------------------------
   // 2. Cargar datos maestros
