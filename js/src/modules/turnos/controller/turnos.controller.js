@@ -72,17 +72,30 @@ export async function initTurnos() {
   function getRoleFromToken() {
     try {
       const token = tokenStorage.getToken();
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      return payload.role ?? null;
-    } catch { return null; }
+      if (!token) return null;
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+    
+      return JSON.parse(jsonPayload).role ?? null;
+    } catch (e) { 
+      console.error("Error decodificando token:", e);
+      return null; 
+    }
   }
 
     const role = getRoleFromToken();  // ← agregar
 
+
+    console.log("Mi rol es:", role); // Mira qué sale en la consola
+
     // Si no es admin, ocultar todo el panel de creación
-    if (role !== "admin") {           // ← agregar
-      document.querySelector(".sidebar").style.display = "none";
-    }
+
+    //if (role !== "admin") {           // ← agregar
+    //  document.querySelector(".sidebar").style.display = "none";
+    //}
 
   // ----------------------------------------------------------
   // 2. Cargar datos maestros
