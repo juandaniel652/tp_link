@@ -5,14 +5,15 @@ export function requireAuth() {
 
   if (!token || token === "null" || token === "undefined") {
     tokenStorage.removeToken();
-    window.location.replace("../../../../html/login.html");
+    // CAMBIO: Ruta absoluta desde la raíz del sitio
+    window.location.replace("/agenda/html/login.html");
     return false;
   }
 
-  // ← Verificar expiración del JWT
   if (_tokenVencido(token)) {
     tokenStorage.removeToken();
-    window.location.replace("../../../../html/login.html");
+    // CAMBIO: Ruta absoluta
+    window.location.replace("/agenda/html/login.html");
     return false;
   }
 
@@ -21,7 +22,8 @@ export function requireAuth() {
 
 export function logout() {
   tokenStorage.removeToken();
-  window.location.href = "../../../../html/login.html";
+  // CAMBIO: Ruta absoluta
+  window.location.href = "/agenda/html/login.html";
 }
 
 // ----------------------------------------------------------
