@@ -156,7 +156,7 @@ export class AgendaController {
       fecha,
     });
     // Redirigir a turnos (esto se mantiene solo para admins)
-    window.location.href = `/html/turno.html?${params.toString()}`;
+    window.location.href = `./turno.html?${params.toString()}`;
   }
 
 
