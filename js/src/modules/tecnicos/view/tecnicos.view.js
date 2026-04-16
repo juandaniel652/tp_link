@@ -118,11 +118,12 @@ export default class TecnicosView {
       const tr = document.createElement("tr");
 
       const horariosTexto = (r._horariosRaw || [])
-        .map(h =>
-          `${DIAS_LABEL[h.dia_semana] ?? h.dia_semana} ` +
-          `${h.hora_inicio.slice(0, 5)}-${h.hora_fin.slice(0, 5)}`
-        )
-        .join("<br>");
+      .filter(h => DIAS_LABEL[h.dia_semana]) // <-- Filtra días inexistentes (ej. el 0)
+      .map(h => 
+        `<strong>${DIAS_LABEL[h.dia_semana]}:</strong> ` + 
+        `${h.hora_inicio.slice(0, 5)} - ${h.hora_fin.slice(0, 5)}`
+      )
+      .join("<br>");
 
       tr.innerHTML = `
         <td>${r.imagen ? `<img src="${r.imagen}" class="foto-tecnico" />` : "—"}</td>
