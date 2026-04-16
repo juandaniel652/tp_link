@@ -139,12 +139,16 @@ export default class HorariosView {
     this._rows.innerHTML = "";
     if (this._selected.size === 0) return;
 
-    const order    = [1, 2, 3, 4, 5, 6];
+    const order = [1, 2, 3, 4, 5, 6];
     const ordenados = [...this._selected.entries()]
       .sort(([a], [b]) => order.indexOf(a) - order.indexOf(b));
 
     ordenados.forEach(([dia, rango]) => {
       const info = DIAS.find(d => d.value === dia);
+      
+      // --- FIX: Si el día no está en el array DIAS (ej. día 0), lo salteamos ---
+      if (!info) return; 
+
       const row  = document.createElement("div");
       row.classList.add("hs-day-row");
       row.dataset.dia = dia;
@@ -217,11 +221,21 @@ export default class HorariosView {
     this.limpiar();
     horarios.forEach(h => {
       const dia    = h.dia_semana;
+      
+      // --- VALIDACIÓN EXTRA: Solo cargar si el día es válido ---
+      const infoValida = DIAS.find(d => d.value === dia);
+      if (!infoValida) return; 
+
       const inicio = (h.hora_inicio ?? "").slice(0, 5);
       const fin    = (h.hora_fin    ?? "").slice(0, 5);
+      
       this._selected.set(dia, { inicio, fin });
+      
       const chip = this.container.querySelector(`.hs-chip[data-dia="${dia}"]`);
-      if (chip) { chip.classList.add("hs-chip--active"); chip.setAttribute("aria-pressed", "true"); }
+      if (chip) { 
+        chip.classList.add("hs-chip--active"); 
+        chip.setAttribute("aria-pressed", "true"); 
+      }
     });
     this._syncSelectAllState();
     this._renderRows();
