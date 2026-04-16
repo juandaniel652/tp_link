@@ -76,13 +76,21 @@ export default class TecnicosView {
   // ── Emit ─────────────────────────────────────────────────────────────────────
 
   _emitGuardar() {
-    // Validar horarios primero — recopilarYValidar marca errores inline
     const horarios = this.horariosView.recopilarYValidar();
 
+    // Validación visual inmediata
     if (horarios === null) {
       this._horariosError.textContent = "Corregí los errores en los horarios antes de guardar.";
       this._horariosError.style.display = "block";
+      // Hacemos scroll al primer error de horario para que el usuario lo vea
+      this.form.querySelector("#listaHorarios").scrollIntoView({ behavior: "smooth" });
       return;
+    }
+
+    if (horarios.length === 0) {
+        this._horariosError.textContent = "Debes agregar al menos un horario de atención.";
+        this._horariosError.style.display = "block";
+        return;
     }
 
     this._horariosError.style.display = "none";
@@ -108,6 +116,20 @@ export default class TecnicosView {
 
   renderTabla(tecnicos = []) {
     this.contenedor.innerHTML = "";
+
+    // Si es nulo, undefined o array vacío
+    if (!tecnicos || tecnicos.length === 0) {
+        this.contenedor.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center py-10">
+                    <div style="opacity: 0.5;">
+                        <p>🚫 No hay técnicos registrados</p>
+                        <small>Crea uno nuevo usando el formulario</small>
+                    </div>
+                </td>
+            </tr>`;
+        return;
+    }
 
     if (!tecnicos.length) {
       this.contenedor.innerHTML = `<tr><td colspan="7">No hay registros.</td></tr>`;

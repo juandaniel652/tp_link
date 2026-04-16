@@ -50,7 +50,6 @@ export default class TecnicosController {
   // ── Handlers privados ────────────────────────────────────────────────────────
 
   async _guardar(payload) {
-    // Protección extra por si alguien habilita el botón por consola
     if (this._getRole() !== 'admin') {
         ToastService.error("No tenés permisos para realizar esta acción.");
         return;
@@ -59,44 +58,59 @@ export default class TecnicosController {
     if (!this._validar(payload)) return;
 
     try {
-      if (payload.id !== undefined) {
-        await this.service.actualizar(payload.id, payload);
-        ToastService.success("Técnico actualizado");
-      } else {
-        await this.service.crear(payload);
-        ToastService.success("Técnico creado");
-      }
+        if (payload.id !== undefined) {
+            await this.service.actualizar(payload.id, payload);
+            ToastService.success("Técnico actualizado");
+        } else {
+            await this.service.crear(payload);
+            ToastService.success("Técnico creado");
+        }
 
-      this.view.resetFormulario();
-      await this._cargarTabla();
+        this.view.resetFormulario();
+        await this._cargarTabla();
 
     } catch (err) {
-      console.error("Error al guardar técnico:", err);
-      ToastService.error("Error al guardar. Revisá la consola.");
+        console.error("Error al guardar técnico:", err);
+        
+        // --- LÓGICA SENIOR ADENTRO DEL CATCH ---
+        if (err.message?.includes("no encontrado") || err.status === 404) {
+            ToastService.error("El técnico ya no existe. Refrescando lista...");
+            this.view.resetFormulario();
+            await this._cargarTabla();
+        } else {
+            ToastService.error("Error al guardar. Revisá la consola.");
+        }
     }
-  }
+}
 
   async _eliminar(id) {
-    if (this._getRole() !== 'admin') return;
-
-    const confirmado = await ToastService.confirm({
-      title:       "¿Eliminar técnico?",
-      message:     "Esta acción no se puede deshacer.",
-      confirmText: "Sí, eliminar",
-      cancelText:  "Cancelar",
-      type:        "danger",
-    });
+      if (this._getRole() !== 'admin') return;
   
-    if (!confirmado) return;
-  
-    try {
-      await this.service.eliminar(id);
-      ToastService.success("Técnico eliminado");
-      await this._cargarTabla();
-    } catch (err) {
-      console.error("Error al eliminar técnico:", err);
-      ToastService.error("Error al eliminar técnico.");
-    }
+      const confirmado = await ToastService.confirm({
+          title: "¿Eliminar técnico?",
+          message: "Esta acción no se puede deshacer.",
+          confirmText: "Sí, eliminar",
+          cancelText: "Cancelar",
+          type: "danger",
+      });
+    
+      if (!confirmado) return;
+    
+      try {
+          await this.service.eliminar(id);
+          ToastService.success("Técnico eliminado");
+          await this._cargarTabla();
+      } catch (err) {
+          console.error("Error al eliminar técnico:", err);
+          
+          // --- LÓGICA SENIOR ADENTRO DEL CATCH ---
+          if (err.message?.includes("no encontrado") || err.status === 404) {
+              ToastService.warning("El registro ya había sido eliminado.");
+              await this._cargarTabla();
+          } else {
+              ToastService.error("Error al eliminar técnico.");
+          }
+      }
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────────────

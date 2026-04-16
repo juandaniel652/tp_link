@@ -29,7 +29,11 @@ export async function apiRequest(endpoint, options = {}) {
   const data = await response.json().catch(() => null);
 
   if (!response.ok) {
-    throw new Error(data?.detail || "Error de servidor");
+  // Si detail es un array (típico de FastAPI), sacamos el primer mensaje
+  const msg = Array.isArray(data?.detail) 
+    ? data.detail[0].msg 
+    : (data?.detail || "Error de servidor");
+  throw new Error(msg);
   }
 
   return data;
