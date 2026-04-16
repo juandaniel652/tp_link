@@ -96,7 +96,7 @@ export default class TecnicosView {
       duracion_turno_min: Number(this.inputs.duracion.value),
       email:              this.inputs.email.value.trim(),
       imagen:             nuevaImagen || this._imagenActual,
-      horarios,
+      horarios: horarios || [],
       activo: true,
       ...(this._editandoId !== null && { id: this._editandoId })
     };
@@ -118,12 +118,15 @@ export default class TecnicosView {
       const tr = document.createElement("tr");
 
       const horariosTexto = (r._horariosRaw || [])
-      .filter(h => DIAS_LABEL[h.dia_semana]) // <-- Filtra días inexistentes (ej. el 0)
-      .map(h => 
-        `<strong>${DIAS_LABEL[h.dia_semana]}:</strong> ` + 
-        `${h.hora_inicio.slice(0, 5)} - ${h.hora_fin.slice(0, 5)}`
-      )
-      .join("<br>");
+      .filter(h => DIAS_LABEL[h.dia_semana]) // Seguridad: ignorar si dia_semana es 0 o inválido
+      .sort((a, b) => a.dia_semana - b.dia_semana) // Ordenar de Lunes a Sábado
+      .map(h => {
+        const dia = DIAS_LABEL[h.dia_semana].slice(0, 3); // "Lun", "Mar", etc.
+        const inicio = h.hora_inicio.slice(0, 5);
+        const fin = h.hora_fin.slice(0, 5);
+        return `<strong>${dia}:</strong> ${inicio}-${fin}`;
+      })
+      .join(" | "); // Separador visual limpio
 
       tr.innerHTML = `
         <td>${r.imagen ? `<img src="${r.imagen}" class="foto-tecnico" />` : "—"}</td>
