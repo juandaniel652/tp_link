@@ -14,7 +14,7 @@
   <link rel="icon" type="image/png" sizes="64x64" href="/agenda/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
   <script type="module" crossorigin src="/agenda/assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
   <script type="module" crossorigin src="/agenda/assets/tokenStorage-BJFfxEW5.js"></script>
-  <script type="module" crossorigin src="/agenda/assets/main-owgP_YRp.js"></script>
+  <script type="module" crossorigin src="/agenda/assets/main-C8BWkWps.js"></script>
   <link rel="stylesheet" crossorigin href="/agenda/assets/tecnico-B7MfwyJh.css">
   <link rel="stylesheet" crossorigin href="/agenda/assets/menu-BwFBi8gG.css">
   <link rel="stylesheet" crossorigin href="/agenda/assets/formularios_tablas-DfTRe_l3.css">
@@ -58,6 +58,7 @@
 
           <div class="form-group">
             <label for="nombre">Nombre</label>
+            <span class="field-error" data-error="nombre"></span> </div>
             <input type="text" id="nombre" placeholder="Ingrese nombre" required>
           </div>
 
@@ -87,6 +88,7 @@
           <div class="form-group">
             <label for="duracionTurno">Duración Habitual del Turno en Minutos</label>
             <input type="number" id="duracionTurno" placeholder="Ej: 15" required>
+            <span class="field-error" data-error="duracionTurnoMinutos"></span> </div>
           </div>
 
           <!-- HORARIOS DINÁMICOS -->
