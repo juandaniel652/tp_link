@@ -101,6 +101,8 @@ js/src
 
 ## 📸 Capturas
 
+```
+
 ### Inicio
 
 ![Inicio](docs/Wifi S-Link.png)
@@ -112,7 +114,7 @@ js/src
 ### Agenda
 
 ![Agenda](docs/agenda.png)
-
+```
 ---
 
 ## 🚀 Estado
