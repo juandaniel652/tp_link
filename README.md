@@ -101,11 +101,10 @@ js/src
 
 ## 📸 Capturas
 
-```
 
 ### Inicio
 
-![Inicio](docs/Wifi S-Link.png)
+![Inicio](docs/wifi-s-link.png)
 
 ### Gestión de Turnos
 
@@ -114,7 +113,7 @@ js/src
 ### Agenda
 
 ![Agenda](docs/agenda.png)
-```
+
 ---
 
 ## 🚀 Estado
