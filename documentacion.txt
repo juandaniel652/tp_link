@@ -91,3 +91,12 @@ o que cuando falten  minutos avisen que en ese tiempo culmina o en tiempos de in
 
 - cuando el ususario ingresa lo saluda la app con toast emergente color azul como de la app dandole la bienvenida
 como "Bienvenido {nombre}!!!"
+----------------------------------------
+
+Falta: 
+
+1. Tengo que cambiar la URL por las que sean las proximas reales
+2. Usar url de nuevo backend en php y probar
+3. Usar todo de conexion con login y demas con los enlaces del nuevo dominio
+
+https://andros-net.com.ar/agenda/ dominio de agustin para ponerlo y trabjar con el ya

@@ -5,7 +5,7 @@
 // ============================================================
 
 import { API_BASE_URL } from "./turnos.constants.js";
-import { tokenStorage } from "@/core/storage/tokenStorage.js";
+import { tokenStorage } from "../../../core/storage/tokenStorage.js";
 
 const TURNOS_ENDPOINT = `${API_BASE_URL}/turnos`;
 
@@ -113,28 +113,11 @@ export async function cancelarTurno(id) {
   return true;
 }
 
-// ----------------------------------------------------------
-// DELETE — Eliminación física (si el backend lo soporta)
-// ----------------------------------------------------------
-
-/**
- * Elimina físicamente un turno por ID.
- * @param {string|number} id
- * @returns {Promise<boolean>}
- */
-export async function eliminarTurno(id) {
-  const response = await fetch(`${TURNOS_ENDPOINT}/${id}`, {
-    method:  "DELETE",
-    headers: authHeaders(),
-  });
-  await handleResponse(response);
-  return true;
-}
-
 
 export async function obtenerDisponibilidad(tecnicoId, fecha) {
-  return await apiRequest({
-    url: `/turnos/disponibilidad?tecnico_id=${tecnicoId}&fecha=${fecha}`,
-    method: "GET",
-  });
+  const response = await fetch(
+    `${TURNOS_ENDPOINT}/disponibilidad?tecnico_id=${tecnicoId}&fecha=${fecha}`,
+    { headers: authHeaders() }
+  );
+  return handleResponse(response);
 }

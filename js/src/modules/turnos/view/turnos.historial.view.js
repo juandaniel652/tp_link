@@ -2,8 +2,8 @@
 // turnos.historial.view.js — Vista del Historial de Turnos
 // ============================================================
 
-import { tokenStorage } from "@/core/storage/tokenStorage.js";
-import { ToastService } from "@/ui/ToastService.js";
+import { tokenStorage } from "./../../../core/storage/tokenStorage.js";
+import { ToastService } from "./../../../ui/ToastService.js";
 import {
   cargarTurnosPorFecha,
   cancelarTurnoById,

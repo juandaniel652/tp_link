@@ -2,7 +2,7 @@
 // turnos.controller.js — Controller principal del módulo
 // ============================================================
 
-import { ToastService }            from "@/ui/ToastService.js";
+import { ToastService }            from "../../../ui/ToastService.js";
 import { clienteYaTieneTurno, obtenerDisponibilidadBackend }     from "../service/disponibilidad.service.js";
 import { T_VALUES, RANGOS }        from "../service/turnos.constants.js";
 import { UI_STATE, cambiarEstado } from "../state/turnos.state.js";
@@ -15,10 +15,10 @@ import {
   renderSelectGen,
   renderGrillaTurnos,
 }                                  from "../view/turnos.view.js";
-import Tecnico         from "@/modules/tecnicos/model/tecnico.model.js";
-import { fetchClientes }      from "@/modules/clientes/service/clientes.api.js";
-import { tecnicosApi }        from "@/modules/tecnicos/service/tecnicos.api.js";
-import { tokenStorage }       from "@/core/storage/tokenStorage.js";
+import Tecnico         from "../../../modules/tecnicos/model/tecnico.model.js";
+import { fetchClientes }      from "../../../modules/clientes/service/clientes.api.js";
+import { tecnicosApi }        from "../../../modules/tecnicos/service/tecnicos.api.js";
+import { tokenStorage }       from "../../../core/storage/tokenStorage.js";
 
 // ============================================================
 // Bootstrap
@@ -72,16 +72,35 @@ export async function initTurnos() {
   function getRoleFromToken() {
     try {
       const token = tokenStorage.getToken();
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      return payload.role ?? null;
-    } catch { return null; }
+      if (!token) return null;
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+    
+      return JSON.parse(jsonPayload).role ?? null;
+    } catch (e) { 
+      console.error("Error decodificando token:", e);
+      return null; 
+    }
   }
 
-    const role = getRoleFromToken();  // ← agregar
+    const role = getRoleFromToken();  
 
-    // Si no es admin, ocultar todo el panel de creación
-    if (role !== "admin") {           // ← agregar
-      document.querySelector(".sidebar").style.display = "none";
+    const sidebar = document.querySelector(".sidebar");
+
+    if (role !== "admin") {
+      // 1. Agregamos una clase para darle un estilo visual de "bloqueado"
+      sidebar.classList.add("sidebar-readonly");
+      
+      // 2. Deshabilitamos todos los select y botones dentro del form
+      const inputs = sidebar.querySelectorAll("select, button");
+      inputs.forEach(el => el.disabled = true);
+      
+      // 3. Cambiamos el título para que el usuario sepa por qué no puede usarlo
+      const h2 = sidebar.querySelector("h2");
+      if (h2) h2.textContent = "Consulta de Disponibilidad";
     }
 
   // ----------------------------------------------------------

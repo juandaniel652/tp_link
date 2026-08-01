@@ -1,8 +1,8 @@
 // core/api/apiRequest.js
 
-import { tokenStorage } from "@/core/storage/tokenStorage.js";
+import { tokenStorage } from "../storage/tokenStorage.js";
+import {API_URL} from "../../core/config/api.js";
 
-const API_BASE_URL = "https://agenda-1-zomu.onrender.com/api/v1";
 
 export async function apiRequest(endpoint, options = {}) {
   const token = tokenStorage.getToken();
@@ -15,7 +15,7 @@ export async function apiRequest(endpoint, options = {}) {
     ...options.headers
   };
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+  const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers
   });
@@ -29,7 +29,11 @@ export async function apiRequest(endpoint, options = {}) {
   const data = await response.json().catch(() => null);
 
   if (!response.ok) {
-    throw new Error(data?.detail || "Error de servidor");
+  // Si detail es un array (típico de FastAPI), sacamos el primer mensaje
+  const msg = Array.isArray(data?.detail) 
+    ? data.detail[0].msg 
+    : (data?.detail || "Error de servidor");
+  throw new Error(msg);
   }
 
   return data;

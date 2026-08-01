@@ -1,0 +1,33 @@
+name: Deploy a cPanel
+
+on:
+  push:
+    branches:
+      - backend_php
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚚 Obtener código de GitHub
+        uses: actions/checkout@v4 # Actualizado a v4
+
+      - name: 🛠️ Instalar Node.js y dependencias
+        uses: actions/setup-node@v4 # Actualizado a v4
+        with:
+          node-version: 22 # <--- CAMBIADO A 22
+
+      - name: 🏗️ Ejecutar Build de Vite
+        run: |
+          npm install
+          npm run build
+
+      - name: 🚀 Subir a cPanel vía FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist/ 
+          server-dir: public_html/agenda/

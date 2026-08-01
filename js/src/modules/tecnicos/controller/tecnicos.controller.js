@@ -1,5 +1,6 @@
 // modules/tecnicos/controller/tecnicos.controller.js
-import { ToastService } from "@/ui/ToastService.js";
+import { ToastService } from "../../../ui/ToastService.js";
+import { tokenStorage } from "../../../core/storage/tokenStorage.js"; // Importamos el storage
 import TecnicosService from "../service/tecnicos.service.js";
 import TecnicosView    from "../view/tecnicos.view.js";
 import Tecnico         from "../model/tecnico.model.js";
@@ -19,55 +20,108 @@ export default class TecnicosController {
   // ── Ciclo de vida ────────────────────────────────────────────────────────────
 
   async init() {
+    // 1. Verificar Seguridad antes de mostrar nada
+    this._aplicarSeguridadSegunRol();
+
+    // 2. Cargar datos
     await this._cargarTabla();
+  }
+
+  // ── Seguridad ────────────────────────────────────────────────────────────────
+
+  _aplicarSeguridadSegunRol() {
+    const role = this._getRole();
+
+    if (role !== 'admin') {
+      console.log("[TecnicosController] Aplicando modo lectura");
+      
+      const formElement = document.querySelector(this.view.formSelector);
+      if (formElement) {
+        // Buscamos el div .box que lo envuelve para que no quede el hueco blanco
+        const container = formElement.closest('.box') || formElement;
+        container.style.setProperty('display', 'none', 'important');
+      }
+      
+      // Reforzamos la clase en el body
+      document.body.classList.add("user-readonly");
+    }
   }
 
   // ── Handlers privados ────────────────────────────────────────────────────────
 
   async _guardar(payload) {
-    console.log("GUARDAR payload:", payload);
-    console.log("_validar:", this._validar(payload));
-    // Validación básica antes de ir al servidor
+    if (this._getRole() !== 'admin') {
+        ToastService.error("No tenés permisos para realizar esta acción.");
+        return;
+    }
+
     if (!this._validar(payload)) return;
 
     try {
-      if (payload.id !== undefined) {
-        await this.service.actualizar(payload.id, payload);
-      } else {
-        await this.service.crear(payload);
-      }
+        if (payload.id !== undefined) {
+            await this.service.actualizar(payload.id, payload);
+            ToastService.success("Técnico actualizado");
+        } else {
+            await this.service.crear(payload);
+            ToastService.success("Técnico creado");
+        }
 
-      this.view.resetFormulario();
-      await this._cargarTabla();
+        this.view.resetFormulario();
+        await this._cargarTabla();
 
     } catch (err) {
-      console.error("Error al guardar técnico:", err);
-      ToastService.error("Error al guardar. Revisá la consola.");
+        console.error("Error al guardar técnico:", err);
+        
+        // --- LÓGICA SENIOR ADENTRO DEL CATCH ---
+        if (err.message?.includes("no encontrado") || err.status === 404) {
+            ToastService.error("El técnico ya no existe. Refrescando lista...");
+            this.view.resetFormulario();
+            await this._cargarTabla();
+        } else {
+            ToastService.error("Error al guardar. Revisá la consola.");
+        }
     }
-  }
+}
 
   async _eliminar(id) {
-    const confirmado = await ToastService.confirm({
-      title:       "¿Eliminar técnico?",
-      message:     "Esta acción no se puede deshacer.",
-      confirmText: "Sí, eliminar",
-      cancelText:  "Cancelar",
-      type:        "danger",
-    });
+      if (this._getRole() !== 'admin') return;
   
-    if (!confirmado) return;
-  
-    try {
-      await this.service.eliminar(id);
-      ToastService.success("Técnico eliminado");
-      await this._cargarTabla();
-    } catch (err) {
-      console.error("Error al eliminar técnico:", err);
-      ToastService.error("Error al eliminar técnico.");
-    }
+      const confirmado = await ToastService.confirm({
+          title: "¿Eliminar técnico?",
+          message: "Esta acción no se puede deshacer.",
+          confirmText: "Sí, eliminar",
+          cancelText: "Cancelar",
+          type: "danger",
+      });
+    
+      if (!confirmado) return;
+    
+      try {
+          await this.service.eliminar(id);
+          ToastService.success("Técnico eliminado");
+          await this._cargarTabla();
+      } catch (err) {
+          console.error("Error al eliminar técnico:", err);
+          
+          // --- LÓGICA SENIOR ADENTRO DEL CATCH ---
+          if (err.message?.includes("no encontrado") || err.status === 404) {
+              ToastService.warning("El registro ya había sido eliminado.");
+              await this._cargarTabla();
+          } else {
+              ToastService.error("Error al eliminar técnico.");
+          }
+      }
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────────────
+
+  _getRole() {
+    try {
+        const token = tokenStorage.getToken();
+        const payload = JSON.parse(decodeURIComponent(escape(atob(token.split(".")[1]))));
+        return payload?.role || 'user';
+    } catch { return 'user'; }
+  }
 
   async _cargarTabla() {
     try {
@@ -80,7 +134,6 @@ export default class TecnicosController {
 
   _validar(payload) {
     this.view.limpiarErrores();
-
     const campos = ["nombre", "apellido", "telefono", "email"];
     let valido = true;
 

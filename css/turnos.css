@@ -121,9 +121,15 @@ main {
 /* ================================ */
 .layout {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 24px;
+  grid-template-columns: 300px 1fr; /* Un poquito más de aire al sidebar */
+  gap: 30px;
   padding: 24px;
+  align-items: start; /* Importante para que no se estire el formulario */
+}
+
+.content {
+  min-width: 0; /* Evita que la grilla rompa el layout */
+  flex: 1;
 }
 
 /* ================================ */
@@ -1094,4 +1100,37 @@ button, .btn-primary, .btnSeleccionarTurno, .btnEliminarTurno {
 .modal-btn-info {
   background: linear-gradient(135deg, #1E3C72, #2A5298);
   color: #fff;
+}
+
+
+/* USER NO ADMIN */
+
+/* Estilo para cuando el usuario no es admin */
+.sidebar-readonly {
+  opacity: 0.8;
+  cursor: not-allowed;
+  position: relative;
+}
+
+/* Evita que se pueda interactuar con el formulario */
+.sidebar-readonly .form-turno {
+  pointer-events: none;
+}
+
+/* Estilo visual para los campos deshabilitados */
+.sidebar-readonly select:disabled, 
+.sidebar-readonly button:disabled {
+  background-color: #f0f0f0 !important;
+  color: #999 !important;
+  border-color: #ddd !important;
+  box-shadow: none !important;
+  transform: none !important; /* Evita el efecto hover */
+}
+
+/* Aseguramos que el layout no se rompa */
+.layout {
+  display: grid !important;
+  grid-template-columns: 300px 1fr !important;
+  gap: 24px;
+  align-items: start;
 }

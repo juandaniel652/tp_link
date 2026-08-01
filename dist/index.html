@@ -3,36 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Sistema dewhich git gestión S-Link: clientes, técnicos, turnos, puntos de acceso y agenda.">
+  <meta name="description" content="Sistema de gestión S-Link: clientes, técnicos, turnos, puntos de acceso y agenda.">
   <meta name="author" content="Juan Dominguez">
   <meta name="robots" content="index, follow">
 
   <title>Wifi S-Link</title>
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="16x16" href="/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
-  <link rel="icon" type="image/png" sizes="48x48" href="/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
-  <link rel="icon" type="image/png" sizes="64x64" href="/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/agenda/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/agenda/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/agenda/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="/agenda/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
 
-  <link rel="shortcut icon" href="/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png?v=2" type="image/x-icon">
+  <link rel="shortcut icon" href="/agenda/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png" type="image/x-icon">
 
-
-  <!-- Estilos -->
-  <script type="module" crossorigin src="/assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
-  <script type="module" crossorigin src="/assets/tokenStorage-BJFfxEW5.js"></script>
-  <script type="module" crossorigin src="/assets/token.guard-CQbhYxkz.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/menu-DguJIhAB.css">
+  <!-- Estilos (rutas relativas para producción) -->
+  <script type="module" crossorigin src="/agenda/assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
+  <script type="module" crossorigin src="/agenda/assets/tokenStorage-BJFfxEW5.js"></script>
+  <link rel="stylesheet" crossorigin href="/agenda/assets/menu-BwFBi8gG.css">
 </head>
 <body>
-
 
+  <!-- JS: usar archivos compilados en dist/assets para evitar 404 / MIME error -->
 
   <!-- HEADER -->
   <header class="header">
     <div class="header-container">
       <div class="logo-container">
-        <img src="/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png" alt="Logo S-Link" class="logo">
+        <img src="/agenda/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png" alt="Logo S-Link" class="logo">
         <span class="brand-name">Menú principal</span>
         <span id="userEmail" style="margin-left: 10px; font-weight: bold; color: #fff;"></span>
       </div>
@@ -42,7 +40,7 @@
 
       <nav class="top-nav" aria-label="Menú principal">
         <ul>
-          <li><a href="../index.html" class="active">Menú</a></li>
+          <li><a href="index.html" class="active">Menú</a></li>
           <li><a href="html/cliente.html">Clientes</a></li>
           <li><a href="html/tecnico.html">Técnicos</a></li>
           <li><a href="html/turno.html">Turnos</a></li>
@@ -54,10 +52,9 @@
 
   <!-- CONTENIDO PRINCIPAL -->
   <main class="main-container">
-    <!-- Menú tipo dashboard -->
     <section class="menu-principal">
       <a href="html/cliente.html" class="menu-button" target="_blank" rel="noopener noreferrer">
-        <img src="/assets/clientes-Cvo26Veq.png" alt="Clientes">
+        <img src="/agenda/assets/clientes-Cvo26Veq.png" alt="Clientes">
         <span>Cliente</span>
       </a>
 
@@ -67,12 +64,12 @@
       </a>
 
       <a href="html/turno.html" class="menu-button" target="_blank" rel="noopener noreferrer">
-        <img src="/assets/ticket_turno-BKFA_7lK.png" alt="Turnos">
+        <img src="/agenda/assets/ticket_turno-BKFA_7lK.png" alt="Turnos">
         <span>Turno</span>
       </a>
 
       <a href="html/agenda.html" class="menu-button" target="_blank" rel="noopener noreferrer">
-        <img src="/assets/agenda-DN7FjNUr.png" alt="Agenda">
+        <img src="/agenda/assets/agenda-DN7FjNUr.png" alt="Agenda">
         <span>Agenda</span>
       </a>
     </section>
@@ -81,24 +78,23 @@
   <!-- FOOTER -->
   <footer class="footer">
     <p>&copy; 2025 S-Link. Todos los derechos reservados.</p>
-    <p>Desarrollado por <a href="https://portafolio-juan-daniel-dom-men-05.netlify.app/" target="_blank" rel="noopener noreferrer">Juan Dominguez</a></p>
+    <p>Desarrollado por <a href="https://juan-dominguez.netlify.app/" target="_blank" rel="noopener noreferrer">Juan Dominguez</a></p>
   </footer>
 
   <!-- JS MENÚ HAMBURGUESA -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-    const menuToggle = document.querySelector('.menu-toggle');
-    const nav = document.querySelector('.top-nav');
+      const menuToggle = document.querySelector('.menu-toggle');
+      const nav = document.querySelector('.top-nav');
       
-    menuToggle.addEventListener('click', () => {
-      if(nav.style.display === 'flex') {
-        nav.style.display = 'none';
-      } else {
-        nav.style.display = 'flex';
-      }
+      menuToggle.addEventListener('click', () => {
+        if(nav.style.display === 'flex') {
+          nav.style.display = 'none';
+        } else {
+          nav.style.display = 'flex';
+        }
+      });
     });
-  });
-
   </script>
 </body>
 </html>

@@ -6,8 +6,8 @@
 // - Sin respuesta en WARNING_COUNTDOWN → logout automático
 // ============================================================
 
-import { tokenStorage }  from "@/core/storage/tokenStorage.js";
-import { ToastService }  from "@/ui/ToastService.js";
+import { tokenStorage }  from "../storage/tokenStorage.js";
+import { ToastService }  from "../../ui/ToastService.js";
 
 // ----------------------------------------------------------
 // Configuración — ajustá estos valores a tu negocio

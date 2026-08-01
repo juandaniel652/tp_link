@@ -76,13 +76,21 @@ export default class TecnicosView {
   // ── Emit ─────────────────────────────────────────────────────────────────────
 
   _emitGuardar() {
-    // Validar horarios primero — recopilarYValidar marca errores inline
     const horarios = this.horariosView.recopilarYValidar();
 
+    // Validación visual inmediata
     if (horarios === null) {
       this._horariosError.textContent = "Corregí los errores en los horarios antes de guardar.";
       this._horariosError.style.display = "block";
+      // Hacemos scroll al primer error de horario para que el usuario lo vea
+      this.form.querySelector("#listaHorarios").scrollIntoView({ behavior: "smooth" });
       return;
+    }
+
+    if (horarios.length === 0) {
+        this._horariosError.textContent = "Debes agregar al menos un horario de atención.";
+        this._horariosError.style.display = "block";
+        return;
     }
 
     this._horariosError.style.display = "none";
@@ -96,7 +104,7 @@ export default class TecnicosView {
       duracion_turno_min: Number(this.inputs.duracion.value),
       email:              this.inputs.email.value.trim(),
       imagen:             nuevaImagen || this._imagenActual,
-      horarios,
+      horarios: horarios || [],
       activo: true,
       ...(this._editandoId !== null && { id: this._editandoId })
     };
@@ -109,6 +117,20 @@ export default class TecnicosView {
   renderTabla(tecnicos = []) {
     this.contenedor.innerHTML = "";
 
+    // Si es nulo, undefined o array vacío
+    if (!tecnicos || tecnicos.length === 0) {
+        this.contenedor.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center py-10">
+                    <div style="opacity: 0.5;">
+                        <p>🚫 No hay técnicos registrados</p>
+                        <small>Crea uno nuevo usando el formulario</small>
+                    </div>
+                </td>
+            </tr>`;
+        return;
+    }
+
     if (!tecnicos.length) {
       this.contenedor.innerHTML = `<tr><td colspan="7">No hay registros.</td></tr>`;
       return;
@@ -118,11 +140,15 @@ export default class TecnicosView {
       const tr = document.createElement("tr");
 
       const horariosTexto = (r._horariosRaw || [])
-        .map(h =>
-          `${DIAS_LABEL[h.dia_semana] ?? h.dia_semana} ` +
-          `${h.hora_inicio.slice(0, 5)}-${h.hora_fin.slice(0, 5)}`
-        )
-        .join("<br>");
+      .filter(h => DIAS_LABEL[h.dia_semana]) // Seguridad: ignorar si dia_semana es 0 o inválido
+      .sort((a, b) => a.dia_semana - b.dia_semana) // Ordenar de Lunes a Sábado
+      .map(h => {
+        const dia = DIAS_LABEL[h.dia_semana].slice(0, 3); // "Lun", "Mar", etc.
+        const inicio = h.hora_inicio.slice(0, 5);
+        const fin = h.hora_fin.slice(0, 5);
+        return `<strong>${dia}:</strong> ${inicio}-${fin}`;
+      })
+      .join(" | "); // Separador visual limpio
 
       tr.innerHTML = `
         <td>${r.imagen ? `<img src="${r.imagen}" class="foto-tecnico" />` : "—"}</td>

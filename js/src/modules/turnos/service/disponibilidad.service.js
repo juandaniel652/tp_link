@@ -197,10 +197,10 @@ export function filtrarPorRango(horarios, rango, tNum = 1) {
  * @param {number}        [t=1]
  * @returns {string[]}   array de "HH:MM" disponibles
  */
-export async function obtenerHorariosDisponiblesBackend(
+export async function obtenerHorariosDisponibles(
   tecnicoId,
   fechaISO
-) {
+){
   const data = await obtenerDisponibilidad(tecnicoId, fechaISO);
 
   return data.slots_disponibles || [];

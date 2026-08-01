@@ -11,14 +11,45 @@ export class ClienteController {
   constructor({ view, tokenProvider }) {
     this.view = view;
     this.tokenProvider = tokenProvider;
-
     this.clientes = [];
     this.clienteEditando = null;
   }
 
   async init() {
     this.bindEvents();
+    
+    // --- NUEVA LÓGICA DE ROL ---
+    const token = this.tokenProvider.getToken();
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    const role = payload.role ?? 'user';
+
+    if (role !== "admin") {
+      this.aplicarModoLectura();
+    }
+    // ---------------------------
+
     await this.cargarClientes();
+  }
+
+  aplicarModoLectura() {
+    const formSection = document.querySelector("#formCliente");
+    if (formSection) {
+      // Usamos las propiedades de tu CSS para deshabilitar
+      const box = formSection.closest(".box");
+      box.style.opacity = "0.75";
+      
+      // Bloqueamos todos los inputs y botones del form
+      const elements = formSection.querySelectorAll("input, button");
+      elements.forEach(el => el.disabled = true);
+      
+      // Ocultamos las acciones del formulario
+      const actions = formSection.querySelector(".form-actions");
+      if (actions) actions.style.display = "none";
+      
+      // Cambiamos el título para dar feedback
+      const h2 = box.querySelector("h2");
+      if (h2) h2.textContent = "Consulta de Clientes";
+    }
   }
 
   bindEvents() {

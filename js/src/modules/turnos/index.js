@@ -38,7 +38,6 @@ export {
   getTurnosPorFecha,
   crearTurno,
   cancelarTurno,
-  eliminarTurno,
 }                                   from "./service/turnos.api.js";
 
 // Constantes

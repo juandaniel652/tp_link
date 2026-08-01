@@ -1,12 +1,7 @@
 /* ================================
    FUENTES
 ================================ */
-@font-face {
-  font-family: 'RobotoMonoBold'; 
-  src: url('../fuentes/RobotoMono/RobotoMono-Bold.ttf') format('truetype'); 
-  font-weight: normal; 
-  font-style: normal;  
-}
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
 
 @font-face {
   font-family: 'AncizarSanzBold'; 
@@ -30,7 +25,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh; /* footer abajo si hay poco contenido */
-  font-family: 'AncizarSanzBold', sans-serif;
+  font-family: 'AncizarSanzBold', 'Segoe UI', sans-serif;
 }
 
 main {
@@ -781,4 +776,37 @@ main {
 .session-countdown {
   color: #e74c3c;
   font-size: 18px;
+}
+
+/* --- SEGURIDAD DE VISTA PARA USUARIOS (NO ADMINS) --- */
+
+/* 1. Ocultar formularios de alta/edición y sus contenedores (.box) */
+body.user-readonly #formGeneral,
+body.user-readonly #formCliente,
+body.user-readonly .box:has(#formGeneral),
+body.user-readonly .box:has(#formCliente),
+body.user-readonly .form-actions,
+body.user-readonly .btn-save,
+body.user-readonly button[type="submit"] {
+    display: none !important;
+}
+
+/* 2. Ocultar columnas de acciones en las tablas */
+body.user-readonly table th:last-child,
+body.user-readonly table td:last-child,
+body.user-readonly .column-actions,
+body.user-readonly .actions {
+    display: none !important;
+}
+
+/* 3. Ocultar botones de edición/borrado sueltos */
+body.user-readonly .btn-edit, 
+body.user-readonly .btn-delete,
+body.user-readonly .btn-action {
+    display: none !important;
+}
+
+/* 4. Estilo visual para indicar que es modo lectura */
+body.user-readonly table {
+    border-left: 4px solid #3498db; /* Una línea azul para indicar 'solo vista' */
 }

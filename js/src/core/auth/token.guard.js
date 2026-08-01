@@ -1,18 +1,30 @@
-import { tokenStorage } from "@/core/storage/tokenStorage.js";
+import { tokenStorage } from "../storage/tokenStorage.js";
+
+const isProduction = window.location.hostname !== 'localhost';
+const BASE_PATH = isProduction ? '/agenda' : '';
+const LOGIN_PAGE = `${BASE_PATH}/html/login.html`;
 
 export function requireAuth() {
-  const token = tokenStorage.getToken();
+  const pathActual = window.location.pathname;
 
-  if (!token || token === "null" || token === "undefined") {
-    tokenStorage.removeToken();
-    window.location.replace("../html/login.html");
-    return false;
+  // 1. Si ya estamos en una página de acceso, no validamos nada
+  if (pathActual.includes("login.html") || pathActual.includes("register.html") || pathActual.includes("recuperacion.html")) {
+    return true;
   }
 
-  // ← Verificar expiración del JWT
-  if (_tokenVencido(token)) {
+  const token = tokenStorage.getToken();
+
+  // 2. Si no hay token o está vencido
+  if (!token || token === "null" || token === "undefined" || _tokenVencido(token)) {
+    
+    // GUARDAMOS LA RUTA ACTUAL PARA VOLVER LUEGO
+    // No guardamos si la ruta es el index o el propio login
+    if (!pathActual.includes("login.html") && pathActual !== BASE_PATH + "/") {
+        sessionStorage.setItem("redirect_after_login", pathActual);
+    }
+
     tokenStorage.removeToken();
-    window.location.replace("../html/login.html");
+    window.location.replace(LOGIN_PAGE);
     return false;
   }
 
@@ -21,18 +33,15 @@ export function requireAuth() {
 
 export function logout() {
   tokenStorage.removeToken();
-  window.location.href = "../html/login.html";
+  sessionStorage.removeItem("redirect_after_login"); // Limpiamos por seguridad
+  window.location.href = LOGIN_PAGE;
 }
 
-// ----------------------------------------------------------
-// Helper — decodifica exp del JWT sin librerías
-// ----------------------------------------------------------
 function _tokenVencido(token) {
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
-    if (!payload.exp) return false;
-    return payload.exp < Math.floor(Date.now() / 1000);
+    return payload.exp ? payload.exp < Math.floor(Date.now() / 1000) : false;
   } catch {
-    return true; // si no se puede decodificar → tratar como vencido
+    return true;
   }
 }

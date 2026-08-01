@@ -8,17 +8,16 @@
   <!-- Estilos -->
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="16x16" href="/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
-  <link rel="icon" type="image/png" sizes="48x48" href="/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
-  <link rel="icon" type="image/png" sizes="64x64" href="/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
-  <script type="module" crossorigin src="/assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
-  <script type="module" crossorigin src="/assets/tokenStorage-BJFfxEW5.js"></script>
-  <script type="module" crossorigin src="/assets/token.guard-CQbhYxkz.js"></script>
-  <script type="module" crossorigin src="/assets/main-D0SoeOn5.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/tecnico-B7MfwyJh.css">
-  <link rel="stylesheet" crossorigin href="/assets/menu-DguJIhAB.css">
-  <link rel="stylesheet" crossorigin href="/assets/formularios_tablas-Cv9h1JXT.css">
+  <link rel="icon" type="image/png" sizes="16x16" href="/agenda/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/agenda/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/agenda/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="/agenda/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png">
+  <script type="module" crossorigin src="/agenda/assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
+  <script type="module" crossorigin src="/agenda/assets/tokenStorage-BJFfxEW5.js"></script>
+  <script type="module" crossorigin src="/agenda/assets/main-C8BWkWps.js"></script>
+  <link rel="stylesheet" crossorigin href="/agenda/assets/tecnico-B7MfwyJh.css">
+  <link rel="stylesheet" crossorigin href="/agenda/assets/menu-BwFBi8gG.css">
+  <link rel="stylesheet" crossorigin href="/agenda/assets/formularios_tablas-DfTRe_l3.css">
 </head>
 
 <body>
@@ -30,7 +29,7 @@
   <header class="site-header">
     <div class="header-container">
       <a href="../index.html" class="logo-link">
-        <img src="/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png" alt="Logo" class="logo">
+        <img src="/agenda/assets/logo-transparente-tp-link-blanco-BvX_nEZi.png" alt="Logo" class="logo">
       </a>
       <h1 class="site-title">Técnicos</h1>
 
@@ -59,6 +58,7 @@
 
           <div class="form-group">
             <label for="nombre">Nombre</label>
+            <span class="field-error" data-error="nombre"></span> </div>
             <input type="text" id="nombre" placeholder="Ingrese nombre" required>
           </div>
 
@@ -88,6 +88,7 @@
           <div class="form-group">
             <label for="duracionTurno">Duración Habitual del Turno en Minutos</label>
             <input type="number" id="duracionTurno" placeholder="Ej: 15" required>
+            <span class="field-error" data-error="duracionTurnoMinutos"></span> </div>
           </div>
 
           <!-- HORARIOS DINÁMICOS -->
